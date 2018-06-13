@@ -5,13 +5,13 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="torchfun",
-    version="0.0.1",
+    version="0.0.2",
     author="CHEN Si Yu",
     author_email="sychen@zju.edu.cn",
     description="A collection of small functions that supplements torch functionality",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/pypa/torchfun",
+    url="https://github.com/sorenchiron/torchfun",
     packages=setuptools.find_packages(),
     classifiers=(
         "Programming Language :: Python",
