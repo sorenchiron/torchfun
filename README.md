@@ -3,3 +3,10 @@
 <!-- ### -- for those who suffer from torch -->
 
 * flatten(tensor)
+* imshow(tensor_batch)
+
+# Install TorchFun
+
+```bash
+pip install torchfun
+```
