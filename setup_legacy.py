@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="torchfun",
+    name="torchure",
     version="0.0.14",
     author="CHEN Si Yu",
     author_email="sychen@zju.edu.cn",

@@ -1,5 +1,5 @@
 name = 'torchfun'
-
 from .torchfun import flatten,imshow
+from .torchfun import *
 
-__all__ = locals()#['flatten',]
+__all__ = locals()
