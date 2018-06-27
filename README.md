@@ -49,10 +49,10 @@ Arguements:
 
 Usage:
 
-imshow(batch)
-imshow(batch,title=[a,b,c])
-imshow(batch,title='title')
-imshow(batch,auto_close=False) 
+    imshow(batch)
+    imshow(batch,title=[a,b,c])
+    imshow(batch,title='title')
+    imshow(batch,auto_close=False) 
 
 ### load (function)
 Arguements:
