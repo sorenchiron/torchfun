@@ -149,8 +149,10 @@ Return value: None
 
 Arguements:
     * model_or_dict: model or state dictionary
+
 Return: parameter amount in python-int
         Returns 0 if datatype not understood
+
 Usage:
 ```python
     count_parameters(model)
