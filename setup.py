@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="torchfun",
-    version="0.0.15",
+    version="0.0.20",
     author="CHEN Si Yu",
     author_email="sychen@zju.edu.cn",
     description="A collection of small functions that supplements torch functionality",
