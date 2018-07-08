@@ -4,10 +4,12 @@
 <!-- ### -- for those who suffer from torch -->
 
 ### Functionality
-
-* flatten(tensor)
-* imshow(tensor_batch)
-* load
+* Flatten
+* flatten()
+* imshow()
+* load()
+* save()
+* count_parameters()
 
 ## Install TorchFun
 
@@ -27,7 +29,7 @@ Usage:
 ```
 
 ----------------
-### flatten (function)
+### flatten(x) (function)
 
 Usage:
 ```python
@@ -35,7 +37,7 @@ Usage:
 ```
 
 ----------------
-### imshow (function)
+### imshow(x,title=None,auto_close=True) (function)
 
 only deal with torch channel-first image batch,
 
