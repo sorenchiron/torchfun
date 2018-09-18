@@ -1055,10 +1055,17 @@ body .markdown-body
 .codehilite .vi{color:teal}
 .codehilite .il{color:#009999}
 .codehilite .gc{color:#999;background-color:#EAF2F5}
-</style><title>README</title></head><body><article class="markdown-body"><h1 id="torchfun-originally-torchure">TorchFun (originally Torchure)<a class="headerlink" href="#torchfun-originally-torchure" title="Permanent link"></a></h1>
-<h2 id="for-those-who-expect-more-convenient-features-from-torch">for those who expect more convenient features from torch<a class="headerlink" href="#for-those-who-expect-more-convenient-features-from-torch" title="Permanent link"></a></h2>
-<!-- ### -- for those who suffer from torch -->
-
+</style><title>README</title></head><body><article class="markdown-body"><h1 id="torchfun">TorchFun<a class="headerlink" href="#torchfun" title="Permanent link"></a></h1>
+<p>More convenient features based on PyTorch (originally Torchure)</p>
+<h2 id="preface">Preface<a class="headerlink" href="#preface" title="Permanent link"></a></h2>
+<p><!-- ### -- for those who suffer from torch -->
+<code>TorchFun</code> project was initiated long ago and was published in 2018-6-13. </p>
+<p>TorchFun is motivated by the one author loves, who sometimes encounter inconvenience using PyTorch at her work. The author published the project as a python package <code>TorchFun</code> on PyPi, so that his beloved could access it whenever and wheresoever needed.</p>
+<p>The purposed of TorchFun is to provide functions which are important and convenient, but absent in PyTorch, like some layers and visualization utils.</p>
+<p>This project has been undergoing in secret so that the author could credit TorchFun to his beloved as a little supprise of help, one day when this project is well-enriched or gets famous.</p>
+<p>Interestingly, The original project name given by the author, is <code>Torchure</code>. That is because he was always multi-tasking trivial affairs in school and got scorched. When he was learning this new framework and found plenty of issues/missing-functionalities, he felt that this was totally a torture. So, this project was named &ldquo;Torchure&rdquo; to satirize the lame PyTorch (you can still found Torchure in PyPi). And, the author hoped, by developing Torchure, his beloved could feel ease even when encountering the crappy-parts of PyTorch.</p>
+<p>This history-of-project was appended recently, because his adorable little beloved wants a supprise immediately, or she will keep rolling on the floor.</p>
+<p>To c71b05bf46d8772e4488335085a2e7fd.</p>
 <h3 id="functionality">Functionality<a class="headerlink" href="#functionality" title="Permanent link"></a></h3>
 <ul>
 <li>Flatten</li>
@@ -1071,25 +1078,29 @@ body .markdown-body
 <li>count_parameters()</li>
 <li>Packsearch</li>
 <li>packsearch()</li>
+<li>hash_parameters()</li>
 </ul>
 <h2 id="install-torchfun">Install TorchFun<a class="headerlink" href="#install-torchfun" title="Permanent link"></a></h2>
+<p>installl
 <div class="codehilite"><pre>pip install torchfun
 </pre></div>
-
+update
+<div class="codehilite"><pre>pip install -U torchfun
+</pre></div></p>
 <h2 id="api">API<a class="headerlink" href="#api" title="Permanent link"></a></h2>
-<h3 id="flatten-module">Flatten Module<a class="headerlink" href="#flatten-module" title="Permanent link"></a></h3>
+<h3 id="flatten-module">Flatten [Module]<a class="headerlink" href="#flatten-module" title="Permanent link"></a></h3>
 <p>used to reshape outputs</p>
 <p>Usage:
 <div class="codehilite"><pre>    <span class="n">flat</span> <span class="o">=</span> <span class="n">Flatten</span><span class="p">()</span>
     <span class="n">out</span> <span class="o">=</span> <span class="n">flat</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </pre></div></p>
 <hr />
-<h3 id="flattenx-function">flatten(x) function<a class="headerlink" href="#flattenx-function" title="Permanent link"></a></h3>
+<h3 id="flattenx-function">flatten(x) [Function]<a class="headerlink" href="#flattenx-function" title="Permanent link"></a></h3>
 <p>Usage:
 <div class="codehilite"><pre>    <span class="n">out</span> <span class="o">=</span> <span class="n">flatten</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </pre></div></p>
 <hr />
-<h3 id="subpixelxout_channels-function">subpixel(x,out_channels) function<a class="headerlink" href="#subpixelxout_channels-function" title="Permanent link"></a></h3>
+<h3 id="subpixelxout_channels-function">subpixel(x,out_channels) [Function]<a class="headerlink" href="#subpixelxout_channels-function" title="Permanent link"></a></h3>
 <p>Unfold channel/depth dimensions to enlarge the feature map</p>
 <p>Notice: </p>
 <div class="codehilite"><pre>Output size is deducted. 
@@ -1109,7 +1120,7 @@ subpixel-out: 100x48x48x1
 
 
 <hr />
-<h3 id="subpixel-module">Subpixel Module<a class="headerlink" href="#subpixel-module" title="Permanent link"></a></h3>
+<h3 id="subpixel-layer-module">Subpixel Layer [Module]<a class="headerlink" href="#subpixel-layer-module" title="Permanent link"></a></h3>
 <p>Same functionality as subpixel(x), but with Module interface.</p>
 <div class="codehilite"><pre>s = Subpixel(out_channels=1)
 out = s(x)
@@ -1117,7 +1128,7 @@ out = s(x)
 
 
 <hr />
-<h3 id="imshowxtitlenoneauto_closetrue-function">imshow(x,title=None,auto_close=True) (function)<a class="headerlink" href="#imshowxtitlenoneauto_closetrue-function" title="Permanent link"></a></h3>
+<h3 id="imshowxtitlenoneauto_closetrue-function">imshow(x,title=None,auto_close=True) [Function]<a class="headerlink" href="#imshowxtitlenoneauto_closetrue-function" title="Permanent link"></a></h3>
 <p>only deal with torch channel-first image batch,</p>
 <p>Arguements:</p>
 <ul>
@@ -1154,7 +1165,7 @@ or permanantly by editing: <code>site-packages/matplotlib/mpl-data/matplotlibrc<
 </pre></div>
 and, the TCL/TK GUI library for <code>tkinter</code> can be downloaded <a href="https://www.tcl.tk/">here</a>.</p>
 <hr />
-<h3 id="loadab-function">load(a,b) (function)<a class="headerlink" href="#loadab-function" title="Permanent link"></a></h3>
+<h3 id="loadab-function">load(a,b) [Function]<a class="headerlink" href="#loadab-function" title="Permanent link"></a></h3>
 <p>Arguements:
 * arbitrary arguemnts named : <code>a</code> and <code>b</code>
 Load weight <code>a</code> into model <code>b</code>, or load model <code>b</code> using weight <code>a</code>
@@ -1173,13 +1184,17 @@ or
 or
 <div class="codehilite"><pre>    <span class="o">&gt;</span><span class="n">load</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="n">f</span><span class="p">)</span>
 </pre></div>
-Return value:
-* None</p>
+Return value:</p>
+<ul>
+<li>None</li>
+</ul>
 <hr />
-<h3 id="saveab-function">save(a,b) (function)<a class="headerlink" href="#saveab-function" title="Permanent link"></a></h3>
-<p>Arguements:
-* arbitrary arguemnts named : <code>a</code> and <code>b</code>
-save weight <code>a</code> into target <code>b</code>, or save model <code>b</code> into target <code>a</code>
+<h3 id="saveab-function">save(a,b) [Function]<a class="headerlink" href="#saveab-function" title="Permanent link"></a></h3>
+<p>Arguements:</p>
+<ul>
+<li>arbitrary arguemnts named : <code>a</code> and <code>b</code></li>
+</ul>
+<p>save weight <code>a</code> into target <code>b</code>, or save model <code>b</code> into target <code>a</code>
 The order of the arguments doesn&rsquo;t matter.</p>
 <p>Example:</p>
 <div class="codehilite"><pre>    <span class="o">&gt;</span><span class="n">save</span><span class="p">(</span><span class="s">&#39;weights.pts&#39;</span><span class="p">,</span><span class="n">model</span><span class="p">)</span>
@@ -1203,27 +1218,31 @@ or
 </pre></div>
 Return value: None</p>
 <hr />
-<h3 id="count_parametersmodel_or_dict-function">count_parameters(model_or_dict) (function)<a class="headerlink" href="#count_parametersmodel_or_dict-function" title="Permanent link"></a></h3>
+<h3 id="count_parametersmodel_or_dict_or_param-function">count_parameters(model_or_dict_or_param) [Function]<a class="headerlink" href="#count_parametersmodel_or_dict_or_param-function" title="Permanent link"></a></h3>
 <p>Count parameter numer of a module/state_dict/layer/tensor.
     This function can also print the occupied memory of parameters in MBs</p>
 <p>Arguements:
-* model_or_dict: model or state dictionary</p>
+* model_or_dict_or_param: model or state dictionary or parameters()</p>
 <p>Return: parameter amount in python-int
         Returns 0 if datatype not understood</p>
 <p>Usage:
 <div class="codehilite"><pre>    <span class="n">count_parameters</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-    <span class="n">count_parameters</span><span class="p">(</span><span class="n">state_dict</span><span class="p">)</span>
+    <span class="n">count_parameters</span><span class="p">(</span><span class="n">state_dict</span><span class="p">)</span> <span class="c1">#all params </span>
+    <span class="n">count_parameters</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span> <span class="c1">#only trainable params</span>
     <span class="n">count_parameters</span><span class="p">(</span><span class="n">weight_tensor</span><span class="p">)</span>
     <span class="n">count_parameters</span><span class="p">(</span><span class="n">numpy_array</span><span class="p">)</span>
 </pre></div></p>
 <hr />
-<h3 id="packsearch">Packsearch<a class="headerlink" href="#packsearch" title="Permanent link"></a></h3>
+<h3 id="packsearch-module">Packsearch [Module]<a class="headerlink" href="#packsearch-module" title="Permanent link"></a></h3>
+<p>This is a very useful thing you definitly have been dreaming of.</p>
+<p>You can now use packsearch to query names inside any package! </p>
 <p>Given an module object as input:</p>
-<div class="codehilite"><pre>&gt; p = Packsearch(torch)
+<div class="codehilite"><pre>   &gt; p = Packsearch(torch) 
+or &gt; p = Packsarch(numpy) whatever
 </pre></div>
 
 
-<p>the instance p provide p.search() method. So that you can 
+<p>the instance <code>p</code> provide <code>p.search()</code> method. So that you can 
 search everything inside this package</p>
 <div class="codehilite"><pre>&gt; p.search(&#39;maxpoo&#39;)
 </pre></div>
@@ -1243,7 +1262,7 @@ search everything inside this package</p>
 
 
 <hr />
-<h3 id="packsearchmodulekeyword-function">packsearch(module,keyword) Function<a class="headerlink" href="#packsearchmodulekeyword-function" title="Permanent link"></a></h3>
+<h3 id="packsearchmodulekeyword-function">packsearch(module,keyword) [Function]<a class="headerlink" href="#packsearchmodulekeyword-function" title="Permanent link"></a></h3>
 <p>or packsearch(keyword,module)</p>
 <p>Given an module object, and search pattern string as input:</p>
 <div class="codehilite"><pre>&gt; packsearch(torch,&#39;maxpoo&#39;)
@@ -1252,7 +1271,7 @@ search everything inside this package</p>
 
 <p>or</p>
 <div class="codehilite"><pre>&gt; packsearch(&#39;maxpoo&#39;,torch)
-you can search everything inside this package
+
 output:
     Packsearch: 35 results found:
     -------------results start-------------
@@ -1266,9 +1285,25 @@ output:
 </pre></div>
 
 
-<h3 id="hash_parametersmodule-function">hash_parameters(module)  Function<a class="headerlink" href="#hash_parametersmodule-function" title="Permanent link"></a></h3>
-<p>return the summary of all variables.
-This is used to detect chaotic changes of weights.
+<p>you can search for everything inside any package</p>
+<h3 id="hash_parametersmodule-function">hash_parameters(module)  [Function]<a class="headerlink" href="#hash_parametersmodule-function" title="Permanent link"></a></h3>
+<p>return the summary of all variables.</p>
+<p>This is used to detect chaotic changes of weights.
 You can check the sum_parameters before and after some operations, to know
 if there is any change made to the params.</p>
-<p>I use this function to verify gradient behaviours.</p></article></body></html>
+<p>I use this function to verify gradient behaviours.</p>
+<p>By default, This only hash the trainable parameters!</p>
+<p>arguements:</p>
+<ul>
+<li>module_or_statdict_or_param: torch.nn.module, 
+                    or model.state_dict(), 
+                    or model.parameters().</li>
+<li>use_sum: return the sum instead of mean value of all params.</li>
+</ul>
+<p>Usage demo:</p>
+<div class="codehilite"><pre><span class="n">model</span> <span class="o">=</span> <span class="n">MyNet</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="n">hash_parameters</span><span class="p">(</span><span class="n">model</span><span class="p">))</span> <span class="c1"># see params</span>
+<span class="n">train_one_step</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">hash_parameters</span><span class="p">(</span><span class="n">model</span><span class="p">))</span> <span class="c1"># see if params are updated</span>
+<span class="k">print</span><span class="p">(</span><span class="n">hash_parameters</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()))</span> <span class="c1"># see if trainable+un-trainable params are updated</span>
+</pre></div></article></body></html>

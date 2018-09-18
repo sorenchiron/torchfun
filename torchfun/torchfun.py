@@ -6,7 +6,7 @@
 from __future__ import division,print_function
 import numpy as np
 import torch
-import io
+import io,os
 from tqdm import tqdm
 t = torch
 
@@ -270,12 +270,13 @@ def count_parameters(model_or_dict_or_param):
         print('TorchFun:count_parameters:Warning, Unknown data type:',model_or_dict.__class__)
         return 0
     num = 0
-    Bytes = 0
+    KBytes = 0
     for p in w:
-        num += np.prod(p.shape)
+        this_num = np.prod(p.shape)
+        num += this_num
         dtype = p.dtype if p.dtype in dtype_size else torch.float32
-        Bytes += num * dtype_size[dtype]
-    print('Torchfun:parameters:',Bytes/1024/1024,'MBs',num,'params')
+        KBytes += (this_num/1024*dtype_size[dtype])
+    print('Torchfun:parameters:%.2f' % (KBytes/1024),'MBs',num,'params')
     return num
 
 parameters = count_parameters
@@ -291,8 +292,6 @@ def show_layers_parameters(model):
     print('total parameters:',total_params)
     print('------------end------------')
 
-
-import os
 module_type = type(os)
 
 class Packsearch(object):
@@ -444,18 +443,38 @@ def packsearch(module_or_str,str_or_module):
         print('Packsearch: search done,',res_counter,'results found.')
 
 
-def hash_parameters(module,use_sum=False):
+def hash_parameters(model_or_statdict_or_param,use_sum=False):
     '''return the summary of all variables.
     This is used to detect chaotic changes of weights.
     You can check the sum_parameters before and after some operations, to know
     if there is any change made to the params.
 
-    I use this function to verify gradient behaviours.'''
+    I use this function to verify gradient behaviours.
+
+    By default, This only hash the trainable parameters!
+
+    arguements:
+    module_or_statdict_or_param: torch.nn.module, 
+                    or model.state_dict(), 
+                    or model.parameters().
+    use_sum: return the sum instead of mean value of all params.'''
+    m = model_or_statdict_or_param
     means = []
-    for p in module.parameters():
+    params = []
+    if isinstance(m,Torch.nn.Module):
+        params = [m[k] for k in m]
+    elif isinstance(m,dict):
+        params = m.parameters()
+    elif isinstance(m,generator_type):
+        params = parameters
+    else:
+        print('TorchFun:hash_parameters:','input type not support:',type(m))
+
+    for p in params:
         if use_sum:
             v = p.sum()
         else:
             v = p.mean()
         means.append(v)
+
     return float(sum(means))

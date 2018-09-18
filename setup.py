@@ -38,6 +38,9 @@ setuptools.setup(
     url="https://github.com/sorenchiron/torchfun",
     packages=setuptools.find_packages(),
     include_package_data=True,
+    package_data={
+                '':['version']
+                },
     classifiers=(
         "Programming Language :: Python",
         "License :: OSI Approved :: MIT License",
