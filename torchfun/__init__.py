@@ -20,7 +20,7 @@ The purposed of TorchFun is to provide functions which are important and conveni
 
 This project has been undergoing in secret so that the author could credit TorchFun to his beloved as a little supprise of help, one day when this project is well-enriched or gets famous.
 
-Interestingly, The original project name given by the author, is `Torchure`. That is because he was always multi-tasking trivial affairs in school and got scorched. When he was learning this new framework and found plenty of issues/missing-functionalities, he felt that this was totally a torture. So, this project was named "Torchure" to satirize the lame PyTorch (you can still found Torchure in PyPi). And, the author hoped, by developing Torchure, his beloved could feel ease even when encountering the crappy-parts of PyTorch.
+Interestingly, The original project name given by the author, is `Torchure`. That is because he was always multi-tasking trivial affairs in school and got scorched, and when he was learning this new framework in hope to help his beloved, he found plenty of issues/missing-functionalities. He felt that this was totally a torture. So, this project was named "Torchure" to satirize the lame PyTorch (you can still found Torchure in PyPi). And, the author hoped, by developing Torchure, his beloved could feel ease even when encountering the crappy-parts of PyTorch.
 
 This history-of-project was appended recently, because his adorable little beloved wants a supprise immediately, or she will keep rolling on the floor.
 
