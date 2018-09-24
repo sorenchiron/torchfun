@@ -6,11 +6,25 @@
 from __future__ import division,print_function
 import numpy as np
 import torch
-import io,os
+import io,os,importlib,sys
 from tqdm import tqdm
+from .nn import *
 t = torch
 
 def sort_args(args_or_types,types_or_args):
+    '''
+    This is a very interesting function.
+    It is used to support __arbitrary-arguments-ordering__ in TorchFun.
+
+    Input:
+        The function takes a list of types, and a list of arguments.
+
+    Returns:
+        a list of arguments, with the same order as the types-list.
+
+    Of course, `sort_args` supports arbitrary-arguments-ordering by itself.
+
+    '''
     if type(args_or_types[0]) is type:
         types = args_or_types
         args = types_or_args
@@ -23,73 +37,6 @@ def sort_args(args_or_types,types_or_args):
     for t in types:
         res.append(type_arg_dict[t])
     return res
-
-
-def flatten(x):
-    '''Flatten function
-    Usage:
-        out = flatten(x)
-    '''
-    shapes = x.shape
-    dims = len(shapes)
-    flatten_length = torch.prod(shapes[1:])
-    return x.view(-1,flatten_length)
-
-class Flatten(torch.nn.Module):
-    '''Flatten module
-    Usage:
-        flat = Flatten()
-        out = flat(x)
-    '''
-    def __init__(self):
-        pass
-    def forward(self,x):
-        return flatten(x)
-
-def subpixel(x,out_channels=1):
-    '''Unfold channel/depth dimensions to enlarge the feature map
-    Notice: Output size is deducted. 
-    The size of the unfold square is automatically determined
-    e.g. :
-        images: 100x16x16x9.  9=3x3 square
-        subpixel-out: 100x48x48x1
-    Arguement:
-        x: NCHW image, channel first.
-        out_channels, channel number of output feature map'''
-    b,c,h,w = shapes = x.shape
-    out_c = out_channels
-    if c%out_c != 0:
-        print('input has',c,'channels, cannot be split into',out_c,'parts')
-        raise Exception('subpixel inappropriate size')
-    unfold_dim = c//out_c
-    l = int(np.sqrt(unfold_dim))
-    if l**2 != unfold_dim:
-        print('remaining',unfold_dim,'digits for each channel, unable to sqrt.')
-        raise Exception('subpixel inappropriate size')
-    ###### start ######
-    x.transpose_(1,3) # nhwc
-    y = x.reshape(b,h,w,unfold_dim,out_c)
-    y.transpose_(2,3)
-    y = y.reshape(b,h,l,l,w,out_c)
-    y = y.reshape(b,l*h,l,w,out_c) # b,l*h,l,w,outc
-    y.transpose_(2,3) # b,l*h,w,l,outc
-    y = y.reshape(b,l*h,l*w,out_c)
-    y.transpose_(1,3) # nchw
-    return y
-
-class Subpixel(torch.nn.Module):
-    '''Unfold channel/depth dimensions to enlarge the feature map
-    Notice: Output size is deducted. 
-    The size of the unfold square is automatically determined
-    e.g. :
-        images: 100x16x16x9.  9=3x3 square
-        subpixel-out: 100x48x48x1
-    Arguement:
-        out_channels, channel number of output feature map'''
-    def __init__(self,out_channels=1):
-        self.out_channels = out_channels
-    def forward(self,x):
-        return subpixel(x,out_channels=self.out_channels)
 
 def imshow(x,title=None,auto_close=True):
     '''only deal with torch channel-first image batch,
@@ -478,3 +425,131 @@ def hash_parameters(model_or_statdict_or_param,use_sum=False):
         means.append(v)
 
     return float(sum(means))
+
+def force_exist(dirname,verbose=True):
+    '''force a directory to exist.
+    force_exist can automatically create directory with any depth.
+    Arguements:
+        dirname: path of the desired directory
+        verbose: print every directory creation. default True.
+    Usage:
+        force_exist('a/b/c/d/e/f')
+        force_exist('a/b/c/d/e/f',verbose=False)
+    '''
+    
+    if dirname == '' or dirname == '.':
+        return True
+    top = os.path.dirname(dirname)
+    force_exist(top)
+    if not os.path.exists(dirname):
+        if verbose:
+            print('creating',dirname)
+        os.makedirs(dirname)
+        return False
+    else:
+        return True
+
+
+def omini_open(path):
+    import subprocess
+    import platform
+    if platform.system() == "Windows":
+        os.startfile(path)
+    elif platform.system() == "Darwin":
+        subprocess.Popen(["open", path])
+    else:
+        subprocess.Popen(["xdg-open", path])
+
+
+def whereis(module_or_string,open_gui=True):
+    '''find the source file location of a module
+    arguments:
+        module_or_string: target module object, or it's string path like `torch.nn`
+        open_gui: open the folder with default window-manager.
+    returns:
+        module file name, or None
+    '''
+    if isinstance(module_or_string,module_type):
+        mod = module_or_string
+    elif isinstance(module_or_string,str):
+        try:
+            mod = importlib.import_module(module_or_string)
+        except:
+            s = '.'.join(module_or_string.split('.')[:-1])
+            print('TorchFun:warning:',module_or_string,'is not a module. Maybe it is a node class. TorchFun is trying to parse its father prefix:',s)
+            try:
+                mod = importlib.import_module(s)
+            except Exception as e:
+                print('TorchFun:error:','father prefix',s,'is not valid')
+                raise e
+    else:
+        print('TorchFun:error:invalid arguement',module_or_string)
+        return None
+    fname = mod.__file__
+    dirname = os.path.dirname(mod.__file__)
+    print(fname)
+    if open_gui:
+        omini_open(dirname)
+
+    return fname
+    
+def pil_imshow(arr):
+    """
+    Simple showing of an image through an external viewer.
+
+    This function is only available if Python Imaging Library (PIL) is installed.
+
+    Uses the image viewer specified by the environment variable
+    SCIPY_PIL_IMAGE_VIEWER, or if that is not defined then `see`,
+    to view a temporary file generated from array data.
+
+    .. warning::
+
+        This function uses `bytescale` under the hood to rescale images to use
+        the full (0, 255) range if ``mode`` is one of ``None, 'L', 'P', 'l'``.
+        It will also cast data for 2-D images to ``uint32`` for ``mode=None``
+        (which is the default).
+
+    Parameters
+    ----------
+    arr : ndarray
+        Array of image data to show.
+
+    Returns
+    -------
+    None
+
+    Examples
+    --------
+    >>> a = np.tile(np.arange(255), (255,1))
+    >>> from scipy import misc
+    >>> misc.imshow(a)
+
+    Ported and upgraded based on scipy.misc.imshow
+    Open-sourced according to the license.
+    """
+    from PIL import Image
+    import tempfile
+
+    # to get the tempdir, or the tempdir is None by default.
+    fnum,fname = tempfile.mkstemp()
+    os.close(fnum)
+    os.unlink(fname)
+
+    oldpath = os.path.join(tempfile.tempdir,'torchfun_pil_imshow_tempimg_prefix.png')
+    if os.path.exists(oldpath):
+        print('cleaning old tmp image.')
+        os.unlink(oldpath)
+
+    im = Image.fromarray(arr)
+    fnum, fname = tempfile.mkstemp('.png',prefix='torchfun_pil_imshow_tempimg_prefix')
+    if im.mode != 'RGB':
+        im = im.convert('RGB')
+
+    try:
+        im.save(fname)
+    except Exception as e:
+        print(e)
+        raise RuntimeError("Error saving temporary image data.")
+    os.close(fnum)
+    omini_open(fname)

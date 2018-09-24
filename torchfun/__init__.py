@@ -1,7 +1,17 @@
-name = 'torchfun'
-from .torchfun import flatten,imshow
+# LICENSE: MIT
+# Author: CHEN Si Yu.
+# Date: 2018
+# Appended constrains: If the content in this project is used in your source-codes, this author's name must be cited at the begining of your source-code. 
+
 from .torchfun import *
+from . import transforms
+from . import nn
+from .transforms import *
+from .nn import *
+
 import os
+
+name = 'torchfun'
 
 __folder__ = os.path.dirname(__file__)
 
@@ -11,8 +21,7 @@ __version__ = open(__ver_fname__).read()
 
 __all__ = locals()
 
-__doc__ = '''
-`TorchFun` project was initiated long ago and was published in 2018-6-13. 
+__doc__ = '''`TorchFun` project was initiated long ago and was published in 2018-6-13. 
 
 TorchFun is motivated by the one author loves, who sometimes encounter inconvenience using PyTorch at her work. The author published the project as a python package `TorchFun` on PyPi, so that his beloved could access it whenever and wheresoever needed.
 
@@ -35,9 +44,12 @@ del_list=[
 'torch',
 'tqdm',
 'division',
-'print_function']
+'print_function',
+'importlib',
+'sys']
 
 for del_item in del_list:
-    del __all__[del_item]
+    if del_item in __all__:
+        del __all__[del_item]
 
 del del_list

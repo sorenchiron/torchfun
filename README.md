@@ -16,7 +16,7 @@ Interestingly, The original project name given by the author, is `Torchure`. Tha
 
 This history-of-project was appended recently, because his adorable little beloved wants a supprise immediately, or she will keep rolling on the floor.
 
-To c71b05bf46d8772e4488335085a2e7fd.
+To Eggy c71b05bf46d8772e4488335085a2e7fd.
 
 ### Functionality
 * Flatten
@@ -30,6 +30,8 @@ To c71b05bf46d8772e4488335085a2e7fd.
 * Packsearch
 * packsearch()
 * hash_parameters()
+* force_exist()
+* whereis()
 
 ## Install TorchFun
 installl
@@ -275,7 +277,8 @@ or
 
 you can search for everything inside any package
 
-### hash_parameters(module)  [Function]
+------------------
+### hash_parameters(module_or_statdict_or_param)  [Function]
 
 return the summary of all variables.
 
@@ -303,3 +306,49 @@ train_one_step(model)
 print(hash_parameters(model)) # see if params are updated
 print(hash_parameters(model.state_dict())) # see if trainable+un-trainable params are updated
 ```
+
+-----------------
+### force_exist(dirname,verbose=True) [Function]
+
+force a series of hierachical directories to exist.
+
+`force_exist` can automatically create directory with any depth.
+
+Arguements:
+
+* dirname: path of the desired directory
+* verbose: print every directory creation. default True.
+
+Usage:
+
+    force_exist('a/b/c/d/e/f')
+    force_exist('a/b/c/d/e/f',verbose=False)
+
+
+------------------
+### sort_args(args_or_types,types_or_args) [Function]
+
+This is a very interesting function.
+It is used to support __arbitrary-arguments-ordering__ in TorchFun.
+
+Input:
+    The function takes a list of types, and a list of arguments.
+
+Returns:
+    a list of arguments, with the same order as the types-list.
+
+Of course, `sort_args` supports arbitrary-arguments-ordering by itself.
+
+
+-------------------
+### whereis(module_or_string) [Function]
+
+find the source file location of a module
+arguments:
+
+*    module_or_string: target module object, or it's string path like `torch.nn`
+*    open_gui: open the folder with default window-manager.
+
+returns:
+
+*    module file name, or None
