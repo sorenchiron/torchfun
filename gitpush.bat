@@ -1,0 +1,2 @@
+bash gitpush.sh
+pause
