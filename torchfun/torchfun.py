@@ -244,6 +244,8 @@ module_type = type(os)
 class Packsearch(object):
     '''Given an module object as input:
     > p = Packsearch(torch)
+    or
+    > p = Packsearch('torch')
     the instance p provide p.search() method. So that you can 
     search everything inside this package
     > p.search('maxpoo')
@@ -260,7 +262,10 @@ class Packsearch(object):
     '''
     def __init__(self,module_object,auto_init=True):
         super(self.__class__,self).__init__()
-        self.root = module_object
+        if isinstance(module_object,module_type):
+            self.root = module_object
+        else:
+            self.root = importlib.import_module(module_object)
         self.target = self.root.__name__
         self.name_list = []
         self.name_dict = []
