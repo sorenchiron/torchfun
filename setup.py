@@ -5,15 +5,16 @@ import os
 
 def increase_version_number():
     if os.path.exists('version'):
-        version = pickle.load(open('version','rb'))
+        version = open('version','r')
     else:
         version = '0.0.0'
     print('previous version',version)
-    release,updates,fixes = version.split('.')
+    release,updates,fixes = version.read().split('.')
     fixes = str(int(fixes)+1)
+    version.close()
+    new_version = open('version','w')
     version = '.'.join([release,updates,fixes])
-    pickle.dump(version,open('version','wb'))
-    
+    new_version.write(version)
     print('new version',version)
     return version
 
@@ -21,8 +22,15 @@ def write_version(v):
     with open('torchfun/version','w') as f:
         f.write(v)
 
+def write_install(v):
+    fname = 'torchfun-%s-py3-none-any.whl' % (v)
+    fpath = os.path.join('dist',fname)
+    with open('local_install.bat','w') as f:
+        f.write('pip install '+fpath)
+
 version = increase_version_number()
 write_version(version)
+write_install(version)
 
 with open("README.md", "r") as fh:
     long_description = fh.read()

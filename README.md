@@ -43,6 +43,10 @@ update
 pip install -U torchfun
 ```
 
+## Documentation:
+
+Please visit: https://sorenchiron.github.io/torchfun.github.io/torchfun.html
+
 ## API
 
 ### Flatten [Module]

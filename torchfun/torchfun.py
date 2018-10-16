@@ -38,7 +38,7 @@ def sort_args(args_or_types,types_or_args):
         res.append(type_arg_dict[t])
     return res
 
-def imshow(x,title=None,auto_close=True):
+def imshow(x,title=None,auto_close=True,rows=8):
     '''only deal with torch channel-first image batch,
     title: add title to plot. (Default None)
         title can be string, or any string-able object.
@@ -46,14 +46,62 @@ def imshow(x,title=None,auto_close=True):
         Close the pyplot session afterwards. 
         Clean the environment just like you had 
         never used matplotlib here.
-        if set to False, the plot will remain in the memory for further drawings.'''
+        if set to False, the plot will remain in the memory for further drawings.
+    rows: (default 8)
+        the width of the output grid image.
+
+    Usage:
+    ```python
+        imshow(batch)
+        imshow(batch,title=[a,b,c])
+        imshow(batch,title='title')
+        imshow(batch,auto_close=False) 
+    ```
+    Warnings:
+    ```text
+        TorchFun:imshow:Warning, you are using WebAgg backend for Matplotlib. 
+        Please consider windowed display SDKs such as TkAgg backend and GTK* backends.
+    ```
+    This means your matplotlib is using web-browser for figure display. We __strongly__ recommend you to use window-based native display because browser-based backends are fragile and tend to crash. You can change the display mamanger for matplotlib each time you execute your script by:
+    ```python
+    import matplotlib
+    matplotlib.use('TkAgg') # or GTK GTKAgg
+    ```
+    or permanantly by editing: `site-packages/matplotlib/mpl-data/matplotlibrc` and change backend to `TkAgg`
+
+    A full list of available backends can be found at:
+    ```python
+    import matplotlib
+    matplotlib.rcsetup.all_backends
+    ```
+    and, the TCL/TK GUI library for `tkinter` can be downloaded [here](https://www.tcl.tk/).
+
+    Notice:
+        If you use conda to manage your python versions, errors may occur when using TCL/TK.
+        That's because conda secretly redirect your global python library path towards its.
+        That will cause other stand-alone python versions to search from conda's lib dirs for binaries.
+        To solve this, you may have to set:
+        
+        ```
+        export TCL_LIBRARY=/usr/...pythondir.../lib/tcl8.6
+        export TK_LIBRARY=/usr/...pythondir.../lib/tcl8.6
+        ```
+        or on windows:
+
+        ```
+        set "TCL_LIBRARY=/usr/...pythondir.../lib/tcl8.6"
+        set "TK_LIBRARY=/usr/...pythondir.../lib/tcl8.6"
+        ```
+
+        '''
     import torchvision
     if x.requires_grad:
         x = x.detach()
+    x = x.cpu()
     shapes = x.shape
     if len(shapes)==3:
         x = t.unsqueeze(x,dim=0)
-    grid = torchvision.utils.make_grid(x)
+    grid = torchvision.utils.make_grid(x,nrow=rows)
     gridnp = grid.numpy()
     max_intensity = gridnp.max()
     min_intensity = gridnp.min()
@@ -91,6 +139,78 @@ def imshow(x,title=None,auto_close=True):
         del plt
     else:
         plt.pause(0.001)
+
+
+def pil_imshow(arr):
+    """
+    Simple showing of an image through an external viewer.
+
+    This function is only available if Python Imaging Library (PIL) is installed.
+
+    Uses the image viewer specified by the environment variable
+    SCIPY_PIL_IMAGE_VIEWER, or if that is not defined then `see`,
+    to view a temporary file generated from array data.
+
+    .. warning::
+
+        This function uses `bytescale` under the hood to rescale images to use
+        the full (0, 255) range if ``mode`` is one of ``None, 'L', 'P', 'l'``.
+        It will also cast data for 2-D images to ``uint32`` for ``mode=None``
+        (which is the default).
+
+    Parameters
+    ----------
+    arr : ndarray
+        Array of image data to show.
+
+    Returns
+    -------
+    None
+
+    Examples
+    --------
+    >>> a = np.tile(np.arange(255), (255,1))
+    >>> from scipy import misc
+    >>> misc.imshow(a)
+
+    Ported and upgraded based on scipy.misc.imshow
+    Open-sourced according to the license.
+
+    """
+    import PIL
+    from PIL import Image
+    from PIL.ImageFile import ImageFile
+    import tempfile
+
+    if isinstance(arr,torch.Tensor):
+        return imshow(arr)
+
+    # to get the tempdir, or the tempdir is None by default.
+    fnum,fname = tempfile.mkstemp()
+    os.close(fnum)
+    os.unlink(fname)
+
+    oldpath = os.path.join(tempfile.tempdir,'torchfun_pil_imshow_tempimg_prefix.png')
+    if os.path.exists(oldpath):
+        print('cleaning old tmp image.')
+        os.unlink(oldpath)
+
+    if isinstance(arr,ImageFile):
+        im = arr
+    else:
+        im = Image.fromarray(arr)
+    fnum, fname = tempfile.mkstemp('.png',prefix='torchfun_pil_imshow_tempimg_prefix')
+    if im.mode != 'RGB':
+        im = im.convert('RGB')
+
+    try:
+        im.save(fname)
+    except Exception as e:
+        print(e)
+        raise RuntimeError("Error saving temporary image data.")
+    os.close(fnum)
+    omini_open(fname)
+
 
 def load(a,b):
     '''
@@ -133,19 +253,32 @@ def save(a,b):
     save weight `a` into target `b`, or save model `b` into target `a`
     The order of the arguments doesn't matter.
     Example:
+
         >save('weights.pts',model)
+
     or
+
         >save(model,'weights.pts')
+
     or
+
         >f = open('weight.pts')
         >save(f,model)
+
     or
+
         >save(model,f)
+
     or
+
         >save('weights.pts',state_dict)
+
     or
+
         >save(state_dict,'weights.pts')
+
     Return value: None
+    
     '''
     args = (a,b)
     arg_file_pos = None
@@ -249,6 +382,8 @@ class Packsearch(object):
     the instance p provide p.search() method. So that you can 
     search everything inside this package
     > p.search('maxpoo')
+    or simply
+    > p('maxpoo')
     output:
         Packsearch: 35 results found:
         -------------results start-------------
@@ -260,7 +395,7 @@ class Packsearch(object):
         5        torch.nn.MaxPool2d
         ...
     '''
-    def __init__(self,module_object,auto_init=True):
+    def __init__(self,module_object,auto_init=True,verbose=False):
         super(self.__class__,self).__init__()
         if isinstance(module_object,module_type):
             self.root = module_object
@@ -271,7 +406,7 @@ class Packsearch(object):
         self.name_dict = []
         if auto_init:
             print('Packsearch:','caching names in the module...')
-            self.traverse(self.root)
+            self.traverse(self.root,search_attributes=verbose)
             self.preprocess_names()
             print('Packsearch:','done, please use search().')
 
@@ -279,8 +414,10 @@ class Packsearch(object):
         self.name_list = sorted(self.name_list)
         self.name_dict = [(i.lower(),i) for i in self.name_list]
 
-    def traverse(self,mod):
-        '''gather all names and store them into a name_list'''
+    def traverse(self,mod,search_attributes=False):
+        '''gather all names and store them into a name_list
+        search_attributes: whether to include class attributes or method names
+        '''
         if type(mod) is not module_type:
             return
         root_name = mod.__name__+'.' # make `torchvision.` != `torch.`
@@ -303,7 +440,11 @@ class Packsearch(object):
                     # packages like io,numpy,os, will be excluded.
                         stack.insert(0,obj) # to be traversed later
                 else:
-                    pass # do not traverse non-module objects
+                    # usually do not traverse non-module objects
+                    if search_attributes:
+                        attrs = dir(obj)
+                        items = [prefix+'.'+name+'.'+attr for attr in attrs]
+                        self.name_list.extend(items)
                 self.name_list.append(prefix+'.'+name)
             del m
             # record that we have visited this module
@@ -364,6 +505,9 @@ class Packsearch(object):
     def __repr__(self):
         obj_desc = super(self.__class__,self).__repr__()
         return self.__str__() + os.linesep + 'location:' + obj_desc
+    def __call__(self,name):
+        return self.search(name)
+
 
 def packsearch(module_or_str,str_or_module):
     '''Given an module object, and search pattern string as input:
@@ -465,18 +609,25 @@ def omini_open(path):
     else:
         subprocess.Popen(["xdg-open", path])
 
-
 def whereis(module_or_string,open_gui=True):
-    '''find the source file location of a module
+    '''
+    find the source file location of a module
     arguments:
         module_or_string: target module object, or it's string path like `torch.nn`
         open_gui: open the folder with default window-manager.
     returns:
         module file name, or None
+
     '''
+    mors = module_or_string
+    mod = None
     if isinstance(module_or_string,module_type):
         mod = module_or_string
-    elif isinstance(module_or_string,str):
+    elif ((not isinstance(module_or_string,str)) and
+     hasattr(module_or_string,'__module__')):
+        module_or_string = module_or_string.__module__
+    
+    if isinstance(module_or_string,str):
         try:
             mod = importlib.import_module(module_or_string)
         except:
@@ -487,9 +638,11 @@ def whereis(module_or_string,open_gui=True):
             except Exception as e:
                 print('TorchFun:error:','father prefix',s,'is not valid')
                 raise e
-    else:
-        print('TorchFun:error:invalid arguement',module_or_string)
+         
+    if not hasattr(mod,'__file__'):
+        print('TorchFun:error:invalid arguement',mors)
         return None
+
     fname = mod.__file__
     dirname = os.path.dirname(mod.__file__)
     print(fname)
@@ -498,63 +651,17 @@ def whereis(module_or_string,open_gui=True):
 
     return fname
     
-def pil_imshow(arr):
-    """
-    Simple showing of an image through an external viewer.
 
-    This function is only available if Python Imaging Library (PIL) is installed.
 
-    Uses the image viewer specified by the environment variable
-    SCIPY_PIL_IMAGE_VIEWER, or if that is not defined then `see`,
-    to view a temporary file generated from array data.
-
-    .. warning::
-
-        This function uses `bytescale` under the hood to rescale images to use
-        the full (0, 255) range if ``mode`` is one of ``None, 'L', 'P', 'l'``.
-        It will also cast data for 2-D images to ``uint32`` for ``mode=None``
-        (which is the default).
-
-    Parameters
-    ----------
-    arr : ndarray
-        Array of image data to show.
-
-    Returns
-    -------
-    None
-
-    Examples
-    --------
-    >>> a = np.tile(np.arange(255), (255,1))
-    >>> from scipy import misc
-    >>> misc.imshow(a)
-
-    Ported and upgraded based on scipy.misc.imshow
-    Open-sourced according to the license.
-    """
-    from PIL import Image
-    import tempfile
-
-    # to get the tempdir, or the tempdir is None by default.
-    fnum,fname = tempfile.mkstemp()
-    os.close(fnum)
-    os.unlink(fname)
-
-    oldpath = os.path.join(tempfile.tempdir,'torchfun_pil_imshow_tempimg_prefix.png')
-    if os.path.exists(oldpath):
-        print('cleaning old tmp image.')
-        os.unlink(oldpath)
-
-    im = Image.fromarray(arr)
-    fnum, fname = tempfile.mkstemp('.png',prefix='torchfun_pil_imshow_tempimg_prefix')
-    if im.mode != 'RGB':
-        im = im.convert('RGB')
-
+def tf_session(allow_growth=True):
+    '''Used to create tensorflow session that does not stupidly and unresonably consume all gpu-memeory.
+    returns:
+        a tensorflow session consuming dynamic gpu memory.'''
     try:
-        im.save(fname)
+        tensorflow = importlib.import_module('tensorflow')
     except Exception as e:
-        print(e)
-        raise RuntimeError("Error saving temporary image data.")
-    os.close(fnum)
-    omini_open(fname)
+        print('tensorflow not installed, cannot provide tensorflow session instance.')
+        raise e
+    config = tensorflow.ConfigProto()
+    config.gpu_options.allow_growth = allow_growth
+    return tensorflow.Session(config=config)

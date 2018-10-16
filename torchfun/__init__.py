@@ -19,7 +19,7 @@ __ver_fname__ = os.path.join(__folder__,'version')
 
 __version__ = open(__ver_fname__).read()
 
-__all__ = locals()
+__all__ = list(locals())
 
 __doc__ = '''`TorchFun` project was initiated long ago and was published in 2018-6-13. 
 
@@ -50,6 +50,6 @@ del_list=[
 
 for del_item in del_list:
     if del_item in __all__:
-        del __all__[del_item]
+        __all__.remove(del_item)
 
 del del_list
