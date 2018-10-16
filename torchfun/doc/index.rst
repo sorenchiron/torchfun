@@ -10,6 +10,7 @@ Welcome to torchfun's documentation!
    :maxdepth: 2
    :caption: Contents:
             modules.rst
+            torchfun.rst
 
 
 Indices and tables
