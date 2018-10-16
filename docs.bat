@@ -1,5 +1,6 @@
 call .\make_docs.bat
+cd ..\..\
 echo continuing
-copy .\_build\html\* ..\..\docs\
+copy  .\torchfun\doc\_build\html\* .\docs\  /Y
 echo done!
 pause
