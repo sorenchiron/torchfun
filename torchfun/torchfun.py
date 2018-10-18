@@ -8,7 +8,6 @@ import numpy as np
 import torch
 import io,os,importlib,sys
 from tqdm import tqdm
-from .nn import *
 t = torch
 
 def sort_args(args_or_types,types_or_args):
@@ -37,6 +36,21 @@ def sort_args(args_or_types,types_or_args):
     for t in types:
         res.append(type_arg_dict[t])
     return res
+
+def omini_open(path):
+    '''
+    Opens everything using system default viwer.
+
+    This function can call system GUI to open folders,images,files,videos...
+    '''
+    import subprocess
+    import platform
+    if platform.system() == "Windows":
+        os.startfile(path)
+    elif platform.system() == "Darwin":
+        subprocess.Popen(["open", path])
+    else:
+        subprocess.Popen(["xdg-open", path])
 
 def imshow(x,title=None,auto_close=True,rows=8):
     '''only deal with torch channel-first image batch,
@@ -278,7 +292,7 @@ def save(a,b):
         >save(state_dict,'weights.pts')
 
     Return value: None
-    
+
     '''
     args = (a,b)
     arg_file_pos = None
@@ -429,7 +443,16 @@ class Packsearch(object):
             prefix = m.__name__
             if prefix in traversed_mod_names:
                 continue
-            names = dir(m)
+
+            names = [] 
+            try:
+                dir_ = dir(m)
+                names.extend(dir_)
+            except:
+                print('Packsearch:warning:some object was corrupted by their author, and they are not traversable.')
+            names.extend(list(m.__dict__.keys()))
+            names = list(set(names))
+
             for name in names:
                 obj = getattr(m,name)
                 if type(obj) is module_type:
@@ -463,7 +486,15 @@ class Packsearch(object):
             prefix = m.__name__
             if prefix in traversed_mod_names:
                 continue
-            names = dir(m)
+            names = [] 
+            try:
+                dir_ = dir(m)
+                names.extend[dir_]
+            except:
+                print('Packsearch:warning:some object was corrupted by their author, and they are not traversable.')
+            names.extend(list(m.__dict__.keys()))
+            names = list(set(names))
+
             for name in names:
                 obj = getattr(m,name)
                 if type(obj) is module_type:
@@ -597,17 +628,6 @@ def force_exist(dirname,verbose=True):
         return False
     else:
         return True
-
-
-def omini_open(path):
-    import subprocess
-    import platform
-    if platform.system() == "Windows":
-        os.startfile(path)
-    elif platform.system() == "Darwin":
-        subprocess.Popen(["open", path])
-    else:
-        subprocess.Popen(["xdg-open", path])
 
 def whereis(module_or_string,open_gui=True):
     '''

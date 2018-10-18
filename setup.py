@@ -63,5 +63,6 @@ setuptools.setup(
         'matplotlib',
         'Pillow',
         'scipy',
-        'tqdm']
+        'tqdm',
+        'psutil']
 )

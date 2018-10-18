@@ -36,6 +36,14 @@ torchfun.transforms module
     :undoc-members:
     :show-inheritance:
 
+torchfun.utils module
+---------------------
+
+.. automodule:: torchfun.utils
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 
 Module contents
 ---------------

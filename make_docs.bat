@@ -1,4 +1,4 @@
-del .\docs\* -recurse -force
+rem del .\docs\* -recurse -force
 cd .\torchfun\doc\
 del .\modules.rst
 del .\torchfun.rst

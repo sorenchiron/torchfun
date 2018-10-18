@@ -6,6 +6,7 @@
 from __future__ import division,print_function
 import torch
 import numpy as np
+from .torchfun import sort_args
 
 __doc__ = '''Neural Network related layers/functions/classes
 that are compatible with all pyTorch usage.
@@ -89,9 +90,6 @@ class Subpixel(torch.nn.Module):
         else:
             c = x.size(1) // self.patch_pixels
             return subpixel(x,out_channels=c)
-
-
-
 
 class Conv2dDepthShared(torch.nn.Conv2d):
     r"""
@@ -296,6 +294,9 @@ class Squeeze(torch.nn.Module):
             return x.squeeze_()
 
 class AbsMax(torch.nn.Module):
+    '''
+    TODO: not fully implemented
+    '''
     def __init__(self,dim=1):
         super(self.__class__,self).__init__()
         self.dim = dim
@@ -303,4 +304,62 @@ class AbsMax(torch.nn.Module):
         signs = x.sign()
         absx = x.abs()
 
-        
+def clip(in_tensor,max_or_min,min_or_max):
+    '''limit the values in in_tensor to be within [min,max].
+    values larger than max will be cut to max, respectively for mins.
+    the order of max/min doesn't matter.
+    the operation is not in-place, that saves you alot troubles.
+    '''
+    minv,maxv = torch.tensor(sorted([max_or_min,min_or_max]),dtype=in_tensor.dtype).to(in_tensor.device)
+    x = torch.max(in_tensor,minv)
+    x = torch.min(x,maxv)
+    return x
+
+class Clip(torch.nn.Module):
+    __doc__=clip.__doc__
+    def __init__(self,max_or_min,min_or_max):
+        super(self.__class__,self).__init__()
+        minv,maxv = torch.tensor(sorted([max_or_min,min_or_max]),
+                                            dtype=x.dtype).to(x.device)
+        self.register_buffer(name='minv',tensor=minv)
+        self.register_buffer(name='maxv',tensor=maxv)
+
+    def forward(self,x):
+        return torch.min(torch.max(x,self.minv),self.maxv)
+
+def add_noise(in_tensor,noise_type='normal',noise_param=(0,1),range_limit=(-1,1)):
+    '''
+    Add noise to input tensor.
+    Noise type can be either `normal` or `uniform`
+        * for normal, (mean,std) is required as noise_param
+        * for uniform (min,max) is required as noise_param
+    The range of the output tensor can be limited,
+      by giving `range_limit`:(min,max)
+    '''
+    if noise_type=='uniform':
+        nmin,nmax = noise_param
+        noise = torch.zeros_like(in_tensor).uniform_(nmin,nmax)
+    elif noise_type=='normal':
+        mean,std = noise_param
+        noise = torch.zeros_like(in_tensor).normal_(mean,std)
+    if range_limit is not None:
+        return clip(in_tensor+noise,*range_limit)
+    else:
+        return in_tensor+noise
+
+
+class NO_OP(torch.nn.Module):
+    '''A Module that repersents NO-Operation NO-OP.
+    NO-OP is needed when programmers want customizable dynamic assembling
+    of models. 
+    To disable some layers, instead of using multiple `if` clauses, nn-parts can be configured to be
+    NO-OP class, which will make that part turned-off in all occurrence.
+
+    Notice: NO_OP will accept any init-args, and ignore them.
+    '''
+    def __init__(self,*argv,**kws):
+        super(self.__class__,self).__init__()
+    @staticmethod
+    def forward(x,*argv,**kws):
+        return x
+    forward.__doc__ = __doc__
