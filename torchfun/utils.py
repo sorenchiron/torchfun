@@ -1,8 +1,9 @@
 import time as time_pkg
 from .torchfun import force_exist
 import os
+import itertools
 
-__doc__='utilities for pytorch experiment'
+__doc__='utilities for pytorch experiment. Non-mathematical tools.'
 
 def record_experiment(exp_dir='not-specified',record_top_dir='records',logfilename='record.txt',comment=''):
     '''Arguments:
@@ -62,3 +63,37 @@ def cpu_memory(print_on_screen=True):
         vmsmb = vms/1024/1024
         print('RAM:%.2fMB Disk:%.2fMB'%(rssmb,vmsmb))
     return rss,vms
+
+def combine_parameters(*models):
+    '''Combine the parameters of serveral trainable module object,
+    into one unified parameter generator.
+    Arguements:
+            *models: any number of models.
+
+    This utility is useful when you want several individual parts to be
+    handled by one Optimizer. Parameters shall be gathered into one iterator
+    first, because torch.optimizers require only one parameter-iterator as input'''
+    return itertools.chain(*[m.parameters() for m in models])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

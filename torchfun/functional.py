@@ -3,6 +3,8 @@ import torch
 from .torchfun import sort_args
 import torch.nn.functional as F
 
+__doc__ = 'mathematical functions'
+
 def conv2d_dfs(x,weight,bias=None,stride=1,padding=0,dilation=1):
     '''depth fully shared conv2d.
     Argument:
@@ -12,5 +14,7 @@ def conv2d_dfs(x,weight,bias=None,stride=1,padding=0,dilation=1):
     '''
     b,c,h,w = x.shape
     x = x.contiguous().view(b*c,1,h,w)
-    x = F.conv2d(x,w,bias,stride,padding,dilation,groups=1)
+    x = F.conv2d(x,weight,bias,stride,padding,dilation,groups=1)
+    _,_,h,w = x.shape
     return x.contiguous().view(b,c,h,w)
+

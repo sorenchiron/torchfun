@@ -6,6 +6,8 @@ from torchvision.datasets.folder import find_classes,make_dataset
 from torchvision.datasets.folder import DatasetFolder,ImageFolder
 from torchvision.datasets.folder import default_loader,IMG_EXTENSIONS
 
+__doc__ = 'provide dataset related classes'
+
 class ImageAugmentationDataset(ImageFolder):
     '''
         Pre_transform is applied to the source image firstly.
