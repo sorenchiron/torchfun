@@ -18,6 +18,10 @@ This history-of-project was appended recently, because his adorable little belov
 
 To Eggy c71b05bf46d8772e4488335085a2e7fd.
 
+## Latest Documentation:
+
+Please visit: https://sorenchiron.github.io/torchfun
+
 ### Functionality
 * Flatten
 * flatten()
@@ -43,9 +47,6 @@ update
 pip install -U torchfun
 ```
 
-## Documentation:
-
-Please visit: https://sorenchiron.github.io/torchfun.github.io/torchfun.html
 
 ## API
 

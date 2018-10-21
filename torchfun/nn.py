@@ -21,7 +21,7 @@ def flatten(x):
     #shapes = x.shape
     #dims = len(shapes)
     #flatten_length = torch.prod(shapes[1:])
-    return x.view(x.size(0),-1)
+    return x.contiguous().view(x.size(0),-1)
 
 class Flatten(torch.nn.Module):
     '''Flatten module
@@ -241,11 +241,13 @@ class Conv2dDepthShared(torch.nn.Conv2d):
 
     def forward(self, x):
         b,c,h,w = x.shape
-        xslices = x.view(b*self.trunks,self.slice_depth,h,w)
-        yraw = self.conv2d_fn(xslices, self.weight, self.bias, self.stride,
-                        self.padding, self.dilation, self.groups)
+        xslices = x.contiguous().view(b*self.trunks,
+                                    self.slice_depth,h,w)
+        yraw = self.conv2d_fn(xslices, self.weight, 
+                            self.bias, self.stride,
+                            self.padding, self.dilation, self.groups)
         _,_,h,w = yraw.shape
-        y = yraw.view(b,self.out_channels,h,w)
+        y = yraw.contiguous().view(b,self.out_channels,h,w)
         return y
 
 class Squeeze(torch.nn.Module):
@@ -317,10 +319,9 @@ def clip(in_tensor,max_or_min,min_or_max):
 
 class Clip(torch.nn.Module):
     __doc__=clip.__doc__
-    def __init__(self,max_or_min,min_or_max):
+    def __init__(self,max_or_min,min_or_max,dtype=torch.float):
         super(self.__class__,self).__init__()
-        minv,maxv = torch.tensor(sorted([max_or_min,min_or_max]),
-                                            dtype=x.dtype).to(x.device)
+        minv,maxv = torch.tensor(sorted([max_or_min,min_or_max]),dtype=dtype)
         self.register_buffer(name='minv',tensor=minv)
         self.register_buffer(name='maxv',tensor=maxv)
 
@@ -362,4 +363,59 @@ class NO_OP(torch.nn.Module):
     @staticmethod
     def forward(x,*argv,**kws):
         return x
+    forward.__doc__ = __doc__
+
+
+def instance_mean_std(x,num_features):
+    '''NCHW'''
+    b,c,h,w = x.shape
+    nc_groups = c//num_features
+    x = x.contiguous().view(b,nc_groups,num_features,-1)
+    x = x.transpose(1,2) # b, numfeatu, ncgroup, h*w
+    x = x.contiguous()
+    x = x.contiguous().view(b*num_features,-1)
+
+    mean = x.mean(1)
+    std = x.std(1)
+
+    mean = mean.contiguous().view(b,num_features) # n,feature
+    std = std.contiguous().view(b,num_features) # n,feature
+    return mean,std
+
+class InstanceMeanStd(torch.nn.Module):
+    __doc__ = instance_mean_std.__doc__
+    def __init__(self,num_features):
+        super(self.__class__,self).__init__()
+        self.num_features=num_features
+    def forward(self,x):
+        return instance_mean_std(x,self.num_features)
+    forward.__doc__ = __doc__
+
+def instance_renorm(x,mean,std,eps=1e-5):
+    '''Make x have given mean and std.
+    Argument:
+    x: NCHW
+    mean: tensor with size: N-by-num-features
+    std: tensor with size: N-by-num-features
+    eps: default 1e-5
+    '''
+    b,c,h,w = x.shape
+    b,num_features = mean.shape
+    nc_groups = c//num_features
+
+    x_m,x_std = instance_mean_std(x,num_features)
+    x = x.contiguous().view(b,nc_groups,num_features,-1)
+    x = x.transpose(2,3).transpose(0,2) # -1,ncgroup,b,numfeature
+    x = ((x-x_m)/(x_std+eps))*(std+eps) + mean
+    x = x.transpose(0,2).transpose(2,3) # b,nc_groups,num_features,-1
+    x = x.contiguous().view(b,c,h,w)
+    return x.contiguous()
+
+class InstanceReNorm(torch.nn.Module):
+    __doc__ = instance_renorm.__doc__
+    def __init__(self,eps=1e-5):
+        super(self.__class__,self).__init__()
+        self.register_buffer(name='eps',tensor=torch.tensor(eps))
+    def forward(self,x,mean,std):
+        return instance_renorm(x,mean,std,self.eps)
     forward.__doc__ = __doc__

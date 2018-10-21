@@ -6,6 +6,8 @@
 from .torchfun import *
 from . import transforms
 from . import nn
+from . import utils
+from . import datasets
 from .transforms import *
 from .nn import *
 

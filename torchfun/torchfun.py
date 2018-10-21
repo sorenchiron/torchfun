@@ -329,7 +329,7 @@ def _g():
     '''used only for getting generator_type'''
     yield from range(1)
 generator_type =  type(_g())
-def count_parameters(model_or_dict_or_param):
+def count_parameters(model_or_dict_or_param, verbose=True):
     '''Count parameter numer of a module/state_dict/layer/tensor.
     This function can also print the occupied memory of parameters in MBs
     Arguements:
@@ -346,7 +346,8 @@ def count_parameters(model_or_dict_or_param):
     3. count data matrix
         count_parameters(weight_tensor)
         count_parameters(numpy_array)
-
+    Notice:
+        return value is parameter Number.
 
     Alias: parameters()
     '''
@@ -370,7 +371,8 @@ def count_parameters(model_or_dict_or_param):
         num += this_num
         dtype = p.dtype if p.dtype in dtype_size else torch.float32
         KBytes += (this_num/1024*dtype_size[dtype])
-    print('Torchfun:parameters:%.2f' % (KBytes/1024),'MBs',num,'params')
+    if verbose:
+        print('Torchfun:parameters:%.2f' % (KBytes/1024),'MBs',num,'params')
     return num
 
 parameters = count_parameters
@@ -378,10 +380,11 @@ parameters = count_parameters
 def show_layers_parameters(model):
     total_params=0
     print('-----------start-----------')
-    for i,l in enumerate(model,1):
-        l_params = count_parameters(l)
+    for i,name in enumerate(model._modules,1):
+        l = model._modules[name]
+        l_params = count_parameters(l,verbose=False)
         total_params+=l_params
-        print('layer',i,l.__class__.__name__,'params:',l_params)
+        print('layer',str(i).ljust(3),l.__class__.__name__.rjust(15),'params:',l_params)
     print('---------------------------')
     print('total parameters:',total_params)
     print('------------end------------')
@@ -671,8 +674,6 @@ def whereis(module_or_string,open_gui=True):
 
     return fname
     
-
-
 def tf_session(allow_growth=True):
     '''Used to create tensorflow session that does not stupidly and unresonably consume all gpu-memeory.
     returns:
@@ -685,3 +686,20 @@ def tf_session(allow_growth=True):
     config = tensorflow.ConfigProto()
     config.gpu_options.allow_growth = allow_growth
     return tensorflow.Session(config=config)
+
+
+def documentation(search=None):
+    ''' help documentation on Torchfun
+    Argument:
+        search: give None to go to the latest doc site
+                give string or object to search the object
+    '''
+    index_page = 'https://sorenchiron.github.io/torchfun/genindex.html'
+    search_page = 'https://sorenchiron.github.io/torchfun/search.html?q='
+    if search is None:
+        omini_open(index_page)
+    else:
+        if not isinstance(search,str):
+            search = search.__name__
+            search_url = search_page+search
+            omini_open(search_url)

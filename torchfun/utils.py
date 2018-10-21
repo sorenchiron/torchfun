@@ -14,6 +14,7 @@ def record_experiment(exp_dir='not-specified',record_top_dir='records',logfilena
         * logfilename : filename of this log, usually `train_record` `evaluation_record` etc.
         * comment :string comment added to log paragraph. default is empty string.
     '''
+    from sys import argv
     try:
         force_exist(record_top_dir)
         logfilepath = os.path.join(record_top_dir,logfilename)
@@ -45,10 +46,12 @@ def record_experiment(exp_dir='not-specified',record_top_dir='records',logfilena
 
 def cpu_memory(print_on_screen=True):
     '''total CPU memory usage of current python session.
-    returns: (RSS,VMS)
+    returns: (RSS,VMS) In bytes!
             RSS is resident set size, 
             VMS is virtual memory size.
-    Notice: In bytes!
+    Notice: 
+            return values are in bytes.
+            printed values are in MBs.
     '''
     import psutil
     p = psutil.Process(os.getpid())
@@ -57,5 +60,5 @@ def cpu_memory(print_on_screen=True):
     if print_on_screen:
         rssmb = rss/1024/1024
         vmsmb = vms/1024/1024
-        print('RAM:%.2f Disk:%.2f'%(rssmb,vmsmb))
+        print('RAM:%.2fMB Disk:%.2fMB'%(rssmb,vmsmb))
     return rss,vms
