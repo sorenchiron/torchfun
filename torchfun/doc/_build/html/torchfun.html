@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>torchfun package &#8212; torchfun 0.0.162 documentation</title>
+    <title>torchfun package &#8212; torchfun 0.0.164 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
@@ -28,7 +28,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">torchfun 0.0.162 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">torchfun 0.0.164 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -130,6 +130,17 @@ Usually, the post-transforms are ToTensor() and Normalize()</p>
 <dd>1: input image to be degraded
 2: Boolean input indicates if the degrading parameters should be returned.</dd>
 </dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-torchfun.functional">
+<span id="torchfun-functional-module"></span><h2>torchfun.functional module<a class="headerlink" href="#module-torchfun.functional" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="torchfun.functional.conv2d_dfs">
+<code class="descclassname">torchfun.functional.</code><code class="descname">conv2d_dfs</code><span class="sig-paren">(</span><em>x</em>, <em>weight</em>, <em>bias=None</em>, <em>stride=1</em>, <em>padding=0</em>, <em>dilation=1</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.functional.conv2d_dfs" title="Permalink to this definition">¶</a></dt>
+<dd><p>depth fully shared conv2d.
+weight: shape shoule be : 1 x 1 x kh x kw
+bias: contains only 1 number or None</p>
 </dd></dl>
 
 </div>
@@ -1003,6 +1014,256 @@ of this experiment later.</div></blockquote>
 <p>This history-of-project was appended recently, because his adorable little beloved wants a supprise immediately, or she will keep rolling on the floor.</p>
 <p>To c71b05bf46d8772e4488335085a2e7fd.</p>
 <dl class="function">
+<dt id="torchfun.instance_renorm">
+<code class="descclassname">torchfun.</code><code class="descname">instance_renorm</code><span class="sig-paren">(</span><em>x</em>, <em>mean</em>, <em>std</em>, <em>eps=1e-05</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.instance_renorm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make x have given mean and std.
+Argument:
+x: NCHW
+mean: tensor with size: N-by-num-features
+std: tensor with size: N-by-num-features
+eps: default 1e-5</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="torchfun.instance_mean_std">
+<code class="descclassname">torchfun.</code><code class="descname">instance_mean_std</code><span class="sig-paren">(</span><em>x</em>, <em>num_features</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.instance_mean_std" title="Permalink to this definition">¶</a></dt>
+<dd><p>NCHW</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="torchfun.Clip">
+<em class="property">class </em><code class="descclassname">torchfun.</code><code class="descname">Clip</code><span class="sig-paren">(</span><em>max_or_min</em>, <em>min_or_max</em>, <em>dtype=torch.float32</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.Clip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>limit the values in in_tensor to be within [min,max].
+values larger than max will be cut to max, respectively for mins.
+the order of max/min doesn’t matter.
+the operation is not in-place, that saves you alot troubles.</p>
+<dl class="method">
+<dt id="torchfun.Clip.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.Clip.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="torchfun.InstanceMeanStd">
+<em class="property">class </em><code class="descclassname">torchfun.</code><code class="descname">InstanceMeanStd</code><span class="sig-paren">(</span><em>num_features</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.InstanceMeanStd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>NCHW</p>
+<dl class="method">
+<dt id="torchfun.InstanceMeanStd.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.InstanceMeanStd.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>NCHW</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="torchfun.packsearch">
+<code class="descclassname">torchfun.</code><code class="descname">packsearch</code><span class="sig-paren">(</span><em>module_or_str</em>, <em>str_or_module</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.packsearch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given an module object, and search pattern string as input:
+&gt; packsearch(torch,’maxpoo’)
+or
+&gt; packsearch(‘maxpoo’,torch)
+you can search everything inside this package
+output:</p>
+<blockquote>
+<div>Packsearch: 35 results found:
+————-results start————-
+0        torch.nn.AdaptiveMaxPool1d
+1        torch.nn.AdaptiveMaxPool2d
+2        torch.nn.AdaptiveMaxPool3d
+3        torch.nn.FractionalMaxPool2d
+4        torch.nn.MaxPool1d
+5        torch.nn.MaxPool2d
+…</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="torchfun.generator_type">
+<code class="descclassname">torchfun.</code><code class="descname">generator_type</code><a class="headerlink" href="#torchfun.generator_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">builtins.generator</span></code></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="torchfun.pil_imshow">
+<code class="descclassname">torchfun.</code><code class="descname">pil_imshow</code><span class="sig-paren">(</span><em>arr</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.pil_imshow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple showing of an image through an external viewer.</p>
+<p>This function is only available if Python Imaging Library (PIL) is installed.</p>
+<p>Uses the image viewer specified by the environment variable
+SCIPY_PIL_IMAGE_VIEWER, or if that is not defined then <cite>see</cite>,
+to view a temporary file generated from array data.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This function uses <cite>bytescale</cite> under the hood to rescale images to use
+the full (0, 255) range if <code class="docutils literal notranslate"><span class="pre">mode</span></code> is one of <code class="docutils literal notranslate"><span class="pre">None,</span> <span class="pre">'L',</span> <span class="pre">'P',</span> <span class="pre">'l'</span></code>.
+It will also cast data for 2-D images to <code class="docutils literal notranslate"><span class="pre">uint32</span></code> for <code class="docutils literal notranslate"><span class="pre">mode=None</span></code>
+(which is the default).</p>
+</div>
+<dl class="docutils">
+<dt>arr <span class="classifier-delimiter">:</span> <span class="classifier">ndarray</span></dt>
+<dd>Array of image data to show.</dd>
+</dl>
+<p>None</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">255</span><span class="p">),</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">scipy</span> <span class="k">import</span> <span class="n">misc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">misc</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Ported and upgraded based on scipy.misc.imshow
+Open-sourced according to the license.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="torchfun.NO_OP">
+<em class="property">class </em><code class="descclassname">torchfun.</code><code class="descname">NO_OP</code><span class="sig-paren">(</span><em>*argv</em>, <em>**kws</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.NO_OP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>A Module that repersents NO-Operation NO-OP.
+NO-OP is needed when programmers want customizable dynamic assembling
+of models. 
+To disable some layers, instead of using multiple <cite>if</cite> clauses, nn-parts can be configured to be
+NO-OP class, which will make that part turned-off in all occurrence.</p>
+<p>Notice: NO_OP will accept any init-args, and ignore them.</p>
+<dl class="staticmethod">
+<dt id="torchfun.NO_OP.forward">
+<em class="property">static </em><code class="descname">forward</code><span class="sig-paren">(</span><em>x</em>, <em>*argv</em>, <em>**kws</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.NO_OP.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="torchfun.force_exist">
+<code class="descclassname">torchfun.</code><code class="descname">force_exist</code><span class="sig-paren">(</span><em>dirname</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.force_exist" title="Permalink to this definition">¶</a></dt>
+<dd><p>force a directory to exist.
+force_exist can automatically create directory with any depth.
+Arguements:</p>
+<blockquote>
+<div>dirname: path of the desired directory
+verbose: print every directory creation. default True.</div></blockquote>
+<dl class="docutils">
+<dt>Usage:</dt>
+<dd>force_exist(‘a/b/c/d/e/f’)
+force_exist(‘a/b/c/d/e/f’,verbose=False)</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="torchfun.load">
+<code class="descclassname">torchfun.</code><code class="descname">load</code><span class="sig-paren">(</span><em>a</em>, <em>b</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load weight <cite>a</cite> into model <cite>b</cite>, or load model <cite>b</cite> using weight <cite>a</cite>
+The order of the arguments doesn’t matter.
+Example:</p>
+<blockquote>
+<div>&gt;load(‘weights.pts’,model)</div></blockquote>
+<dl class="docutils">
+<dt>or</dt>
+<dd>&gt;load(model,’weights.pts’)</dd>
+<dt>or</dt>
+<dd>&gt;f = open(‘weight.pts’)
+&gt;load(f,model)</dd>
+<dt>or</dt>
+<dd>&gt;load(model,f)</dd>
+</dl>
+<p>Return value: None</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="torchfun.Subpixel">
+<em class="property">class </em><code class="descclassname">torchfun.</code><code class="descname">Subpixel</code><span class="sig-paren">(</span><em>out_channels=1</em>, <em>stride=None</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.Subpixel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>Unfold channel/depth dimensions to enlarge the feature map
+Notice: Output size is deducted. 
+The size of the unfold square is automatically determined
+e.g. :</p>
+<blockquote>
+<div>images: 100x16x16x9.  9=3x3 square
+subpixel-out: 100x48x48x1</div></blockquote>
+<dl class="docutils">
+<dt>Arguement:</dt>
+<dd>out_channels, channel number of output feature map
+stride: enlarging ratio of spatial dimensions. stride=2 outputs x4 img area. If provided, out_channels will be ignored.</dd>
+</dl>
+<dl class="method">
+<dt id="torchfun.Subpixel.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.Subpixel.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="torchfun.subpixel">
+<code class="descclassname">torchfun.</code><code class="descname">subpixel</code><span class="sig-paren">(</span><em>x</em>, <em>out_channels=1</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.subpixel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unfold channel/depth dimensions to enlarge the feature map
+Notice: Output size is deducted. 
+The size of the unfold square is automatically determined
+e.g. :</p>
+<blockquote>
+<div>images: 100x9x16x16.  9=3x3 square
+subpixel-out: 100x1x48x48</div></blockquote>
+<dl class="docutils">
+<dt>Arguement:</dt>
+<dd>x: NCHW image, channel first.
+out_channels, channel number of output feature map</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="torchfun.tf_session">
+<code class="descclassname">torchfun.</code><code class="descname">tf_session</code><span class="sig-paren">(</span><em>allow_growth=True</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.tf_session" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to create tensorflow session that does not stupidly and unresonably consume all gpu-memeory.
+returns:</p>
+<blockquote>
+<div>a tensorflow session consuming dynamic gpu memory.</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="torchfun.module_type">
+<code class="descclassname">torchfun.</code><code class="descname">module_type</code><a class="headerlink" href="#torchfun.module_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">builtins.module</span></code></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="torchfun.sort_args">
+<code class="descclassname">torchfun.</code><code class="descname">sort_args</code><span class="sig-paren">(</span><em>args_or_types</em>, <em>types_or_args</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.sort_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a very interesting function.
+It is used to support __arbitrary-<a href="#id23"><span class="problematic" id="id25">arguments-ordering__</span></a> in TorchFun.</p>
+<dl class="docutils">
+<dt>Input:</dt>
+<dd>The function takes a list of types, and a list of arguments.</dd>
+<dt>Returns:</dt>
+<dd>a list of arguments, with the same order as the types-list.</dd>
+</dl>
+<p>Of course, <cite>sort_args</cite> supports arbitrary-arguments-ordering by itself.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="torchfun.parameters">
 <code class="descclassname">torchfun.</code><code class="descname">parameters</code><span class="sig-paren">(</span><em>model_or_dict_or_param</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.parameters" title="Permalink to this definition">¶</a></dt>
 <dd><p>Count parameter numer of a module/state_dict/layer/tensor.
@@ -1041,113 +1302,132 @@ count_parameters(numpy_array)</dd>
 </dd></dl>
 
 <dl class="function">
-<dt id="torchfun.force_exist">
-<code class="descclassname">torchfun.</code><code class="descname">force_exist</code><span class="sig-paren">(</span><em>dirname</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.force_exist" title="Permalink to this definition">¶</a></dt>
-<dd><p>force a directory to exist.
-force_exist can automatically create directory with any depth.
-Arguements:</p>
+<dt id="torchfun.documentation">
+<code class="descclassname">torchfun.</code><code class="descname">documentation</code><span class="sig-paren">(</span><em>search=None</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.documentation" title="Permalink to this definition">¶</a></dt>
+<dd><p>help documentation on Torchfun
+Argument:</p>
 <blockquote>
-<div>dirname: path of the desired directory
-verbose: print every directory creation. default True.</div></blockquote>
+<div><dl class="docutils">
+<dt>search: give None to go to the latest doc site</dt>
+<dd>give string or object to search the object</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="torchfun.add_noise">
+<code class="descclassname">torchfun.</code><code class="descname">add_noise</code><span class="sig-paren">(</span><em>in_tensor</em>, <em>noise_type='normal'</em>, <em>noise_param=(0</em>, <em>1)</em>, <em>range_limit=(-1</em>, <em>1)</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.add_noise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add noise to input tensor.
+Noise type can be either <cite>normal</cite> or <cite>uniform</cite></p>
+<blockquote>
+<div><ul class="simple">
+<li>for normal, (mean,std) is required as noise_param</li>
+<li>for uniform (min,max) is required as noise_param</li>
+</ul>
+</div></blockquote>
 <dl class="docutils">
-<dt>Usage:</dt>
-<dd>force_exist(‘a/b/c/d/e/f’)
-force_exist(‘a/b/c/d/e/f’,verbose=False)</dd>
+<dt>The range of the output tensor can be limited,</dt>
+<dd>by giving <cite>range_limit</cite>:(min,max)</dd>
 </dl>
 </dd></dl>
 
 <dl class="function">
-<dt id="torchfun.packsearch">
-<code class="descclassname">torchfun.</code><code class="descname">packsearch</code><span class="sig-paren">(</span><em>module_or_str</em>, <em>str_or_module</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.packsearch" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given an module object, and search pattern string as input:
-&gt; packsearch(torch,’maxpoo’)
-or
-&gt; packsearch(‘maxpoo’,torch)
-you can search everything inside this package
-output:</p>
+<dt id="torchfun.imshow">
+<code class="descclassname">torchfun.</code><code class="descname">imshow</code><span class="sig-paren">(</span><em>x</em>, <em>title=None</em>, <em>auto_close=True</em>, <em>rows=8</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.imshow" title="Permalink to this definition">¶</a></dt>
+<dd><p>only deal with torch channel-first image batch,
+title: add title to plot. (Default None)</p>
 <blockquote>
-<div>Packsearch: 35 results found:
-————-results start————-
-0        torch.nn.AdaptiveMaxPool1d
-1        torch.nn.AdaptiveMaxPool2d
-2        torch.nn.AdaptiveMaxPool3d
-3        torch.nn.FractionalMaxPool2d
-4        torch.nn.MaxPool1d
-5        torch.nn.MaxPool2d
-…</div></blockquote>
+<div>title can be string, or any string-able object.</div></blockquote>
+<dl class="docutils">
+<dt>auto_close: (default True) </dt>
+<dd>Close the pyplot session afterwards. 
+Clean the environment just like you had 
+never used matplotlib here.
+if set to False, the plot will remain in the memory for further drawings.</dd>
+<dt>rows: (default 8)</dt>
+<dd>the width of the output grid image.</dd>
+</dl>
+<p>Usage:
+<a href="#id11"><span class="problematic" id="id12">``</span></a><a href="#id13"><span class="problematic" id="id14">`</span></a>python</p>
+<blockquote>
+<div>imshow(batch)
+imshow(batch,title=[a,b,c])
+imshow(batch,title=’title’)
+imshow(batch,auto_close=False)</div></blockquote>
+<p><a href="#id15"><span class="problematic" id="id16">``</span></a>`
+Warnings:
+<a href="#id17"><span class="problematic" id="id18">``</span></a><a href="#id19"><span class="problematic" id="id20">`</span></a>text</p>
+<blockquote>
+<div>TorchFun:imshow:Warning, you are using WebAgg backend for Matplotlib. 
+Please consider windowed display SDKs such as TkAgg backend and GTK* backends.</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">This</span> <span class="pre">means</span> <span class="pre">your</span> <span class="pre">matplotlib</span> <span class="pre">is</span> <span class="pre">using</span> <span class="pre">web-browser</span> <span class="pre">for</span> <span class="pre">figure</span> <span class="pre">display.</span> <span class="pre">We</span> <span class="pre">__strongly__</span> <span class="pre">recommend</span> <span class="pre">you</span> <span class="pre">to</span> <span class="pre">use</span> <span class="pre">window-based</span> <span class="pre">native</span> <span class="pre">display</span> <span class="pre">because</span> <span class="pre">browser-based</span> <span class="pre">backends</span> <span class="pre">are</span> <span class="pre">fragile</span> <span class="pre">and</span> <span class="pre">tend</span> <span class="pre">to</span> <span class="pre">crash.</span> <span class="pre">You</span> <span class="pre">can</span> <span class="pre">change</span> <span class="pre">the</span> <span class="pre">display</span> <span class="pre">mamanger</span> <span class="pre">for</span> <span class="pre">matplotlib</span> <span class="pre">each</span> <span class="pre">time</span> <span class="pre">you</span> <span class="pre">execute</span> <span class="pre">your</span> <span class="pre">script</span> <span class="pre">by:</span>
+<span class="pre">```python</span>
+<span class="pre">import</span> <span class="pre">matplotlib</span>
+<span class="pre">matplotlib.use('TkAgg')</span> <span class="pre">#</span> <span class="pre">or</span> <span class="pre">GTK</span> <span class="pre">GTKAgg</span>
+<span class="pre">`</span></code>
+or permanantly by editing: <cite>site-packages/matplotlib/mpl-data/matplotlibrc</cite> and change backend to <cite>TkAgg</cite></p>
+<p>A full list of available backends can be found at:
+<code class="docutils literal notranslate"><span class="pre">`python</span>
+<span class="pre">import</span> <span class="pre">matplotlib</span>
+<span class="pre">matplotlib.rcsetup.all_backends</span>
+<span class="pre">`</span></code>
+and, the TCL/TK GUI library for <cite>tkinter</cite> can be downloaded [here](<a class="reference external" href="https://www.tcl.tk/">https://www.tcl.tk/</a>).</p>
+<dl class="docutils">
+<dt>Notice:</dt>
+<dd><p class="first">If you use conda to manage your python versions, errors may occur when using TCL/TK.
+That’s because conda secretly redirect your global python library path towards its.
+That will cause other stand-alone python versions to search from conda’s lib dirs for binaries.
+To solve this, you may have to set:</p>
+<p><code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">export</span> <span class="pre">TCL_LIBRARY=/usr/...pythondir.../lib/tcl8.6</span>
+<span class="pre">export</span> <span class="pre">TK_LIBRARY=/usr/...pythondir.../lib/tcl8.6</span>
+<span class="pre">`</span></code>
+or on windows:</p>
+<p class="last"><code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">set</span> <span class="pre">&quot;TCL_LIBRARY=/usr/...pythondir.../lib/tcl8.6&quot;</span>
+<span class="pre">set</span> <span class="pre">&quot;TK_LIBRARY=/usr/...pythondir.../lib/tcl8.6&quot;</span>
+<span class="pre">`</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="torchfun.hash_parameters">
+<code class="descclassname">torchfun.</code><code class="descname">hash_parameters</code><span class="sig-paren">(</span><em>model_or_statdict_or_param</em>, <em>use_sum=False</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.hash_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the summary of all variables.
+This is used to detect chaotic changes of weights.
+You can check the sum_parameters before and after some operations, to know
+if there is any change made to the params.</p>
+<p>I use this function to verify gradient behaviours.</p>
+<p>By default, This only hash the trainable parameters!</p>
+<p>arguements:
+module_or_statdict_or_param: torch.nn.module,</p>
+<blockquote>
+<div>or model.state_dict(), 
+or model.parameters().</div></blockquote>
+<p>use_sum: return the sum instead of mean value of all params.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="torchfun.RandomGaussianBlur">
-<em class="property">class </em><code class="descclassname">torchfun.</code><code class="descname">RandomGaussianBlur</code><span class="sig-paren">(</span><em>kernel_ratio=0.01</em>, <em>random_ratio=0.005</em>, <em>pixel_range=None</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.RandomGaussianBlur" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>PIL image</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="torchfun.whereis">
-<code class="descclassname">torchfun.</code><code class="descname">whereis</code><span class="sig-paren">(</span><em>module_or_string</em>, <em>open_gui=True</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.whereis" title="Permalink to this definition">¶</a></dt>
-<dd><p>find the source file location of a module
-arguments:</p>
-<blockquote>
-<div>module_or_string: target module object, or it’s string path like <cite>torch.nn</cite>
-open_gui: open the folder with default window-manager.</div></blockquote>
-<dl class="docutils">
-<dt>returns:</dt>
-<dd>module file name, or None</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="torchfun.show_layers_parameters">
-<code class="descclassname">torchfun.</code><code class="descname">show_layers_parameters</code><span class="sig-paren">(</span><em>model</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.show_layers_parameters" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="torchfun.tf_session">
-<code class="descclassname">torchfun.</code><code class="descname">tf_session</code><span class="sig-paren">(</span><em>allow_growth=True</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.tf_session" title="Permalink to this definition">¶</a></dt>
-<dd><p>Used to create tensorflow session that does not stupidly and unresonably consume all gpu-memeory.
-returns:</p>
-<blockquote>
-<div>a tensorflow session consuming dynamic gpu memory.</div></blockquote>
-</dd></dl>
-
-<dl class="function">
-<dt id="torchfun.pil_imshow">
-<code class="descclassname">torchfun.</code><code class="descname">pil_imshow</code><span class="sig-paren">(</span><em>arr</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.pil_imshow" title="Permalink to this definition">¶</a></dt>
-<dd><p>Simple showing of an image through an external viewer.</p>
-<p>This function is only available if Python Imaging Library (PIL) is installed.</p>
-<p>Uses the image viewer specified by the environment variable
-SCIPY_PIL_IMAGE_VIEWER, or if that is not defined then <cite>see</cite>,
-to view a temporary file generated from array data.</p>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">This function uses <cite>bytescale</cite> under the hood to rescale images to use
-the full (0, 255) range if <code class="docutils literal notranslate"><span class="pre">mode</span></code> is one of <code class="docutils literal notranslate"><span class="pre">None,</span> <span class="pre">'L',</span> <span class="pre">'P',</span> <span class="pre">'l'</span></code>.
-It will also cast data for 2-D images to <code class="docutils literal notranslate"><span class="pre">uint32</span></code> for <code class="docutils literal notranslate"><span class="pre">mode=None</span></code>
-(which is the default).</p>
+<dt id="torchfun.AbsMax">
+<em class="property">class </em><code class="descclassname">torchfun.</code><code class="descname">AbsMax</code><span class="sig-paren">(</span><em>dim=1</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.AbsMax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>TODO: not fully implemented</p>
+<dl class="method">
+<dt id="torchfun.AbsMax.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.AbsMax.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
 </div>
-<dl class="docutils">
-<dt>arr <span class="classifier-delimiter">:</span> <span class="classifier">ndarray</span></dt>
-<dd>Array of image data to show.</dd>
-</dl>
-<p>None</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">255</span><span class="p">),</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">scipy</span> <span class="k">import</span> <span class="n">misc</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">misc</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Ported and upgraded based on scipy.misc.imshow
-Open-sourced according to the license.</p>
 </dd></dl>
 
-<dl class="function">
-<dt id="torchfun.clip">
-<code class="descclassname">torchfun.</code><code class="descname">clip</code><span class="sig-paren">(</span><em>in_tensor</em>, <em>max_or_min</em>, <em>min_or_max</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.clip" title="Permalink to this definition">¶</a></dt>
-<dd><p>limit the values in in_tensor to be within [min,max].
-values larger than max will be cut to max, respectively for mins.
-the order of max/min doesn’t matter.
-the operation is not in-place, that saves you alot troubles.</p>
 </dd></dl>
 
 <dl class="class">
@@ -1199,9 +1479,19 @@ search_attributes: whether to include class attributes or method names</p>
 
 </dd></dl>
 
-<dl class="function">
-<dt id="torchfun.instance_renorm">
-<code class="descclassname">torchfun.</code><code class="descname">instance_renorm</code><span class="sig-paren">(</span><em>x</em>, <em>mean</em>, <em>std</em>, <em>eps=1e-05</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.instance_renorm" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="torchfun.InstanceReNorm">
+<em class="property">class </em><code class="descclassname">torchfun.</code><code class="descname">InstanceReNorm</code><span class="sig-paren">(</span><em>eps=1e-05</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.InstanceReNorm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>Make x have given mean and std.
+Argument:
+x: NCHW
+mean: tensor with size: N-by-num-features
+std: tensor with size: N-by-num-features
+eps: default 1e-5</p>
+<dl class="method">
+<dt id="torchfun.InstanceReNorm.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>x</em>, <em>mean</em>, <em>std</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.InstanceReNorm.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make x have given mean and std.
 Argument:
 x: NCHW
@@ -1210,76 +1500,113 @@ std: tensor with size: N-by-num-features
 eps: default 1e-5</p>
 </dd></dl>
 
-<dl class="class">
-<dt id="torchfun.Subpixel">
-<em class="property">class </em><code class="descclassname">torchfun.</code><code class="descname">Subpixel</code><span class="sig-paren">(</span><em>out_channels=1</em>, <em>stride=None</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.Subpixel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
-<p>Unfold channel/depth dimensions to enlarge the feature map
-Notice: Output size is deducted. 
-The size of the unfold square is automatically determined
-e.g. :</p>
-<blockquote>
-<div>images: 100x16x16x9.  9=3x3 square
-subpixel-out: 100x48x48x1</div></blockquote>
-<dl class="docutils">
-<dt>Arguement:</dt>
-<dd>out_channels, channel number of output feature map
-stride: enlarging ratio of spatial dimensions. stride=2 outputs x4 img area. If provided, out_channels will be ignored.</dd>
-</dl>
-<dl class="method">
-<dt id="torchfun.Subpixel.forward">
-<code class="descname">forward</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.Subpixel.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines the computation performed at every call.</p>
-<p>Should be overridden by all subclasses.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Although the recipe for forward pass needs to be defined within
-this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
-instead of this since the former takes care of running the
-registered hooks while the latter silently ignores them.</p>
-</div>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="torchfun.AbsMax">
-<em class="property">class </em><code class="descclassname">torchfun.</code><code class="descname">AbsMax</code><span class="sig-paren">(</span><em>dim=1</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.AbsMax" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
-<p>TODO: not fully implemented</p>
-<dl class="method">
-<dt id="torchfun.AbsMax.forward">
-<code class="descname">forward</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.AbsMax.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines the computation performed at every call.</p>
-<p>Should be overridden by all subclasses.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Although the recipe for forward pass needs to be defined within
-this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
-instead of this since the former takes care of running the
-registered hooks while the latter silently ignores them.</p>
-</div>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="function">
-<dt id="torchfun.documentation">
-<code class="descclassname">torchfun.</code><code class="descname">documentation</code><span class="sig-paren">(</span><em>search=None</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.documentation" title="Permalink to this definition">¶</a></dt>
-<dd><p>help documentation on Torchfun
-Argument:</p>
-<blockquote>
-<div><dl class="docutils">
-<dt>search: give None to go to the latest doc site</dt>
-<dd>give string or object to search the object</dd>
-</dl>
-</div></blockquote>
+<dt id="torchfun.omini_open">
+<code class="descclassname">torchfun.</code><code class="descname">omini_open</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.omini_open" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens everything using system default viwer.</p>
+<p>This function can call system GUI to open folders,images,files,videos…</p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="torchfun.module_type">
-<code class="descclassname">torchfun.</code><code class="descname">module_type</code><a class="headerlink" href="#torchfun.module_type" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">builtins.module</span></code></p>
+<dl class="function">
+<dt id="torchfun.show_layers_parameters">
+<code class="descclassname">torchfun.</code><code class="descname">show_layers_parameters</code><span class="sig-paren">(</span><em>model</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.show_layers_parameters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="torchfun.whereis">
+<code class="descclassname">torchfun.</code><code class="descname">whereis</code><span class="sig-paren">(</span><em>module_or_string</em>, <em>open_gui=True</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.whereis" title="Permalink to this definition">¶</a></dt>
+<dd><p>find the source file location of a module
+arguments:</p>
+<blockquote>
+<div>module_or_string: target module object, or it’s string path like <cite>torch.nn</cite>
+open_gui: open the folder with default window-manager.</div></blockquote>
+<dl class="docutils">
+<dt>returns:</dt>
+<dd>module file name, or None</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="torchfun.save">
+<code class="descclassname">torchfun.</code><code class="descname">save</code><span class="sig-paren">(</span><em>a</em>, <em>b</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>save weight <cite>a</cite> into target <cite>b</cite>, or save model <cite>b</cite> into target <cite>a</cite>
+The order of the arguments doesn’t matter.
+Example:</p>
+<blockquote>
+<div>&gt;save(‘weights.pts’,model)</div></blockquote>
+<p>or</p>
+<blockquote>
+<div>&gt;save(model,’weights.pts’)</div></blockquote>
+<p>or</p>
+<blockquote>
+<div>&gt;f = open(‘weight.pts’)
+&gt;save(f,model)</div></blockquote>
+<p>or</p>
+<blockquote>
+<div>&gt;save(model,f)</div></blockquote>
+<p>or</p>
+<blockquote>
+<div>&gt;save(‘weights.pts’,state_dict)</div></blockquote>
+<p>or</p>
+<blockquote>
+<div>&gt;save(state_dict,’weights.pts’)</div></blockquote>
+<p>Return value: None</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="torchfun.count_parameters">
+<code class="descclassname">torchfun.</code><code class="descname">count_parameters</code><span class="sig-paren">(</span><em>model_or_dict_or_param</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.count_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Count parameter numer of a module/state_dict/layer/tensor.
+This function can also print the occupied memory of parameters in MBs
+Arguements:
+model_or_dict_or_param: model or state dictionary or model.parameter(), or numpy-array, or tensor.
+Return: parameter amount in python-int</p>
+<blockquote>
+<div>Returns 0 if datatype not understood</div></blockquote>
+<p>Usage:
+1. count trainable and untrainbale params</p>
+<blockquote>
+<div>count_parameters(model)</div></blockquote>
+<dl class="docutils">
+<dt>same as    </dt>
+<dd>count_parameters(state_dict)</dd>
+</dl>
+<ol class="arabic simple" start="2">
+<li><dl class="first docutils">
+<dt>count only trainable params:</dt>
+<dd>count_parameters(model.parameters())</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>count data matrix</dt>
+<dd>count_parameters(weight_tensor)
+count_parameters(numpy_array)</dd>
+</dl>
+</li>
+</ol>
+<dl class="docutils">
+<dt>Notice:</dt>
+<dd>return value is parameter Number.</dd>
+</dl>
+<p>Alias: parameters()</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="torchfun.RandomGaussianBlur">
+<em class="property">class </em><code class="descclassname">torchfun.</code><code class="descname">RandomGaussianBlur</code><span class="sig-paren">(</span><em>kernel_ratio=0.01</em>, <em>random_ratio=0.005</em>, <em>pixel_range=None</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.RandomGaussianBlur" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>PIL image</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="torchfun.clip">
+<code class="descclassname">torchfun.</code><code class="descname">clip</code><span class="sig-paren">(</span><em>in_tensor</em>, <em>max_or_min</em>, <em>min_or_max</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.clip" title="Permalink to this definition">¶</a></dt>
+<dd><p>limit the values in in_tensor to be within [min,max].
+values larger than max will be cut to max, respectively for mins.
+the order of max/min doesn’t matter.
+the operation is not in-place, that saves you alot troubles.</p>
 </dd></dl>
 
 <dl class="class">
@@ -1419,99 +1746,6 @@ registered hooks while the latter silently ignores them.</p>
 
 </dd></dl>
 
-<dl class="attribute">
-<dt id="torchfun.generator_type">
-<code class="descclassname">torchfun.</code><code class="descname">generator_type</code><a class="headerlink" href="#torchfun.generator_type" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">builtins.generator</span></code></p>
-</dd></dl>
-
-<dl class="function">
-<dt id="torchfun.sort_args">
-<code class="descclassname">torchfun.</code><code class="descname">sort_args</code><span class="sig-paren">(</span><em>args_or_types</em>, <em>types_or_args</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.sort_args" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is a very interesting function.
-It is used to support __arbitrary-<a href="#id23"><span class="problematic" id="id25">arguments-ordering__</span></a> in TorchFun.</p>
-<dl class="docutils">
-<dt>Input:</dt>
-<dd>The function takes a list of types, and a list of arguments.</dd>
-<dt>Returns:</dt>
-<dd>a list of arguments, with the same order as the types-list.</dd>
-</dl>
-<p>Of course, <cite>sort_args</cite> supports arbitrary-arguments-ordering by itself.</p>
-</dd></dl>
-
-<dl class="class">
-<dt id="torchfun.Clip">
-<em class="property">class </em><code class="descclassname">torchfun.</code><code class="descname">Clip</code><span class="sig-paren">(</span><em>max_or_min</em>, <em>min_or_max</em>, <em>dtype=torch.float32</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.Clip" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
-<p>limit the values in in_tensor to be within [min,max].
-values larger than max will be cut to max, respectively for mins.
-the order of max/min doesn’t matter.
-the operation is not in-place, that saves you alot troubles.</p>
-<dl class="method">
-<dt id="torchfun.Clip.forward">
-<code class="descname">forward</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.Clip.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines the computation performed at every call.</p>
-<p>Should be overridden by all subclasses.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Although the recipe for forward pass needs to be defined within
-this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
-instead of this since the former takes care of running the
-registered hooks while the latter silently ignores them.</p>
-</div>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="function">
-<dt id="torchfun.flatten">
-<code class="descclassname">torchfun.</code><code class="descname">flatten</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.flatten" title="Permalink to this definition">¶</a></dt>
-<dd><p>Flatten function
-Usage:</p>
-<blockquote>
-<div>out = flatten(x)</div></blockquote>
-</dd></dl>
-
-<dl class="class">
-<dt id="torchfun.InstanceReNorm">
-<em class="property">class </em><code class="descclassname">torchfun.</code><code class="descname">InstanceReNorm</code><span class="sig-paren">(</span><em>eps=1e-05</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.InstanceReNorm" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
-<p>Make x have given mean and std.
-Argument:
-x: NCHW
-mean: tensor with size: N-by-num-features
-std: tensor with size: N-by-num-features
-eps: default 1e-5</p>
-<dl class="method">
-<dt id="torchfun.InstanceReNorm.forward">
-<code class="descname">forward</code><span class="sig-paren">(</span><em>x</em>, <em>mean</em>, <em>std</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.InstanceReNorm.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make x have given mean and std.
-Argument:
-x: NCHW
-mean: tensor with size: N-by-num-features
-std: tensor with size: N-by-num-features
-eps: default 1e-5</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="function">
-<dt id="torchfun.hash_parameters">
-<code class="descclassname">torchfun.</code><code class="descname">hash_parameters</code><span class="sig-paren">(</span><em>model_or_statdict_or_param</em>, <em>use_sum=False</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.hash_parameters" title="Permalink to this definition">¶</a></dt>
-<dd><p>return the summary of all variables.
-This is used to detect chaotic changes of weights.
-You can check the sum_parameters before and after some operations, to know
-if there is any change made to the params.</p>
-<p>I use this function to verify gradient behaviours.</p>
-<p>By default, This only hash the trainable parameters!</p>
-<p>arguements:
-module_or_statdict_or_param: torch.nn.module,</p>
-<blockquote>
-<div>or model.state_dict(), 
-or model.parameters().</div></blockquote>
-<p>use_sum: return the sum instead of mean value of all params.</p>
-</dd></dl>
-
 <dl class="class">
 <dt id="torchfun.Squeeze">
 <em class="property">class </em><code class="descclassname">torchfun.</code><code class="descname">Squeeze</code><span class="sig-paren">(</span><em>dim=None</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.Squeeze" title="Permalink to this definition">¶</a></dt>
@@ -1566,191 +1800,13 @@ registered hooks while the latter silently ignores them.</p>
 
 </dd></dl>
 
-<dl class="class">
-<dt id="torchfun.InstanceMeanStd">
-<em class="property">class </em><code class="descclassname">torchfun.</code><code class="descname">InstanceMeanStd</code><span class="sig-paren">(</span><em>num_features</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.InstanceMeanStd" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
-<p>NCHW</p>
-<dl class="method">
-<dt id="torchfun.InstanceMeanStd.forward">
-<code class="descname">forward</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.InstanceMeanStd.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>NCHW</p>
-</dd></dl>
-
-</dd></dl>
-
 <dl class="function">
-<dt id="torchfun.add_noise">
-<code class="descclassname">torchfun.</code><code class="descname">add_noise</code><span class="sig-paren">(</span><em>in_tensor</em>, <em>noise_type='normal'</em>, <em>noise_param=(0</em>, <em>1)</em>, <em>range_limit=(-1</em>, <em>1)</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.add_noise" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add noise to input tensor.
-Noise type can be either <cite>normal</cite> or <cite>uniform</cite></p>
+<dt id="torchfun.flatten">
+<code class="descclassname">torchfun.</code><code class="descname">flatten</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.flatten" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flatten function
+Usage:</p>
 <blockquote>
-<div><ul class="simple">
-<li>for normal, (mean,std) is required as noise_param</li>
-<li>for uniform (min,max) is required as noise_param</li>
-</ul>
-</div></blockquote>
-<dl class="docutils">
-<dt>The range of the output tensor can be limited,</dt>
-<dd>by giving <cite>range_limit</cite>:(min,max)</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="torchfun.subpixel">
-<code class="descclassname">torchfun.</code><code class="descname">subpixel</code><span class="sig-paren">(</span><em>x</em>, <em>out_channels=1</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.subpixel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Unfold channel/depth dimensions to enlarge the feature map
-Notice: Output size is deducted. 
-The size of the unfold square is automatically determined
-e.g. :</p>
-<blockquote>
-<div>images: 100x9x16x16.  9=3x3 square
-subpixel-out: 100x1x48x48</div></blockquote>
-<dl class="docutils">
-<dt>Arguement:</dt>
-<dd>x: NCHW image, channel first.
-out_channels, channel number of output feature map</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="torchfun.imshow">
-<code class="descclassname">torchfun.</code><code class="descname">imshow</code><span class="sig-paren">(</span><em>x</em>, <em>title=None</em>, <em>auto_close=True</em>, <em>rows=8</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.imshow" title="Permalink to this definition">¶</a></dt>
-<dd><p>only deal with torch channel-first image batch,
-title: add title to plot. (Default None)</p>
-<blockquote>
-<div>title can be string, or any string-able object.</div></blockquote>
-<dl class="docutils">
-<dt>auto_close: (default True) </dt>
-<dd>Close the pyplot session afterwards. 
-Clean the environment just like you had 
-never used matplotlib here.
-if set to False, the plot will remain in the memory for further drawings.</dd>
-<dt>rows: (default 8)</dt>
-<dd>the width of the output grid image.</dd>
-</dl>
-<p>Usage:
-<a href="#id13"><span class="problematic" id="id14">``</span></a><a href="#id15"><span class="problematic" id="id16">`</span></a>python</p>
-<blockquote>
-<div>imshow(batch)
-imshow(batch,title=[a,b,c])
-imshow(batch,title=’title’)
-imshow(batch,auto_close=False)</div></blockquote>
-<p><a href="#id17"><span class="problematic" id="id18">``</span></a>`
-Warnings:
-<a href="#id19"><span class="problematic" id="id20">``</span></a><a href="#id21"><span class="problematic" id="id22">`</span></a>text</p>
-<blockquote>
-<div>TorchFun:imshow:Warning, you are using WebAgg backend for Matplotlib. 
-Please consider windowed display SDKs such as TkAgg backend and GTK* backends.</div></blockquote>
-<p><code class="docutils literal notranslate"><span class="pre">`</span>
-<span class="pre">This</span> <span class="pre">means</span> <span class="pre">your</span> <span class="pre">matplotlib</span> <span class="pre">is</span> <span class="pre">using</span> <span class="pre">web-browser</span> <span class="pre">for</span> <span class="pre">figure</span> <span class="pre">display.</span> <span class="pre">We</span> <span class="pre">__strongly__</span> <span class="pre">recommend</span> <span class="pre">you</span> <span class="pre">to</span> <span class="pre">use</span> <span class="pre">window-based</span> <span class="pre">native</span> <span class="pre">display</span> <span class="pre">because</span> <span class="pre">browser-based</span> <span class="pre">backends</span> <span class="pre">are</span> <span class="pre">fragile</span> <span class="pre">and</span> <span class="pre">tend</span> <span class="pre">to</span> <span class="pre">crash.</span> <span class="pre">You</span> <span class="pre">can</span> <span class="pre">change</span> <span class="pre">the</span> <span class="pre">display</span> <span class="pre">mamanger</span> <span class="pre">for</span> <span class="pre">matplotlib</span> <span class="pre">each</span> <span class="pre">time</span> <span class="pre">you</span> <span class="pre">execute</span> <span class="pre">your</span> <span class="pre">script</span> <span class="pre">by:</span>
-<span class="pre">```python</span>
-<span class="pre">import</span> <span class="pre">matplotlib</span>
-<span class="pre">matplotlib.use('TkAgg')</span> <span class="pre">#</span> <span class="pre">or</span> <span class="pre">GTK</span> <span class="pre">GTKAgg</span>
-<span class="pre">`</span></code>
-or permanantly by editing: <cite>site-packages/matplotlib/mpl-data/matplotlibrc</cite> and change backend to <cite>TkAgg</cite></p>
-<p>A full list of available backends can be found at:
-<code class="docutils literal notranslate"><span class="pre">`python</span>
-<span class="pre">import</span> <span class="pre">matplotlib</span>
-<span class="pre">matplotlib.rcsetup.all_backends</span>
-<span class="pre">`</span></code>
-and, the TCL/TK GUI library for <cite>tkinter</cite> can be downloaded [here](<a class="reference external" href="https://www.tcl.tk/">https://www.tcl.tk/</a>).</p>
-<dl class="docutils">
-<dt>Notice:</dt>
-<dd><p class="first">If you use conda to manage your python versions, errors may occur when using TCL/TK.
-That’s because conda secretly redirect your global python library path towards its.
-That will cause other stand-alone python versions to search from conda’s lib dirs for binaries.
-To solve this, you may have to set:</p>
-<p><code class="docutils literal notranslate"><span class="pre">`</span>
-<span class="pre">export</span> <span class="pre">TCL_LIBRARY=/usr/...pythondir.../lib/tcl8.6</span>
-<span class="pre">export</span> <span class="pre">TK_LIBRARY=/usr/...pythondir.../lib/tcl8.6</span>
-<span class="pre">`</span></code>
-or on windows:</p>
-<p class="last"><code class="docutils literal notranslate"><span class="pre">`</span>
-<span class="pre">set</span> <span class="pre">&quot;TCL_LIBRARY=/usr/...pythondir.../lib/tcl8.6&quot;</span>
-<span class="pre">set</span> <span class="pre">&quot;TK_LIBRARY=/usr/...pythondir.../lib/tcl8.6&quot;</span>
-<span class="pre">`</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="torchfun.instance_mean_std">
-<code class="descclassname">torchfun.</code><code class="descname">instance_mean_std</code><span class="sig-paren">(</span><em>x</em>, <em>num_features</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.instance_mean_std" title="Permalink to this definition">¶</a></dt>
-<dd><p>NCHW</p>
-</dd></dl>
-
-<dl class="class">
-<dt id="torchfun.NO_OP">
-<em class="property">class </em><code class="descclassname">torchfun.</code><code class="descname">NO_OP</code><span class="sig-paren">(</span><em>*argv</em>, <em>**kws</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.NO_OP" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
-<p>A Module that repersents NO-Operation NO-OP.
-NO-OP is needed when programmers want customizable dynamic assembling
-of models. 
-To disable some layers, instead of using multiple <cite>if</cite> clauses, nn-parts can be configured to be
-NO-OP class, which will make that part turned-off in all occurrence.</p>
-<p>Notice: NO_OP will accept any init-args, and ignore them.</p>
-<dl class="staticmethod">
-<dt id="torchfun.NO_OP.forward">
-<em class="property">static </em><code class="descname">forward</code><span class="sig-paren">(</span><em>x</em>, <em>*argv</em>, <em>**kws</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.NO_OP.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines the computation performed at every call.</p>
-<p>Should be overridden by all subclasses.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Although the recipe for forward pass needs to be defined within
-this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
-instead of this since the former takes care of running the
-registered hooks while the latter silently ignores them.</p>
-</div>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="function">
-<dt id="torchfun.save">
-<code class="descclassname">torchfun.</code><code class="descname">save</code><span class="sig-paren">(</span><em>a</em>, <em>b</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.save" title="Permalink to this definition">¶</a></dt>
-<dd><p>save weight <cite>a</cite> into target <cite>b</cite>, or save model <cite>b</cite> into target <cite>a</cite>
-The order of the arguments doesn’t matter.
-Example:</p>
-<blockquote>
-<div>&gt;save(‘weights.pts’,model)</div></blockquote>
-<p>or</p>
-<blockquote>
-<div>&gt;save(model,’weights.pts’)</div></blockquote>
-<p>or</p>
-<blockquote>
-<div>&gt;f = open(‘weight.pts’)
-&gt;save(f,model)</div></blockquote>
-<p>or</p>
-<blockquote>
-<div>&gt;save(model,f)</div></blockquote>
-<p>or</p>
-<blockquote>
-<div>&gt;save(‘weights.pts’,state_dict)</div></blockquote>
-<p>or</p>
-<blockquote>
-<div>&gt;save(state_dict,’weights.pts’)</div></blockquote>
-<p>Return value: None</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="torchfun.load">
-<code class="descclassname">torchfun.</code><code class="descname">load</code><span class="sig-paren">(</span><em>a</em>, <em>b</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.load" title="Permalink to this definition">¶</a></dt>
-<dd><p>Load weight <cite>a</cite> into model <cite>b</cite>, or load model <cite>b</cite> using weight <cite>a</cite>
-The order of the arguments doesn’t matter.
-Example:</p>
-<blockquote>
-<div>&gt;load(‘weights.pts’,model)</div></blockquote>
-<dl class="docutils">
-<dt>or</dt>
-<dd>&gt;load(model,’weights.pts’)</dd>
-<dt>or</dt>
-<dd>&gt;f = open(‘weight.pts’)
-&gt;load(f,model)</dd>
-<dt>or</dt>
-<dd>&gt;load(model,f)</dd>
-</dl>
-<p>Return value: None</p>
+<div>out = flatten(x)</div></blockquote>
 </dd></dl>
 
 <dl class="class">
@@ -1778,51 +1834,6 @@ registered hooks while the latter silently ignores them.</p>
 
 </dd></dl>
 
-<dl class="function">
-<dt id="torchfun.count_parameters">
-<code class="descclassname">torchfun.</code><code class="descname">count_parameters</code><span class="sig-paren">(</span><em>model_or_dict_or_param</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.count_parameters" title="Permalink to this definition">¶</a></dt>
-<dd><p>Count parameter numer of a module/state_dict/layer/tensor.
-This function can also print the occupied memory of parameters in MBs
-Arguements:
-model_or_dict_or_param: model or state dictionary or model.parameter(), or numpy-array, or tensor.
-Return: parameter amount in python-int</p>
-<blockquote>
-<div>Returns 0 if datatype not understood</div></blockquote>
-<p>Usage:
-1. count trainable and untrainbale params</p>
-<blockquote>
-<div>count_parameters(model)</div></blockquote>
-<dl class="docutils">
-<dt>same as    </dt>
-<dd>count_parameters(state_dict)</dd>
-</dl>
-<ol class="arabic simple" start="2">
-<li><dl class="first docutils">
-<dt>count only trainable params:</dt>
-<dd>count_parameters(model.parameters())</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>count data matrix</dt>
-<dd>count_parameters(weight_tensor)
-count_parameters(numpy_array)</dd>
-</dl>
-</li>
-</ol>
-<dl class="docutils">
-<dt>Notice:</dt>
-<dd>return value is parameter Number.</dd>
-</dl>
-<p>Alias: parameters()</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="torchfun.omini_open">
-<code class="descclassname">torchfun.</code><code class="descname">omini_open</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.omini_open" title="Permalink to this definition">¶</a></dt>
-<dd><p>Opens everything using system default viwer.</p>
-<p>This function can call system GUI to open folders,images,files,videos…</p>
-</dd></dl>
-
 </div>
 </div>
 
@@ -1837,6 +1848,7 @@ count_parameters(numpy_array)</dd>
 <li><a class="reference internal" href="#">torchfun package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
 <li><a class="reference internal" href="#module-torchfun.datasets">torchfun.datasets module</a></li>
+<li><a class="reference internal" href="#module-torchfun.functional">torchfun.functional module</a></li>
 <li><a class="reference internal" href="#module-torchfun.nn">torchfun.nn module</a></li>
 <li><a class="reference internal" href="#module-torchfun.torchfun">torchfun.torchfun module</a></li>
 <li><a class="reference internal" href="#module-torchfun.transforms">torchfun.transforms module</a></li>
@@ -1878,7 +1890,7 @@ count_parameters(numpy_array)</dd>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">torchfun 0.0.162 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">torchfun 0.0.164 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

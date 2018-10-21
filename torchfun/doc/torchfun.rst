@@ -12,6 +12,14 @@ torchfun.datasets module
     :undoc-members:
     :show-inheritance:
 
+torchfun.functional module
+--------------------------
+
+.. automodule:: torchfun.functional
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 torchfun.nn module
 ------------------
 
