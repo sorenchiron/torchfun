@@ -6,6 +6,7 @@
 from __future__ import division,print_function
 import torch
 import numpy as np
+from . import functional
 from .torchfun import sort_args
 
 __doc__ = '''Neural Network related layers/functions/classes
@@ -412,6 +413,7 @@ def instance_renorm(x,mean,std,eps=1e-5):
     return x.contiguous()
 
 class InstanceReNorm(torch.nn.Module):
+    '''re normalize input with given mean and std-dev value.'''
     __doc__ = instance_renorm.__doc__
     def __init__(self,eps=1e-5):
         super(self.__class__,self).__init__()

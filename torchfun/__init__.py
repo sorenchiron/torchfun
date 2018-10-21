@@ -8,6 +8,7 @@ from . import transforms
 from . import nn
 from . import utils
 from . import datasets
+from . import functional
 from .transforms import *
 from .nn import *
 
