@@ -1,3 +1,4 @@
+import torch
 import torch.utils.data as data
 from PIL import Image
 import os
@@ -7,6 +8,34 @@ from torchvision.datasets.folder import DatasetFolder,ImageFolder
 from torchvision.datasets.folder import default_loader,IMG_EXTENSIONS
 
 __doc__ = 'provide dataset related classes'
+
+
+class ApposeDataset(torch.utils.data.Dataset):
+    '''make several dataset abreast, 
+    returning tuples of their corresponding elements.
+    Usage:
+            dataset = ApposeDataset(dataset1,dataset2,...)'''
+    def __init__(self,*datasets):
+        super().__init__()
+        self.datasets=datasets
+        self.check_consistency()
+    def check_consistency(self):
+        lens=[len(d) for d in self.datasets]
+        min_length=min(lens)
+        max_length=max(lens)
+        if min_length!=max_length:
+            print('''torchfun:ApposeDataset:warning:input datasets are of different size, 
+                the minimal length will be used to access each dataset.''')
+        self.length = min_length
+        self.lens = lens
+    def __len__(self):
+        return self.length
+    def __getitem__(self,index):
+        if index>=self.length:
+            raise IndexError()
+        else:
+            return (d[index] for d in self.datasets)
+
 
 class ImageAugmentationDataset(ImageFolder):
     '''

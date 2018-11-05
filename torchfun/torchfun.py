@@ -31,10 +31,21 @@ def sort_args(args_or_types,types_or_args):
         types = types_or_args
         args = args_or_types
 
-    type_arg_dict = {type(a):a for a in args}
+    type_arg_tuples = [(type(a),a) for a in args]
     res=[]
     for t in types:
-        res.append(type_arg_dict[t])
+        found = False
+        for type_arg in type_arg_tuples:
+            arg_type,arg_val = type_arg
+            if issubclass(arg_type,t):
+                found=True
+                break
+        if found:
+            res.append(arg_val)
+            type_arg_tuples.remove(type_arg)
+        else:
+            raise TypeError('One of the required argument is of type '+ t.__name__ + ', but none of the given arguments is of this type.')
+
     return res
 
 def omini_open(path):
@@ -52,7 +63,7 @@ def omini_open(path):
     else:
         subprocess.Popen(["xdg-open", path])
 
-def imshow(x,title=None,auto_close=True,rows=8):
+def imshow(x,title=None,auto_close=True,rows=8,backend=None):
     '''only deal with torch channel-first image batch,
     title: add title to plot. (Default None)
         title can be string, or any string-able object.
@@ -63,7 +74,19 @@ def imshow(x,title=None,auto_close=True,rows=8):
         if set to False, the plot will remain in the memory for further drawings.
     rows: (default 8)
         the width of the output grid image.
-
+    backend: None to use default gui. selections:
+        WebAgg,  GTK3Agg,
+        WX,      GTK3Cairo,
+        WXAgg,   MacOSX,
+        WXCairo, nbAgg,
+        agg,     Qt4Agg,
+        cairo,   Qt4Cairo,
+        pdf,     Qt5Agg,
+        pgf,     Qt5Cairo,
+        ps,      TkAgg,
+        svg,     TkCairo,
+        template        
+ 
     Usage:
     ```python
         imshow(batch)
@@ -139,6 +162,9 @@ def imshow(x,title=None,auto_close=True,rows=8):
         return
 
     import matplotlib
+    if backend:
+        print('using explicitly designated backend:',backend)
+        matplotlib.use(backend,force=True)
     if matplotlib.get_backend() == 'WebAgg':
         print('TorchFun:imshow:Warning, you are using WebAgg backend for Matplotlib. Please consider windowed display SDKs such as TkAgg backend and GTK* backends.')
     import matplotlib.pyplot as plt
@@ -377,6 +403,44 @@ def count_parameters(model_or_dict_or_param, verbose=True):
 
 parameters = count_parameters
 
+def hash_parameters(model_or_statdict_or_param,use_sum=False):
+    '''return the summary of all variables.
+    This is used to detect chaotic changes of weights.
+    You can check the sum_parameters before and after some operations, to know
+    if there is any change made to the params.
+
+    I use this function to verify gradient behaviours.
+
+    By default, This only hash the trainable parameters!
+
+    arguements:
+    module_or_statdict_or_param: torch.nn.module, 
+                    or model.state_dict(), 
+                    or model.parameters().
+    use_sum: return the sum instead of mean value of all params.'''
+    m = model_or_statdict_or_param
+    means = []
+    params = []
+    if isinstance(m,torch.nn.Module):
+        params = m.parameters()
+    elif isinstance(m,dict):
+        params = [m[k] for k in m]
+    elif isinstance(m,generator_type):
+        params = parameters
+    elif isinstance(m,torch.Tensor):
+        params = [m]
+    else:
+        print('TorchFun:hash_parameters:','input type not support:',type(m))
+
+    for p in params:
+        if use_sum:
+            v = p.sum()
+        else:
+            v = p.mean()
+        means.append(v)
+
+    return float(sum(means))
+
 def show_layers_parameters(model):
     total_params=0
     print('-----------start-----------')
@@ -392,7 +456,8 @@ def show_layers_parameters(model):
 module_type = type(os)
 
 class Packsearch(object):
-    '''Given an module object as input:
+    '''Search names inside a package.
+    Given an module object as input:
     > p = Packsearch(torch)
     or
     > p = Packsearch('torch')
@@ -417,7 +482,13 @@ class Packsearch(object):
         if isinstance(module_object,module_type):
             self.root = module_object
         else:
-            self.root = importlib.import_module(module_object)
+            try:
+                self.root = importlib.import_module(module_object)
+            except:
+                raise TypeError('''Torchfun Packsearch: Wrong Argument!. torchfun.Packsearch is a class. 
+                    it accept a torch Module or string as input. Use help(torchfun.Packsearch) to see the usage.
+                    Or, you can use torch.packsearch(package,query) function.''')
+        self.warned = False # to make warning appear only once.
         self.target = self.root.__name__
         self.name_list = []
         self.name_dict = []
@@ -452,7 +523,9 @@ class Packsearch(object):
                 dir_ = dir(m)
                 names.extend(dir_)
             except:
-                print('Packsearch:warning:some object was corrupted by their author, and they are not traversable.')
+                if not self.warned:
+                    print('Packsearch:warning:some objects were corrupted by their author, and they are not traversable.')
+                    self.warned = True
             names.extend(list(m.__dict__.keys()))
             names = list(set(names))
 
@@ -476,7 +549,7 @@ class Packsearch(object):
             # record that we have visited this module
             traversed_mod_names.append(prefix)
 
-    def dynamic_traverse(self,mod,query):
+    def dynamic_traverse(self,mod,query,search_attributes=False):
         '''traverse the module and simultaneously search for queried name'''
         if type(mod) is not module_type:
             return
@@ -494,7 +567,9 @@ class Packsearch(object):
                 dir_ = dir(m)
                 names.extend[dir_]
             except:
-                print('Packsearch:warning:some object was corrupted by their author, and they are not traversable.')
+                if not self.warned:
+                    print('Packsearch:warning:some objects were corrupted by their author, and they are not traversable.')
+                    self.warned = True
             names.extend(list(m.__dict__.keys()))
             names = list(set(names))
 
@@ -508,7 +583,14 @@ class Packsearch(object):
                     # packages like io,numpy,os, will be excluded.
                         stack.insert(0,obj) # to be traversed later
                 else:
-                    pass # do not traverse non-module objects
+                    if search_attributes:
+                        attrs = dir(obj)
+                        items = [prefix+'.'+name+'.'+attr for attr in attrs]
+                        for itm in items:
+                            if query in itm.lower():
+                                yield itm
+                        del items
+                    del obj
                 obj_path = prefix+'.'+name
                 if query in obj_path.lower():
                     yield obj_path
@@ -543,7 +625,7 @@ class Packsearch(object):
         return self.search(name)
 
 
-def packsearch(module_or_str,str_or_module):
+def packsearch(module_or_str,str_or_module,verbose=False):
     '''Given an module object, and search pattern string as input:
     > packsearch(torch,'maxpoo')
     or
@@ -564,7 +646,7 @@ def packsearch(module_or_str,str_or_module):
     p = Packsearch(mod,auto_init=False)
     res_counter = 0
     print('Packsearch: dynamic searching start ...')
-    for r in p.dynamic_traverse(mod,name.lower()):
+    for r in p.dynamic_traverse(mod,name.lower(),search_attributes=verbose):
         print(r)
         res_counter += 1
     if res_counter == 0:
@@ -573,41 +655,7 @@ def packsearch(module_or_str,str_or_module):
         print('Packsearch: search done,',res_counter,'results found.')
 
 
-def hash_parameters(model_or_statdict_or_param,use_sum=False):
-    '''return the summary of all variables.
-    This is used to detect chaotic changes of weights.
-    You can check the sum_parameters before and after some operations, to know
-    if there is any change made to the params.
 
-    I use this function to verify gradient behaviours.
-
-    By default, This only hash the trainable parameters!
-
-    arguements:
-    module_or_statdict_or_param: torch.nn.module, 
-                    or model.state_dict(), 
-                    or model.parameters().
-    use_sum: return the sum instead of mean value of all params.'''
-    m = model_or_statdict_or_param
-    means = []
-    params = []
-    if isinstance(m,Torch.nn.Module):
-        params = [m[k] for k in m]
-    elif isinstance(m,dict):
-        params = m.parameters()
-    elif isinstance(m,generator_type):
-        params = parameters
-    else:
-        print('TorchFun:hash_parameters:','input type not support:',type(m))
-
-    for p in params:
-        if use_sum:
-            v = p.sum()
-        else:
-            v = p.mean()
-        means.append(v)
-
-    return float(sum(means))
 
 def force_exist(dirname,verbose=True):
     '''force a directory to exist.
@@ -687,6 +735,39 @@ def tf_session(allow_growth=True):
     config.gpu_options.allow_growth = allow_growth
     return tensorflow.Session(config=config)
 
+
+class Options(object):
+    '''A simple yet effective option class for debugging use.
+    key features: you can set attributes to it directly.
+    like:
+            o = Options()
+            o.what=1
+            o.hahah=123
+
+    '''
+    def __init__(self):
+        super().__init__()
+    def __setattr__(self,name,value):
+        if hasattr(self,name):
+            super().__setattr__(name,value)
+        else:
+            self.__dict__[name]=value
+    def __str__(self):
+        return str(self.__dict__)
+    def __repr__(self):
+        contents=['\t%s:%s'%(name,str(self.__dict__[name])) for name in self.__dict__]
+        contents.insert(0,'Options containing:')
+        return os.linesep.join(contents)
+
+def options(*args,**kws):
+    '''warpping class for Options. this function returns an option object with attributes
+    set according to the input key-value arguments. 
+    please refer to Option class for more information'''
+    if len(args)!=0:
+        print('warning:options must be keywords pairs, not anoymous value list')
+    o = Options()
+    o.__dict__.update(kws)
+    return o
 
 def documentation(search=None):
     ''' help documentation on Torchfun

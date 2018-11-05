@@ -5,24 +5,139 @@
 
 from __future__ import division,print_function
 import torch
-import numpy as np
 from . import functional
+from .functional import *
 from .torchfun import sort_args
+from time import time
+from collections import OrderedDict
+import itertools
 
 __doc__ = '''Neural Network related layers/functions/classes
 that are compatible with all pyTorch usage.
 '''
 
+class DebugAgent(torch.nn.Module):
+    '''wrapper around layers.
+    this wrapper hooks the forward function, to measure time 
+    consumption of this layer.'''
+    def __init__(self,obj):
+        super(DebugAgent,self).__init__()
+        self.obj = obj
+        self.name = obj.__class__.__name__
+        self.bind(obj)
+    def bind(self,obj):
+        self.__dict__.update(obj.__dict__)
+        self.deep_names = {name:getattr(obj,name) for name in obj.__dir__()}
+        self.__dict__.update(self.deep_names)
+    def __call__(self,*argv,**kw):
+        start = time()
+        ret = self.deep_names['forward'](*argv,**kw)
+        end = time()
+        print('debug:',self.name.rjust(15)+'\t:%.5f sec'%(end-start))
+        return ret
+    def __getattr__(self,name):
+        if name in self.__dict__:
+            return self.__dict__[name]
+        elif name in self.deep_names:
+            return self.deep_names[name]
+        else:
+            return getattr(self.obj,name)
 
-def flatten(x):
-    '''Flatten function
-    Usage:
-        out = flatten(x)
+
+class Module(torch.nn.Module):
+    '''More debugging/controlling methods with complete original
+    features from torch.nn.Module
+    provides:
+        * debug mode: inspect running time layer by layer.
+        * release mode: back to normal from debug mode.
+        * freeze layers: set layers to be in-trainable
+        * unfreeze: as the name implies.
+        * unfreeze_all: so as the name implies.
+
+    Notice: you can safely change the base class from torchfun module
+            back to torch module, when you want to publish the model.
+            the state_dict will be loaded correctly and the forward() will
+            function the same.
+    Hint:   Consider establishing a BaseClass global variable at the top of your 
+            code. Use a argument parser to select between torchfun.nn.Module and torch.nn.Module,
+            so that the following classes follows the specified base class
+
+            Example::
+                    | import torch.nn.Module as ReleaseModule
+                    | import torchfun.nn.Module as DevModule    
+                    | from sys import argv
+                    | if argv[1] == 'develop':
+                    |     Base = DevModule
+                    | elif argv[1] == 'release':
+                    |     Base = ReleaseModule
+                    | 
+                    | class MyModel(Base):
+                    |     ...
+
     '''
-    #shapes = x.shape
-    #dims = len(shapes)
-    #flatten_length = torch.prod(shapes[1:])
-    return x.contiguous().view(x.size(0),-1)
+    def __init__(self):
+        super(Module,self).__init__()
+        self._debug=False
+        self._frozen_names=[]
+
+    def debug(self):
+        '''turn on debug mode.
+        allow detailed timing report of forward()'''
+        if self._debug:
+            return
+        else:
+            self._debug=True
+            self._modules_bak=self._modules
+            self.debug_modules = OrderedDict()
+            for name in self._modules:
+                self.debug_modules[name]=DebugAgent(self._modules[name])
+            self._modules = self.debug_modules
+            self._update_using_modules_dict(self.debug_modules)
+    def release(self):
+        if self._debug:
+            del self._modules
+            self._modules = self._modules_bak
+            self._update_using_modules_dict(self._modules_bak)
+            self._debug = False
+    def _update_using_modules_dict(self,odict):
+        for name in odict:
+            self.__setattr__(name,odict[name])
+    def freeze(self,*obj_or_name):
+        for o in obj_or_name:
+            self._freeze(o,True)
+    def unfreeze(self,*obj_or_name):
+        for o in obj_or_name:
+            self._freeze(o,False)
+    def unfreeze_all(self):
+        self._frozen_names = []
+    def _freeze(self,obj_or_name,freeze=True):
+        modules = {self._modules:name for name in self._modules}
+        if obj_or_name in self._modules:
+            name = obj_or_name
+        elif obj_or_name in modules:
+            name = modules[obj_or_name]
+        else:
+            raise Exception('layer or name:%s not in this module'%obj_or_name)
+        if freeze:
+            if name not in self._frozen_names:
+                self._frozen_names.append(name)
+        else:
+            if name in self._frozen_names:
+                del self._frozen_names[name]
+        del modules
+    
+    def train(self,mode=True):
+        super(Module,self).train(mode)
+        for name in self._frozen_names:
+            getattr(self,name).eval()
+
+    def parameters(self):
+        if self._frozen_names:
+            generators = [self._modules[name].parameters() for name in self._modules if name not in self._frozen_names]
+            return itertools.chain(*generators)
+        else:
+            return super(Module,self).parameters()
+
 
 class Flatten(torch.nn.Module):
     '''Flatten module
@@ -31,41 +146,10 @@ class Flatten(torch.nn.Module):
         out = flat(x)
     '''
     def __init__(self):
-        super(self.__class__,self).__init__()
+        super(Flatten,self).__init__()
 
     def forward(self,x):
         return flatten(x)
-
-def subpixel(x,out_channels=1):
-    '''Unfold channel/depth dimensions to enlarge the feature map
-    Notice: Output size is deducted. 
-    The size of the unfold square is automatically determined
-    e.g. :
-        images: 100x9x16x16.  9=3x3 square
-        subpixel-out: 100x1x48x48
-    Arguement:
-        x: NCHW image, channel first.
-        out_channels, channel number of output feature map'''
-    b,c,h,w = shapes = x.shape
-    out_c = out_channels
-    if c%out_c != 0:
-        print('input has',c,'channels, cannot be split into',out_c,'parts')
-        raise Exception('subpixel inappropriate size')
-    unfold_dim = c//out_c
-    l = int(np.sqrt(unfold_dim))
-    if l**2 != unfold_dim:
-        print('remaining',unfold_dim,'digits for each channel, unable to sqrt.')
-        raise Exception('subpixel inappropriate size')
-    ###### start ######
-    x = x.transpose(1,3) # nhwc
-    y = x.reshape(b,h,w,unfold_dim,out_c)
-    y = y.transpose(2,3)
-    y = y.reshape(b,h,l,l,w,out_c)
-    y = y.reshape(b,l*h,l,w,out_c) # b,l*h,l,w,outc
-    y = y.transpose(2,3) # b,l*h,w,l,outc
-    y = y.reshape(b,l*h,l*w,out_c)
-    y = y.transpose(1,3) # nchw
-    return y
 
 class Subpixel(torch.nn.Module):
     '''Unfold channel/depth dimensions to enlarge the feature map
@@ -78,7 +162,7 @@ class Subpixel(torch.nn.Module):
         out_channels, channel number of output feature map
         stride: enlarging ratio of spatial dimensions. stride=2 outputs x4 img area. If provided, out_channels will be ignored.'''
     def __init__(self,out_channels=1,stride=None):
-        super(self.__class__,self).__init__()
+        super(Subpixel,self).__init__()
         self.out_channels = int(out_channels)
         self.stride = int(stride)
         if stride:
@@ -89,7 +173,7 @@ class Subpixel(torch.nn.Module):
         if not self.stride:
             return subpixel(x,out_channels=self.out_channels)
         else:
-            c = x.size(1) // self.patch_pixels
+            c = int(x.size(1)) // self.patch_pixels
             return subpixel(x,out_channels=c)
 
 class Conv2dDepthShared(torch.nn.Conv2d):
@@ -228,7 +312,7 @@ class Conv2dDepthShared(torch.nn.Conv2d):
         slice_depth = in_channels // trunks
         slice_out = out_channels // trunks
 
-        super(self.__class__, self).__init__(slice_depth, slice_out, 
+        super(Conv2dDepthShared, self).__init__(slice_depth, slice_out, 
             kernel_size, 
             stride,padding, 
             dilation=dilation, groups=groups, bias=bias)
@@ -288,7 +372,7 @@ class Squeeze(torch.nn.Module):
 
     '''
     def __init__(self,dim=None):
-        super(self.__class__,self).__init__()
+        super(Squeeze,self).__init__()
         self.dim = dim
     def forward(self,x):
         if self.dim:
@@ -301,54 +385,22 @@ class AbsMax(torch.nn.Module):
     TODO: not fully implemented
     '''
     def __init__(self,dim=1):
-        super(self.__class__,self).__init__()
+        super(AbsMax,self).__init__()
         self.dim = dim
     def forward(self,x):
         signs = x.sign()
         absx = x.abs()
 
-def clip(in_tensor,max_or_min,min_or_max):
-    '''limit the values in in_tensor to be within [min,max].
-    values larger than max will be cut to max, respectively for mins.
-    the order of max/min doesn't matter.
-    the operation is not in-place, that saves you alot troubles.
-    '''
-    minv,maxv = torch.tensor(sorted([max_or_min,min_or_max]),dtype=in_tensor.dtype).to(in_tensor.device)
-    x = torch.max(in_tensor,minv)
-    x = torch.min(x,maxv)
-    return x
-
 class Clip(torch.nn.Module):
     __doc__=clip.__doc__
     def __init__(self,max_or_min,min_or_max,dtype=torch.float):
-        super(self.__class__,self).__init__()
+        super(Clip,self).__init__()
         minv,maxv = torch.tensor(sorted([max_or_min,min_or_max]),dtype=dtype)
         self.register_buffer(name='minv',tensor=minv)
         self.register_buffer(name='maxv',tensor=maxv)
 
     def forward(self,x):
         return torch.min(torch.max(x,self.minv),self.maxv)
-
-def add_noise(in_tensor,noise_type='normal',noise_param=(0,1),range_limit=(-1,1)):
-    '''
-    Add noise to input tensor.
-    Noise type can be either `normal` or `uniform`
-        * for normal, (mean,std) is required as noise_param
-        * for uniform (min,max) is required as noise_param
-    The range of the output tensor can be limited,
-      by giving `range_limit`:(min,max)
-    '''
-    if noise_type=='uniform':
-        nmin,nmax = noise_param
-        noise = torch.zeros_like(in_tensor).uniform_(nmin,nmax)
-    elif noise_type=='normal':
-        mean,std = noise_param
-        noise = torch.zeros_like(in_tensor).normal_(mean,std)
-    if range_limit is not None:
-        return clip(in_tensor+noise,*range_limit)
-    else:
-        return in_tensor+noise
-
 
 class NO_OP(torch.nn.Module):
     '''A Module that repersents NO-Operation NO-OP.
@@ -360,28 +412,12 @@ class NO_OP(torch.nn.Module):
     Notice: NO_OP will accept any init-args, and ignore them.
     '''
     def __init__(self,*argv,**kws):
-        super(self.__class__,self).__init__()
+        super(NO_OP,self).__init__()
     @staticmethod
     def forward(x,*argv,**kws):
         return x
     forward.__doc__ = __doc__
 
-
-def instance_mean_std(x,num_features):
-    '''NCHW'''
-    b,c,h,w = x.shape
-    nc_groups = c//num_features
-    x = x.contiguous().view(b,nc_groups,num_features,-1)
-    x = x.transpose(1,2) # b, numfeatu, ncgroup, h*w
-    x = x.contiguous()
-    x = x.contiguous().view(b*num_features,-1)
-
-    mean = x.mean(1)
-    std = x.std(1)
-
-    mean = mean.contiguous().view(b,num_features) # n,feature
-    std = std.contiguous().view(b,num_features) # n,feature
-    return mean,std
 
 class InstanceMeanStd(torch.nn.Module):
     __doc__ = instance_mean_std.__doc__
@@ -392,25 +428,6 @@ class InstanceMeanStd(torch.nn.Module):
         return instance_mean_std(x,self.num_features)
     forward.__doc__ = __doc__
 
-def instance_renorm(x,mean,std,eps=1e-5):
-    '''Make x have given mean and std.
-    Argument:
-    x: NCHW
-    mean: tensor with size: N-by-num-features
-    std: tensor with size: N-by-num-features
-    eps: default 1e-5
-    '''
-    b,c,h,w = x.shape
-    b,num_features = mean.shape
-    nc_groups = c//num_features
-
-    x_m,x_std = instance_mean_std(x,num_features)
-    x = x.contiguous().view(b,nc_groups,num_features,-1)
-    x = x.transpose(2,3).transpose(0,2) # -1,ncgroup,b,numfeature
-    x = ((x-x_m)/(x_std+eps))*(std+eps) + mean
-    x = x.transpose(0,2).transpose(2,3) # b,nc_groups,num_features,-1
-    x = x.contiguous().view(b,c,h,w)
-    return x.contiguous()
 
 class InstanceReNorm(torch.nn.Module):
     '''re normalize input with given mean and std-dev value.'''
@@ -421,3 +438,19 @@ class InstanceReNorm(torch.nn.Module):
     def forward(self,x,mean,std):
         return instance_renorm(x,mean,std,self.eps)
     forward.__doc__ = __doc__
+
+class MaxMinNorm(Clip):
+    __doc__ = max_min_norm.__doc__
+    def __init__(self,max_or_min,min_or_max,eps=1e-5):
+        super(MaxMinNorm,self).__init__(max_or_min,min_or_max)
+        eps = torch.tensor(eps,dtype=torch.float)
+        self.register_buffer(name='eps',tensor=eps)
+    def forward(self,x):
+        return max_min_norm(x,self.maxv,self.minv,self.eps)
+
+class ReLU(torch.nn.ReLU):
+    '''activation that accepts any argument and ignores them.
+    useful when you want to switch between different activations
+    programatically, '''
+    def __init__(self,*args,**kws):
+        super(ReLU,self).__init__()

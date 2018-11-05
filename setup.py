@@ -60,7 +60,7 @@ setuptools.setup(
         'numpy',
         'torch',
         'torchvision',
-        'matplotlib',
+        'matplotlib>=3.0.0',
         'Pillow',
         'scipy',
         'tqdm',
