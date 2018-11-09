@@ -24,7 +24,14 @@ def sort_args(args_or_types,types_or_args):
     Of course, `sort_args` supports arbitrary-arguments-ordering by itself.
 
     '''
-    if type(args_or_types[0]) is type:
+    if (
+            (type(args_or_types[0]) is type) # one type
+            or 
+            ( # type list
+                isinstance(args_or_types[0],(list,tuple)) and 
+                (type(args_or_types[0][0]) is type)
+            )
+        ):
         types = args_or_types
         args = types_or_args
     else:
@@ -453,6 +460,47 @@ def show_layers_parameters(model):
     print('total parameters:',total_params)
     print('------------end------------')
 
+def show(net,input_shape=(1,3,32,32),logdir='tensorboard',port=8888):
+    '''print the network architecture on web-browser, using tensorboardX and tensorboard.
+    tensoboard must be install to use this tool.
+    this tool will create a noise data according to given input_shape,
+    and feed it directly to net, in order to probe its structure.
+    network strctures descriptions will be written to logdir.
+    a tensorboard daemon will be launched to read the logdir and start a web server
+    on given port.
+    Notice: 
+        input shape must be 
+        This program overwrites the system argument lists (sys.argv)
+    '''
+    try:
+        from tensorboard.main import run_main
+    except Exception as e:
+        raise Exception(str(e)+'\nError importing tensorboard. Maybe your tensorboard is not installed correctly.\
+            usually, tensorboard should come with tensorflow. stand-alone tensorboard packages are not stable enough.')
+    import tensorboardX as tb
+    import sys,shutil,re
+    net,input_shape,logdir,port = sort_args([net,input_shape,logdir,port],[torch.nn.Module,(tuple,list),str,int])
+    imgs = torch.rand(*input_shape)
+    w = tb.SummaryWriter(logdir)
+    try:
+        w.add_graph(net,imgs)
+    except Exception as e:
+        raise Exception(str(e)+'\nYour network has problems dealing with input data.\
+         It is usually due to wrong input shape or problematic network implementation.\
+         Please check your network code for more information.')
+    finally:
+        w.close()
+    args = ['tensorboard','--logdir',logdir,'--port',str(port),'--host','127.0.0.1']
+    sys.argv = args
+    sys.argv[0] = re.sub(r'(-script\.pyw?|\.exe)?$', '', sys.argv[0])
+    shutil.rmtree(logdir,ignore_errors=True)
+    print('You may have to delete',logdir,'folder manully.')
+    omini_open('http://127.0.0.1:%d'%port)
+    try:
+        run_main()
+    except Exception as e:
+        print(e)
+
 module_type = type(os)
 
 class Packsearch(object):
@@ -734,7 +782,6 @@ def tf_session(allow_growth=True):
     config = tensorflow.ConfigProto()
     config.gpu_options.allow_growth = allow_growth
     return tensorflow.Session(config=config)
-
 
 class Options(object):
     '''A simple yet effective option class for debugging use.

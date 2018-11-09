@@ -64,5 +64,6 @@ setuptools.setup(
         'Pillow',
         'scipy',
         'tqdm',
-        'psutil']
+        'psutil',
+        'tensorboardX']
 )
