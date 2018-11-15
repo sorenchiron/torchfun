@@ -454,3 +454,6 @@ class ReLU(torch.nn.ReLU):
     programatically, '''
     def __init__(self,*args,**kws):
         super(ReLU,self).__init__()
+
+class Conv2dDepthFullyShared(torch.nn.Conv2d):
+    NotImplemented

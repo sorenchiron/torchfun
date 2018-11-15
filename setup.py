@@ -65,5 +65,6 @@ setuptools.setup(
         'scipy',
         'tqdm',
         'psutil',
-        'tensorboardX']
+        'tensorboardX',
+        'imageio']
 )

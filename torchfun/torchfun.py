@@ -67,8 +67,27 @@ def omini_open(path):
         os.startfile(path)
     elif platform.system() == "Darwin":
         subprocess.Popen(["open", path])
-    else:
-        subprocess.Popen(["xdg-open", path])
+    else:# linux
+        if path[:4] == 'http': # browser
+            command = 'firefox'
+        else:
+            command = 'xdg-open'
+        subprocess.Popen([command, path])
+
+def imread(fname,out_range=(0,1),dtype=torch.float):
+    '''read jpg/png/gif/bmp/tiff... image file, and cat to tensor
+    function based on imageio.
+    args:
+        fname: string of the file path
+        out_range: tuple, output pixel value range.
+        dtype: torch datatype
+
+    '''
+    import imageio
+    rmin,rmax=out_range
+    img = imageio.imread(fname)
+    img = (img/255)*(rmax-rmin)+rmin
+    return torch.tensor(img,dtype=dtype)
 
 def imshow(x,title=None,auto_close=True,rows=8,backend=None):
     '''only deal with torch channel-first image batch,
@@ -81,7 +100,7 @@ def imshow(x,title=None,auto_close=True,rows=8,backend=None):
         if set to False, the plot will remain in the memory for further drawings.
     rows: (default 8)
         the width of the output grid image.
-    backend: None to use default gui. selections:
+    backend: None to use default gui. options are:
         WebAgg,  GTK3Agg,
         WX,      GTK3Cairo,
         WXAgg,   MacOSX,
@@ -448,6 +467,35 @@ def hash_parameters(model_or_statdict_or_param,use_sum=False):
 
     return float(sum(means))
 
+def vectorize_parameter(model_or_statdict_or_param):
+    '''return the vectorized form of all variables.
+    This is used to detect chaotic changes of weights.
+
+    arguements:
+    module_or_statdict_or_param: torch.nn.module, 
+                    or model.state_dict(), 
+                    or model.parameters().
+   
+    '''
+    m = model_or_statdict_or_param
+    means = []
+    params = []
+    if isinstance(m,torch.nn.Module):
+        params = m.parameters()
+    elif isinstance(m,dict):
+        params = [m[k] for k in m]
+    elif isinstance(m,generator_type):
+        params = parameters
+    elif isinstance(m,torch.Tensor):
+        params = [m]
+    else:
+        print('TorchFun:vectorize_parameter:','input type not support:',type(m))
+    ps=[]
+    for p in params:
+        ps.append(p.view(-1,1))
+
+    return torch.cat(ps,0)
+
 def show_layers_parameters(model):
     total_params=0
     print('-----------start-----------')
@@ -480,6 +528,7 @@ def show(net,input_shape=(1,3,32,32),logdir='tensorboard',port=8888):
     import tensorboardX as tb
     import sys,shutil,re
     net,input_shape,logdir,port = sort_args([net,input_shape,logdir,port],[torch.nn.Module,(tuple,list),str,int])
+    shutil.rmtree(logdir,ignore_errors=True)
     imgs = torch.rand(*input_shape)
     w = tb.SummaryWriter(logdir)
     try:
@@ -493,7 +542,6 @@ def show(net,input_shape=(1,3,32,32),logdir='tensorboard',port=8888):
     args = ['tensorboard','--logdir',logdir,'--port',str(port),'--host','127.0.0.1']
     sys.argv = args
     sys.argv[0] = re.sub(r'(-script\.pyw?|\.exe)?$', '', sys.argv[0])
-    shutil.rmtree(logdir,ignore_errors=True)
     print('You may have to delete',logdir,'folder manully.')
     omini_open('http://127.0.0.1:%d'%port)
     try:
