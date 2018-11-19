@@ -81,13 +81,21 @@ def imread(fname,out_range=(0,1),dtype=torch.float):
         fname: string of the file path
         out_range: tuple, output pixel value range.
         dtype: torch datatype
-
+    Notice:
+        the returned image is 1xCxHxW (NCHW).
     '''
     import imageio
     rmin,rmax=out_range
     img = imageio.imread(fname)
     img = (img/255)*(rmax-rmin)+rmin
-    return torch.tensor(img,dtype=dtype)
+    img = torch.tensor(img,dtype=dtype)
+    if len(img.shape) == 3:
+        img.transpose_(2,1)
+        img.transpose_(0,1)
+    else:
+        img.unsqueeze_(0)
+    img.unsqueeze_(0)
+    return img
 
 def imshow(x,title=None,auto_close=True,rows=8,backend=None):
     '''only deal with torch channel-first image batch,
@@ -131,6 +139,8 @@ def imshow(x,title=None,auto_close=True,rows=8,backend=None):
     matplotlib.use('TkAgg') # or GTK GTKAgg
     ```
     or permanantly by editing: `site-packages/matplotlib/mpl-data/matplotlibrc` and change backend to `TkAgg`
+    
+    If your are using Unix-like systems such as MacOSX, you can create ~/.matplotlib/matplotlibrc and add a line: `backend:TkAgg` to it. 
 
     A full list of available backends can be found at:
     ```python
@@ -191,6 +201,8 @@ def imshow(x,title=None,auto_close=True,rows=8,backend=None):
     if backend:
         print('using explicitly designated backend:',backend)
         matplotlib.use(backend,force=True)
+    else:
+        matplotlib.use('TkAgg')
     if matplotlib.get_backend() == 'WebAgg':
         print('TorchFun:imshow:Warning, you are using WebAgg backend for Matplotlib. Please consider windowed display SDKs such as TkAgg backend and GTK* backends.')
     import matplotlib.pyplot as plt
@@ -863,6 +875,38 @@ def options(*args,**kws):
     o = Options()
     o.__dict__.update(kws)
     return o
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def documentation(search=None):
     ''' help documentation on Torchfun

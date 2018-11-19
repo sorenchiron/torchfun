@@ -121,6 +121,7 @@ def instance_renorm(x,mean,std,eps=1e-5):
     nc_groups = c//num_features
 
     x_m,x_std = instance_mean_std(x,num_features)
+    x_m,x_std = x_m.detach(),x_std.detach()
     x = x.contiguous().view(b,nc_groups,num_features,-1)
     x = x.transpose(2,3).transpose(0,2) # -1,ncgroup,b,numfeature
     x = ((x-x_m)/(x_std+eps))*(std+eps) + mean
@@ -155,4 +156,3 @@ def combine_parameters(*models):
     handled by one Optimizer. Parameters shall be gathered into one iterator
     first, because torch.optimizers require only one parameter-iterator as input'''
     return itertools.chain(*[m.parameters() for m in models])
-

@@ -57,3 +57,10 @@ for del_item in del_list:
         __all__.remove(del_item)
 
 del del_list
+
+try:
+    __IPYTHON__
+    print('Torchfun ',__version__,'.')
+    print('Try torchfun.documentation() to get instant help. documentation() accept both torchfun-object and string-query as arguement. and can be invoked without any argument.')
+except:
+    pass

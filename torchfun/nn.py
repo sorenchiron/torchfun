@@ -434,7 +434,8 @@ class InstanceReNorm(torch.nn.Module):
     __doc__ = instance_renorm.__doc__
     def __init__(self,eps=1e-5):
         super(self.__class__,self).__init__()
-        self.register_buffer(name='eps',tensor=torch.tensor(eps))
+        self.eps=eps
+        #self.register_buffer(name='eps',tensor=torch.tensor(eps))
     def forward(self,x,mean,std):
         return instance_renorm(x,mean,std,self.eps)
     forward.__doc__ = __doc__
