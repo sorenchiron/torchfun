@@ -79,6 +79,8 @@ class Module(torch.nn.Module):
         super(Module,self).__init__()
         self._debug=False
         self._frozen_names=[]
+        if hasattr(self,'forward') and self.forward.__doc__ == None:
+            self.forward.__doc__ = self.__class__.__doc__
 
     def debug(self):
         '''turn on debug mode.
@@ -444,8 +446,8 @@ class MaxMinNorm(Clip):
     __doc__ = max_min_norm.__doc__
     def __init__(self,max_or_min,min_or_max,eps=1e-5):
         super(MaxMinNorm,self).__init__(max_or_min,min_or_max)
-        eps = torch.tensor(eps,dtype=torch.float)
-        self.register_buffer(name='eps',tensor=eps)
+        self.eps = eps
+        #self.register_buffer(name='eps',tensor=eps)
     def forward(self,x):
         return max_min_norm(x,self.maxv,self.minv,self.eps)
 

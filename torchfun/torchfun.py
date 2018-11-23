@@ -97,7 +97,45 @@ def imread(fname,out_range=(0,1),dtype=torch.float):
     img.unsqueeze_(0)
     return img
 
-def imshow(x,title=None,auto_close=True,rows=8,backend=None):
+def imsave(img_or_dest,dest_or_img):
+    '''save torch tensor image.'''
+    img,dest = sort_args((img_or_dest,dest_or_img),((torch.Tensor,np.ndarray),str))
+    if isinstance(img,torch.Tensor):
+        img = img.cpu().squeeze().transpose(0,1).transpose(1,2).numpy()
+    img = _force_image_range(img,out_range=(0,1))
+    if img is None:
+        return
+    import imageio
+    imageio.imsave(dest,img)
+imwrite = imsave
+
+def _force_image_range(npimg,out_range=(0,1)):
+    '''input must be numpy image'''
+    max_intensity = npimg.max()
+    min_intensity = npimg.min()
+    if min_intensity>=0 and max_intensity>1 and max_intensity<=255:
+        # 0 - 255
+        npimg = npimg/255
+        print('TorchFun:imshow:Guessed pixel value range:0~255')
+    elif min_intensity<0 and min_intensity>=-0.5 and max_intensity>0 and max_intensity <=0.5:
+        # -0.5 - 0.5
+        npimg += 0.5
+        print('TorchFun:imshow:Guessed pixel value range:-0.5~0.5')
+    elif min_intensity<-0.5 and min_intensity>=-1 and max_intensity>0.5 and max_intensity <=1:
+        # -1 - 1
+        npimg = npimg/2
+        npimg += 0.5
+        print('TorchFun:imshow:Guessed pixel value range:-1~1')
+    elif min_intensity>=0 and max_intensity<=1:
+        print('TorchFun:imshow:Guessed pixel value range:0~1')
+    else:
+        print('TorchFun:imshow:Cannot speculate the value-range of this image. Please normalize the image manually before using imshow.')
+        return None
+    outmin,outmax = out_range
+    npimg = npimg*(outmax-outmin) + outmin
+    return npimg
+
+def imshow(x,title=None,auto_close=True,cols=8,backend=None):
     '''only deal with torch channel-first image batch,
     title: add title to plot. (Default None)
         title can be string, or any string-able object.
@@ -106,8 +144,8 @@ def imshow(x,title=None,auto_close=True,rows=8,backend=None):
         Clean the environment just like you had 
         never used matplotlib here.
         if set to False, the plot will remain in the memory for further drawings.
-    rows: (default 8)
-        the width of the output grid image.
+    cols: columns(default 8)
+        the width of the output grid, aka, number of images per row.
     backend: None to use default gui. options are:
         WebAgg,  GTK3Agg,
         WX,      GTK3Cairo,
@@ -174,27 +212,10 @@ def imshow(x,title=None,auto_close=True,rows=8,backend=None):
     shapes = x.shape
     if len(shapes)==3:
         x = t.unsqueeze(x,dim=0)
-    grid = torchvision.utils.make_grid(x,nrow=rows)
+    grid = torchvision.utils.make_grid(x,nrow=cols)
     gridnp = grid.numpy()
-    max_intensity = gridnp.max()
-    min_intensity = gridnp.min()
-    if min_intensity>=0 and max_intensity>1:
-        # 0 - 255
-        gridnp = gridnp/255
-        print('TorchFun:imshow:Guessed pixel value range:0~255')
-    elif min_intensity<0 and min_intensity>=-0.5 and max_intensity>0 and max_intensity <=0.5:
-        # -0.5 - 0.5
-        gridnp += 0.5
-        print('TorchFun:imshow:Guessed pixel value range:-0.5~0.5')
-    elif min_intensity<-0.5 and min_intensity>=-1 and max_intensity>0.5 and max_intensity <=1:
-        # -1 - 1
-        gridnp = gridnp/2
-        gridnp += 0.5
-        print('TorchFun:imshow:Guessed pixel value range:-1~1')
-    elif min_intensity>=0 and max_intensity<=1:
-        print('TorchFun:imshow:Guessed pixel value range:0~1')
-    else:
-        print('TorchFun:imshow:Cannot speculate the value-range of this image. Please normalize the image manually before using imshow.')
+    gridnp = _force_image_range(gridnp,out_range=(0,1))
+    if gridnp is None:
         return
 
     import matplotlib
@@ -317,8 +338,9 @@ def load(a,b):
     else:
         print('TorchFun:load(): Warning! neither of the arguments is pytorch model, abort loading.')
         return
-
     source = args[arg_file_pos]
+
+    model,source = sort_args((a,b),(torch.nn.Module,(str,io.TextIOWrapper)))
     if isinstance(source,io.TextIOWrapper):
         # file handle input
         source = io.BytesIO(f.read())
