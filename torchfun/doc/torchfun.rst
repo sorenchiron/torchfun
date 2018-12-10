@@ -20,6 +20,14 @@ torchfun.functional module
     :undoc-members:
     :show-inheritance:
 
+torchfun.metrics module
+-----------------------
+
+.. automodule:: torchfun.metrics
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 torchfun.nn module
 ------------------
 
@@ -40,6 +48,14 @@ torchfun.transforms module
 --------------------------
 
 .. automodule:: torchfun.transforms
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+torchfun.types module
+---------------------
+
+.. automodule:: torchfun.types
     :members:
     :undoc-members:
     :show-inheritance:

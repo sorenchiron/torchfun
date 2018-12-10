@@ -8,7 +8,23 @@ import numpy as np
 import torch
 import io,os,importlib,sys
 from tqdm import tqdm
+import types
+from .types import argparse_list_type,list_of_int,list_of_float,argparse_bool_type
 t = torch
+
+def printf(format_str,*args):
+    '''works like C printf.
+    '''
+    print(format_str % tuple(args))
+
+def print_verbose(*args,verbose=True):
+    '''programmable print function. with an option to control
+    if the inputs are really printed.
+    used to control verbose levels of a function.
+    verbose: default True.
+    '''
+    if verbose:
+        print(*args)
 
 def sort_args(args_or_types,types_or_args):
     '''
@@ -74,6 +90,28 @@ def omini_open(path):
             command = 'xdg-open'
         subprocess.Popen([command, path])
 
+def to_numpy(tensor,keep_dim=False):
+    '''convert a NCHW tensor to NHWC numpy array.
+    if the input tensor has only one image,
+    then the N dimension will be deleted.
+
+    if the input is not 4-dimensional, 
+    the tensor will be simply cat to np array
+    '''
+    if isinstance(tensor,np.ndarray):
+        return tensor 
+    elif isinstance(tensor,torch.Tensor):
+        tensor = tensor.cpu().numpy()
+        dims = len(tensor.shape)
+        if dims == 4:
+            n,c,h,w = tensor.shape
+            tensor = tensor.transpose(0,2,3,1)
+            if n==1 and not keep_dim:
+                tensor = tensor.squeeze(0)
+        return tensor
+    else:
+        raise Exception('unknown input type:%s'%(tensor.__class__.__name__))
+
 def imread(fname,out_range=(0,1),dtype=torch.float):
     '''read jpg/png/gif/bmp/tiff... image file, and cat to tensor
     function based on imageio.
@@ -101,7 +139,12 @@ def imsave(img_or_dest,dest_or_img):
     '''save torch tensor image.'''
     img,dest = sort_args((img_or_dest,dest_or_img),((torch.Tensor,np.ndarray),str))
     if isinstance(img,torch.Tensor):
-        img = img.cpu().squeeze().transpose(0,1).transpose(1,2).numpy()
+        dimensions = len(img.shape)
+        if dimensions == 4:
+            # concatenate into a long image
+            img = torch.cat([i for i in img],2)
+        if dimensions == 3: #make channel last image
+            img = img.cpu().transpose(0,1).transpose(1,2).numpy()
     img = _force_image_range(img,out_range=(0,1))
     if img is None:
         return
@@ -109,28 +152,43 @@ def imsave(img_or_dest,dest_or_img):
     imageio.imsave(dest,img)
 imwrite = imsave
 
-def _force_image_range(npimg,out_range=(0,1)):
-    '''input must be numpy image'''
+def _force_image_range(npimg,out_range=(0,1),verbose=True):
+    '''input must be numpy image.
+    This function automatically detects the domain of the input img batch,
+    and force the input to be between the out_range.
+    args:
+        out_range: (min,max)
+
+    Notice:
+        if work under verbose=True, images with suspicious domain will return None
+        in order to issue instant debugging.
+        if not, the image will be forced into the output range.
+        '''
     max_intensity = npimg.max()
     min_intensity = npimg.min()
     if min_intensity>=0 and max_intensity>1 and max_intensity<=255:
         # 0 - 255
         npimg = npimg/255
-        print('TorchFun:imshow:Guessed pixel value range:0~255')
+        print_verbose('TorchFun:imshow:Guessed pixel value range:0~255',verbose=verbose)
     elif min_intensity<0 and min_intensity>=-0.5 and max_intensity>0 and max_intensity <=0.5:
         # -0.5 - 0.5
         npimg += 0.5
-        print('TorchFun:imshow:Guessed pixel value range:-0.5~0.5')
+        print_verbose('TorchFun:imshow:Guessed pixel value range:-0.5~0.5',verbose=verbose)
     elif min_intensity<-0.5 and min_intensity>=-1 and max_intensity>0.5 and max_intensity <=1:
         # -1 - 1
         npimg = npimg/2
         npimg += 0.5
-        print('TorchFun:imshow:Guessed pixel value range:-1~1')
+        print_verbose('TorchFun:imshow:Guessed pixel value range:-1~1',verbose=verbose)
     elif min_intensity>=0 and max_intensity<=1:
-        print('TorchFun:imshow:Guessed pixel value range:0~1')
+        print_verbose('TorchFun:imshow:Guessed pixel value range:0~1',verbose=verbose)
     else:
-        print('TorchFun:imshow:Cannot speculate the value-range of this image. Please normalize the image manually before using imshow.')
-        return None
+        msg='TorchFun:imshow:Cannot speculate the value-range of this image. Please normalize the image manually before using imshow.'
+        print_verbose(msg,verbose=verbose)
+        if verbose:
+            return None
+        else:# force range to be 0-1
+            minv,maxv = npimg.min(),npimg.max()
+            npimg = (npimg-minv)/(maxv-minv+1e-11)
     outmin,outmax = out_range
     npimg = npimg*(outmax-outmin) + outmin
     return npimg
@@ -310,6 +368,51 @@ def pil_imshow(arr):
     os.close(fnum)
     omini_open(fname)
 
+def imresize(tensor_or_size,size_or_tensor):
+    '''stretch pytorch image NCHW, into given shape
+    arguments
+            tensor: NCHW tensor
+            size: tuple or list of [height,width], or a scale factor
+    '''
+    x,siz = sort_args([tensor_or_size,size_or_tensor],[torch.Tensor,(tuple,list,int,float)])
+    if isinstance(siz,(int,float)):
+        return torch.nn.functional.interpolate(x,scale_factor=siz,mod='bilinear',align_corners=False)
+    else:
+        h,w = siz
+        return torch.nn.functional.interpolate(x,size=(h,w),mode='bilinear',align_corners=False)
+
+def imcrop_center(tensor_or_size,size_or_tensor):
+    '''crop a center patch from pytorch image NCHW
+    arguments
+            tensor: NCHW tensor
+            size: tuple or list of [height,width], or a scale factor
+                    given a tuple of height,width, this returns a scaled patch of the 
+                    largest center crop.
+                    given a factor of scale, this will return a scaled square maximum center crop
+    '''
+    x,siz = sort_args([tensor_or_size,size_or_tensor],[torch.Tensor,(tuple,list,int,float)])
+    *_,h,w = x.shape
+    if isinstance(siz,(float,int)):
+        out_h = out_w = min(h,w)*siz
+        siz = (out_h,out_w)
+    else:
+        out_h,out_w = siz
+    imgratio = h/w
+    cropratio = out_h/out_w
+    if cropratio>=imgratio:# height filled first
+        H = h
+        W = int(H / cropratio)
+        Hstart = 0
+        Wstart = (w - W)//2
+    else:
+        W = w
+        H = W * cropratio
+        Wstart = 0
+        Hstart = (h-H)//2
+    Hend = Hstart+H
+    Wend = Wstart+W
+    patch = x[:,:,Hstart:Hend,Wstart:Wend]
+    return torch.nn.functional.interpolate(patch,size=siz,mode='bilinear',align_corners=False)
 
 def load(a,b):
     '''
@@ -410,11 +513,6 @@ def save(a,b):
     torch.save(weights,target)
     return
 
-
-def _g():
-    '''used only for getting generator_type'''
-    yield from range(1)
-generator_type =  type(_g())
 def count_parameters(model_or_dict_or_param, verbose=True):
     '''Count parameter numer of a module/state_dict/layer/tensor.
     This function can also print the occupied memory of parameters in MBs
@@ -443,7 +541,7 @@ def count_parameters(model_or_dict_or_param, verbose=True):
         w = [s[k] for k in s]
     elif isinstance(model_or_dict_or_param,dict):
         w = [model_or_dict_or_param[i] for i in model_or_dict_or_param]
-    elif isinstance(model_or_dict_or_param,generator_type):
+    elif isinstance(model_or_dict_or_param,types.GeneratorType):
         w = [i for i in model_or_dict_or_param]
     elif getattr(model_or_dict_or_param,'shape',False):
         w= [model_or_dict_or_param.shape]
@@ -485,7 +583,7 @@ def hash_parameters(model_or_statdict_or_param,use_sum=False):
         params = m.parameters()
     elif isinstance(m,dict):
         params = [m[k] for k in m]
-    elif isinstance(m,generator_type):
+    elif isinstance(m,types.GeneratorType):
         params = parameters
     elif isinstance(m,torch.Tensor):
         params = [m]
@@ -518,7 +616,7 @@ def vectorize_parameter(model_or_statdict_or_param):
         params = m.parameters()
     elif isinstance(m,dict):
         params = [m[k] for k in m]
-    elif isinstance(m,generator_type):
+    elif isinstance(m,types.GeneratorType):
         params = parameters
     elif isinstance(m,torch.Tensor):
         params = [m]
@@ -583,8 +681,6 @@ def show(net,input_shape=(1,3,32,32),logdir='tensorboard',port=8888):
     except Exception as e:
         print(e)
 
-module_type = type(os)
-
 class Packsearch(object):
     '''Search names inside a package.
     Given an module object as input:
@@ -609,7 +705,7 @@ class Packsearch(object):
     '''
     def __init__(self,module_object,auto_init=True,verbose=False):
         super(self.__class__,self).__init__()
-        if isinstance(module_object,module_type):
+        if isinstance(module_object,types.ModuleType):
             self.root = module_object
         else:
             try:
@@ -636,7 +732,7 @@ class Packsearch(object):
         '''gather all names and store them into a name_list
         search_attributes: whether to include class attributes or method names
         '''
-        if type(mod) is not module_type:
+        if type(mod) is not types.ModuleType:
             return
         root_name = mod.__name__+'.' # make `torchvision.` != `torch.`
         root_name_len = len(root_name)
@@ -661,7 +757,7 @@ class Packsearch(object):
 
             for name in names:
                 obj = getattr(m,name)
-                if type(obj) is module_type:
+                if type(obj) is types.ModuleType:
                     obj_path = obj.__name__
                     obj_prefix = obj_path[:root_name_len]
                     if obj_prefix == root_name:
@@ -681,7 +777,7 @@ class Packsearch(object):
 
     def dynamic_traverse(self,mod,query,search_attributes=False):
         '''traverse the module and simultaneously search for queried name'''
-        if type(mod) is not module_type:
+        if type(mod) is not types.ModuleType:
             return
         root_name = mod.__name__+'.' # make `torchvision.` != `torch.`
         root_name_len = len(root_name)
@@ -705,7 +801,7 @@ class Packsearch(object):
 
             for name in names:
                 obj = getattr(m,name)
-                if type(obj) is module_type:
+                if type(obj) is types.ModuleType:
                     obj_path = obj.__name__
                     obj_prefix = obj_path[:root_name_len]
                     if obj_prefix == root_name:
@@ -772,7 +868,7 @@ def packsearch(module_or_str,str_or_module,verbose=False):
         5        torch.nn.MaxPool2d
         ...
     '''
-    mod,name = sort_args([module_type,str],[module_or_str,str_or_module])
+    mod,name = sort_args([types.ModuleType,str],[module_or_str,str_or_module])
     p = Packsearch(mod,auto_init=False)
     res_counter = 0
     print('Packsearch: dynamic searching start ...')
@@ -783,9 +879,6 @@ def packsearch(module_or_str,str_or_module,verbose=False):
         print('Packsearch: no result found')
     else:
         print('Packsearch: search done,',res_counter,'results found.')
-
-
-
 
 def force_exist(dirname,verbose=True):
     '''force a directory to exist.
@@ -822,7 +915,7 @@ def whereis(module_or_string,open_gui=True):
     '''
     mors = module_or_string
     mod = None
-    if isinstance(module_or_string,module_type):
+    if isinstance(module_or_string,types.ModuleType):
         mod = module_or_string
     elif ((not isinstance(module_or_string,str)) and
      hasattr(module_or_string,'__module__')):
@@ -917,17 +1010,28 @@ def options(*args,**kws):
 
 
 
+# try not to override default list type
+class TorchEasyList(list):
+    def cat(self,dim=0):
+        return torch.cat(self,dim)
+    def push_head(self,element):
+        self.insert(0,element)
+    def push_back(self,element):
+        return self.append(element)
+    def __add__(self,element):
+        if isinstance(element,list):
+            return TorchEasyList(super().__add__(element))
+        else:
+            newlist = TorchEasyList(self)
+            newlist.push_head(element)
+            return newlist
 
+list = TorchEasyList
 
+# try not to override default bool type
+from .types import bool
 
-
-
-
-
-
-
-
-
+##################### Last function ####################
 
 
 def documentation(search=None):

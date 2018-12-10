@@ -11,6 +11,7 @@ from . import datasets
 from . import functional
 from .transforms import *
 from .nn import *
+from .functional import *
 from .utils import *
 
 import os

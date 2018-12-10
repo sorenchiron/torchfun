@@ -65,11 +65,37 @@ def clip(in_tensor,max_or_min,min_or_max):
     values larger than max will be cut to max, respectively for mins.
     the order of max/min doesn't matter.
     the operation is not in-place, that saves you alot troubles.
+    Notice: this clip is not inplace, and neither can pass backward derivatives
+            when the values are clipped to min/max.
+    Warning: When applied during loss-calculating in training, this clip will cause
+            gradient disapperance.
     '''
     minv,maxv = torch.tensor(sorted([max_or_min,min_or_max]),dtype=in_tensor.dtype).to(in_tensor.device)
     x = torch.max(in_tensor,minv)
     x = torch.min(x,maxv)
     return x
+
+def clip_(in_tensor,max_or_min,min_or_max):
+    '''limit the values in in_tensor to be within [min,max].
+    values larger than max will be cut to max, respectively for mins.
+    the order of max/min doesn't matter.
+    the operation is not in-place, that saves you alot troubles.
+    Notice: this clip is not inplace.
+            But, for clipped values, the gradients will always be passed backwards.
+            This is useful when 
+    '''
+    minv,maxv = sorted((max_or_min,min_or_max))
+
+    greater_pos = (in_tensor.detach()>maxv).type_as(in_tensor)
+    diff = (maxv-in_tensor.detach())*greater_pos
+    in_tensor = in_tensor+diff
+
+    less_pos = (in_tensor.detach()<minv).type_as(in_tensor)
+    diff = (minv-in_tensor.detach())*less_pos
+    in_tensor = in_tensor+diff
+    return in_tensor
+
+
 
 def add_noise(in_tensor,noise_type='normal',noise_param=(0,1),range_limit=(-1,1)):
     '''

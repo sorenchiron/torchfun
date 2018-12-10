@@ -395,14 +395,30 @@ class AbsMax(torch.nn.Module):
 
 class Clip(torch.nn.Module):
     __doc__=clip.__doc__
-    def __init__(self,max_or_min,min_or_max,dtype=torch.float):
+    def __init__(self,max_or_min,min_or_max,dtype=torch.float,keep_grad=True):
         super(Clip,self).__init__()
-        minv,maxv = torch.tensor(sorted([max_or_min,min_or_max]),dtype=dtype)
+        minv,maxv = sorted([max_or_min,min_or_max])
+        minv,maxv = torch.tensor([minv,maxv],dtype=dtype)
         self.register_buffer(name='minv',tensor=minv)
         self.register_buffer(name='maxv',tensor=maxv)
+        if keep_grad:
+            self.forward = self.forward_keep_grad
+        else:
+            self.forward = self.forward_clip_grad
 
-    def forward(self,x):
+    def forward_clip_grad(self,x):
         return torch.min(torch.max(x,self.minv),self.maxv)
+    def forward_keep_grad(self,x):
+        minv,maxv = self.minv,self.maxv
+        in_tensor = x
+        greater_pos = (in_tensor.detach()>maxv).type_as(in_tensor)
+        diff = (maxv-in_tensor.detach())*greater_pos
+        in_tensor = in_tensor+diff
+
+        less_pos = (in_tensor.detach()<minv).type_as(in_tensor)
+        diff = (minv-in_tensor.detach())*less_pos
+        in_tensor = in_tensor+diff
+        return in_tensor
 
 class NO_OP(torch.nn.Module):
     '''A Module that repersents NO-Operation NO-OP.
@@ -460,3 +476,41 @@ class ReLU(torch.nn.ReLU):
 
 class Conv2dDepthFullyShared(torch.nn.Conv2d):
     NotImplemented
+
+class Interpolate(torch.nn.Module):
+    ''' resizing/scaling multi dimensional tensors
+    The modes available for resizing are: `nearest`, `linear` (3D-only),
+    `bilinear` (4D-only), `trilinear` (5D-only), `area`
+
+    Args:
+        input (Tensor): the input tensor
+        size (int or Tuple[int] or Tuple[int, int] or Tuple[int, int, int]):
+            output spatial size.
+        scale_factor (float or Tuple[float]): multiplier for spatial size. Has to match input size if it is a tuple.
+        mode (string): algorithm used for upsampling:
+            'nearest' | 'linear' | 'bilinear' | 'trilinear' | 'area'. Default: 'nearest'
+        align_corners (bool, optional): if True, the corner pixels of the input
+            and output tensors are aligned, and thus preserving the values at
+            those pixels. This only has effect when :attr:`mode` is `linear`,
+            `bilinear`, or `trilinear`. Default: False
+
+    .. warning::
+        With ``align_corners = True``, the linearly interpolating modes
+        (`linear`, `bilinear`, and `trilinear`) don't proportionally align the
+        output and input pixels, and thus the output values can depend on the
+        input size. This was the default behavior for these modes up to version
+        0.3.1. Since then, the default behavior is ``align_corners = False``.
+        See :class:`~torch.nn.Upsample` for concrete examples on how this
+        affects the outputs.
+'''
+    def __init__(self,size=None,scale_factor=None,mode='bilinear',align_corners=None):
+        super().__init__()
+        self.__dict__.update(locals())
+        if (size is None) and (scale_factor is None):
+            print('Torchfun: warning: size and scale_factor are both None, the interpolation parmeters are not specified!')
+    def forward(self,x):
+        return torch.nn.functional.interpolate(x,
+            size=self.size,
+            scale_factor=self.scale_factor,
+            mode=self.mode,
+            align_corners=self.align_corners)
