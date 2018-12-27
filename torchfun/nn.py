@@ -382,16 +382,16 @@ class Squeeze(torch.nn.Module):
         else:
             return x.squeeze_()
 
-class AbsMax(torch.nn.Module):
-    '''
-    TODO: not fully implemented
-    '''
-    def __init__(self,dim=1):
-        super(AbsMax,self).__init__()
-        self.dim = dim
-    def forward(self,x):
-        signs = x.sign()
-        absx = x.abs()
+#class AbsMax(torch.nn.Module):
+#    '''
+#    TODO: not fully implemented
+#    '''
+#    def __init__(self,dim=1):
+#        super(AbsMax,self).__init__()
+#        self.dim = dim
+#    def forward(self,x):
+#        signs = x.sign()
+#        absx = x.abs()
 
 class Clip(torch.nn.Module):
     __doc__=clip.__doc__

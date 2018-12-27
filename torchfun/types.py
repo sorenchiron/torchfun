@@ -1,4 +1,5 @@
 import os
+import torch
 
 module_type = type(os)
 
@@ -54,3 +55,19 @@ def argparse_bool_type(option_string):
         raise Exception('un-parsable argument value %s for bool-type'%option_string)
 
 bool=argparse_bool_type
+
+
+class TorchEasyList(list):
+    def cat(self,dim=0):
+        return torch.cat(self,dim)
+    def push_head(self,element):
+        self.insert(0,element)
+    def push_back(self,element):
+        return self.append(element)
+    def __add__(self,element):
+        if isinstance(element,list):
+            return TorchEasyList(super().__add__(element))
+        else:
+            newlist = TorchEasyList(self)
+            newlist.push_head(element)
+            return newlist

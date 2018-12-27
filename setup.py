@@ -10,7 +10,19 @@ def increase_version_number():
         version = '0.0.0'
     print('previous version',version)
     release,updates,fixes = version.read().split('.')
+    updates_increase=release_increase=0
+    if '+' in fixes:
+        fixes = '-1'
+        updates_increase = 1
+    if '+' in updates:
+        updates = '0'
+        fixes = '-1'
+        release_increase = 1
+
     fixes = str(int(fixes)+1)
+    updates = str(int(updates)+updates_increase)
+    release = str(int(release)+release_increase)
+
     version.close()
     new_version = open('version','w')
     version = '.'.join([release,updates,fixes])

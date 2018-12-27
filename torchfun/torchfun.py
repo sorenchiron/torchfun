@@ -136,15 +136,45 @@ def imread(fname,out_range=(0,1),dtype=torch.float):
     return img
 
 def imsave(img_or_dest,dest_or_img):
-    '''save torch tensor image.'''
-    img,dest = sort_args((img_or_dest,dest_or_img),((torch.Tensor,np.ndarray),str))
+    '''save torch tensor image(s) or numpy image(s).
+    img: can be numpy image, numpy image batch. 
+        or single torch-tensor image
+        or torch-tensor-image-batch.
+        or list/tuple of numpy images
+        or list/tuple of pytorch-tensor images
+
+    Notice: images must have non-zero channels, even for grey-scale images (1-channel images).
+    
+    behaviour: images will be concatenated into a long single image and save into destination file-name.
+    
+    '''
+    img,dest = sort_args((img_or_dest,dest_or_img),((torch.Tensor,np.ndarray,tuple,list),str))
+
+    if isinstance(img,(tuple,list)):
+        if len(img)==0:
+            raise Exception('No images contained in the input list/tuple')
+        if isinstance(img[0],torch.Tensor):
+            libcat = torch.cat
+            libstack = torch.stack
+        elif isinstance(img[0],np.ndarray):
+            libcat = np.concatenate
+            libstack = np.stack
+        else:
+            raise Exception('input datatype not understood %s' % str(type(img[0])))
+        ## make a batch
+        if len(img[0].shape==4):
+            img = libcat(img,0)
+        else:
+            img = libstack(img)
+
     if isinstance(img,torch.Tensor):
         dimensions = len(img.shape)
         if dimensions == 4:
             # concatenate into a long image
             img = torch.cat([i for i in img],2)
+        dimensions = len(img.shape)
         if dimensions == 3: #make channel last image
-            img = img.cpu().transpose(0,1).transpose(1,2).numpy()
+            img = img.cpu().numpy().transpose(1,2,0)
     img = _force_image_range(img,out_range=(0,1))
     if img is None:
         return
@@ -429,6 +459,9 @@ def load(a,b):
         >load(model,f)
 
     Return value: None
+    Behaviour: the loaded state-dict will be transformed to the same device as model,
+            so that torch won't complain about CUDA-memory-insufficient when you just want to load
+            weights from disk directly to cpu-model.
     '''
     args = (a,b)
     arg_file_pos = None
@@ -447,7 +480,8 @@ def load(a,b):
     if isinstance(source,io.TextIOWrapper):
         # file handle input
         source = io.BytesIO(f.read())
-    weights = torch.load(source)
+    model_device = model.state_dict[model.state_dict.keys()[0]].device()
+    weights = torch.load(source,map_location=model_device)
     model.load_state_dict(weights)
     return
 
@@ -991,46 +1025,41 @@ def options(*args,**kws):
     o.__dict__.update(kws)
     return o
 
+class Unimodel(torch.nn.Module):
+    '''this class is used to gather your multiple models, so that
+    you can save/load them together.
+
+    usage:
+
+        unimodel = Unimodel(resnet1,resnet2,resnet3)
+        unimodel.save('xxxx.pth')
+        unimodel.load('ssss.pth')
+
+    '''
+    def __init__(self,*models,**named_models):
+        super().__init__()
+        for i,m in enumerate(models):
+            self.__setattr__('model%d'%i,m)
+        for name in named_models:
+            self.__setattr__(name,named_models[name])
+    def save(self,path):
+        '''same as torchfun save()'''
+        save(self,path)
+    def load(self,path):
+        '''same as torchfun load()'''
+        load(self,path)
 
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-# try not to override default list type
-class TorchEasyList(list):
-    def cat(self,dim=0):
-        return torch.cat(self,dim)
-    def push_head(self,element):
-        self.insert(0,element)
-    def push_back(self,element):
-        return self.append(element)
-    def __add__(self,element):
-        if isinstance(element,list):
-            return TorchEasyList(super().__add__(element))
-        else:
-            newlist = TorchEasyList(self)
-            newlist.push_head(element)
-            return newlist
-
-list = TorchEasyList
 
 # try not to override default bool type
-from .types import bool
+from .types import bool,TorchEasyList
+list = TorchEasyList
 
+# try not to override default list type
 ##################### Last function ####################
 
 
