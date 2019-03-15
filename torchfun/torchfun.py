@@ -108,7 +108,10 @@ def to_numpy(tensor,keep_dim=False):
             tensor = tensor.transpose(0,2,3,1)
             if n==1 and not keep_dim:
                 tensor = tensor.squeeze(0)
+        elif dims == 3:
+            tensor = tensor.transpose(1,2,0)
         return tensor
+
     else:
         raise Exception('unknown input type:%s'%(tensor.__class__.__name__))
 
@@ -162,7 +165,7 @@ def imsave(img_or_dest,dest_or_img):
         else:
             raise Exception('input datatype not understood %s' % str(type(img[0])))
         ## make a batch
-        if len(img[0].shape==4):
+        if len(img[0].shape)==4:
             img = libcat(img,0)
         else:
             img = libstack(img)
@@ -183,7 +186,7 @@ def imsave(img_or_dest,dest_or_img):
 imwrite = imsave
 
 def _force_image_range(npimg,out_range=(0,1),verbose=True):
-    '''input must be numpy image.
+    '''input must be numpy image. input tensors will be cat to numpy arrray
     This function automatically detects the domain of the input img batch,
     and force the input to be between the out_range.
     args:
@@ -294,6 +297,11 @@ def imshow(x,title=None,auto_close=True,cols=8,backend=None):
 
         '''
     import torchvision
+    if isinstance(x,(list,tuple)):
+        x = torch.cat(x,0)
+    elif isinstance(x,np.ndarray):
+        x = x.transpose((2,0,1))
+        x = torch.tensor(x).unsqueeze(0)
     if x.requires_grad:
         x = x.detach()
     x = x.cpu()
@@ -441,8 +449,10 @@ def imcrop_center(tensor_or_size,size_or_tensor):
         Hstart = (h-H)//2
     Hend = Hstart+H
     Wend = Wstart+W
+    Hstart,Hend,Wstart,Wend = int(Hstart),int(Hend),int(Wstart),int(Wend)
     patch = x[:,:,Hstart:Hend,Wstart:Wend]
-    return torch.nn.functional.interpolate(patch,size=siz,mode='bilinear',align_corners=False)
+    with torch.no_grad():
+        return torch.nn.functional.interpolate(patch,size=siz,mode='bilinear',align_corners=False)
 
 def load(a,b):
     '''
@@ -480,7 +490,7 @@ def load(a,b):
     if isinstance(source,io.TextIOWrapper):
         # file handle input
         source = io.BytesIO(f.read())
-    model_device = model.state_dict[model.state_dict.keys()[0]].device()
+    model_device = model.state_dict()[list(model.state_dict().keys())[0]].device
     weights = torch.load(source,map_location=model_device)
     model.load_state_dict(weights)
     return
@@ -1055,9 +1065,22 @@ class Unimodel(torch.nn.Module):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 # try not to override default bool type
-from .types import bool,TorchEasyList
-list = TorchEasyList
+# TODO: change bool, or somehow it will 
+# overwrite all occurrence of bool above
+from .types import Bool,TorchEasyList
+List = TorchEasyList
 
 # try not to override default list type
 ##################### Last function ####################

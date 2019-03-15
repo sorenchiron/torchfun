@@ -394,7 +394,7 @@ class Squeeze(torch.nn.Module):
 #        absx = x.abs()
 
 class Clip(torch.nn.Module):
-    __doc__=clip.__doc__
+    __doc__=clip_.__doc__
     def __init__(self,max_or_min,min_or_max,dtype=torch.float,keep_grad=True):
         super(Clip,self).__init__()
         minv,maxv = sorted([max_or_min,min_or_max])

@@ -77,6 +77,14 @@ setuptools.setup(
         'scipy',
         'tqdm',
         'psutil',
-        'tensorboardX',
-        'imageio']
+        'tensorboardX<=1.5',
+        'imageio',
+        'img2pdf'],
+    entry_points={
+        'console_scripts': [
+            'imgformat = torchfun.tools.imgformat:main'
+        ],
+        'gui_scripts': [
+        ]
+    }
 )

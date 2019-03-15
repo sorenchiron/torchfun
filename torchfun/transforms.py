@@ -9,7 +9,10 @@ import random
 __doc__ = '''Transforms used for data augmentation in torchvision.datasets.*
 or in torch.utils.data.Dataset'''
 
-class RandomGaussianBlur(object):
+class Transform:
+    pass
+
+class RandomGaussianBlur(Transform):
     '''PIL image'''
     def __init__(self,kernel_ratio=0.01,random_ratio=0.005,pixel_range=None):
         '''
@@ -34,3 +37,13 @@ class RandomGaussianBlur(object):
     def __repr__(self):
         return 'GaussianBlur with kernel_ratio:%f random_ratio:%f' %(self.kernel_ratio,self.random_ratio)
         
+class NoTransform(Transform):
+    def __init__(self,*rubbish_args,**rubbish_kws):
+        super().__init__()
+    def __call__(self,img,target=None):
+        if target is not None:
+            return img,target
+        else:
+            return img
+    def __repr__(self):
+        return 'No Transform:'+super().__repr__()

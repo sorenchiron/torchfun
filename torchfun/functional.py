@@ -182,3 +182,14 @@ def combine_parameters(*models):
     handled by one Optimizer. Parameters shall be gathered into one iterator
     first, because torch.optimizers require only one parameter-iterator as input'''
     return itertools.chain(*[m.parameters() for m in models])
+
+def cosine_similarity(x1,x2):
+    '''compute cosine similarity between two batch of data.
+    x1 x2 are flattened first, into N x V shape.
+    then each paired sample between x1 and x2 are used to compute a 
+    multi-dimensional vectorial cosine similarity.
+
+    output:  similarity output with size N, which is a vector.'''
+    x1=flatten(x1)
+    x2=flatten(x2)
+    return torch.nn.functional.cosine_similarity(x1,x2,dim=1)

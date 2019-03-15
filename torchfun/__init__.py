@@ -9,10 +9,24 @@ from . import nn
 from . import utils
 from . import datasets
 from . import functional
+from . import ui
+from . import path
 from .transforms import *
 from .nn import *
 from .functional import *
 from .utils import *
+from .ui import *
+
+
+############ BIND NAMES ##############
+list = List
+bool = Bool
+############ BIND ENDED ##############
+
+
+
+
+
 
 import os
 
@@ -25,6 +39,7 @@ __ver_fname__ = os.path.join(__folder__,'version')
 __version__ = open(__ver_fname__).read()
 
 __all__ = list(locals())
+__all__.append('list')
 
 __doc__ = '''`TorchFun` project was initiated long ago and was published in 2018-6-13. 
 
