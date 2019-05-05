@@ -438,6 +438,10 @@ class NO_OP(torch.nn.Module):
 
 
 class InstanceMeanStd(torch.nn.Module):
+    '''calculate the mean and std of each sample in a batch.
+    This is for pixel-wise statictical feature extractions only.
+    For images only.
+    '''
     __doc__ = instance_mean_std.__doc__
     def __init__(self,num_features):
         super(self.__class__,self).__init__()
@@ -471,8 +475,23 @@ class ReLU(torch.nn.ReLU):
     '''activation that accepts any argument and ignores them.
     useful when you want to switch between different activations
     programatically, '''
+    def __init__(self,*args,inplace=False,**kws):
+        super(ReLU,self).__init__(inplace=inplace)
+
+class ReLUwithGrad(torch.nn.Module):
+    '''a relu function with gradient not clipped to zero.
+    the gradient w.r.t input is not zero even when the input
+    is negative value.
+
+    This RELU output the value like a normal relu max(0,input)
+    but it output backward() like a linear function y=x,
+    dReLU/dx = 1'''
     def __init__(self,*args,**kws):
-        super(ReLU,self).__init__()
+        super().__init__()
+    def forward(self,x):
+        xmirror = x.detach()
+        xnegative[x>=0]=0
+        return x - xnegative
 
 class Conv2dDepthFullyShared(torch.nn.Conv2d):
     NotImplemented

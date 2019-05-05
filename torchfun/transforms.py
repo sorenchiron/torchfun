@@ -3,8 +3,8 @@
 # Date: 2018
 # Appended constrains: If the content in this project is used in your source-codes, this author's name must be cited at the begining of your source-code. 
 
-from PIL import ImageFilter
 from __future__ import division
+from PIL import ImageFilter
 import torch
 import math
 import random
@@ -21,10 +21,26 @@ import warnings
 
 from torchvision.transforms import functional as F
 
-__all__ = ["Compose", "ToTensor", "ToPILImage", "Normalize", "Resize", "Scale", "CenterCrop", "Pad",
-           "Lambda", "RandomApply", "RandomChoice", "RandomOrder", "RandomCrop", "RandomHorizontalFlip",
-           "RandomVerticalFlip", "RandomResizedCrop", "RandomSizedCrop", "FiveCrop", "TenCrop", "LinearTransformation",
-           "ColorJitter", "RandomRotation", "RandomAffine", "Grayscale", "RandomGrayscale"]
+__all__ = [
+"Transform",
+"RandomGaussianBlur",
+"NoTransform",
+"Normalize",
+"Resize",
+"CenterCrop",
+"RandomCrop",
+"RandomHorizontalFlip",
+"RandomVerticalFlip",
+"RandomResizedCrop",
+"FiveCrop",
+"TenCrop",
+"LinearTransformation",
+"ColorJitter",
+"RandomRotation",
+"RandomAffine",
+"Grayscale",
+"RandomGrayscale"
+]
 
 _pil_interpolation_to_str = {
     Image.NEAREST: 'PIL.Image.NEAREST',

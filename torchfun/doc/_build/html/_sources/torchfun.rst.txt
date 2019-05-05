@@ -1,6 +1,13 @@
 torchfun package
 ================
 
+Subpackages
+-----------
+
+.. toctree::
+
+    torchfun.tools
+
 Submodules
 ----------
 
@@ -36,6 +43,14 @@ torchfun.nn module
     :undoc-members:
     :show-inheritance:
 
+torchfun.path module
+--------------------
+
+.. automodule:: torchfun.path
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 torchfun.torchfun module
 ------------------------
 
@@ -56,6 +71,14 @@ torchfun.types module
 ---------------------
 
 .. automodule:: torchfun.types
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+torchfun.ui module
+------------------
+
+.. automodule:: torchfun.ui
     :members:
     :undoc-members:
     :show-inheritance:

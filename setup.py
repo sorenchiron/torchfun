@@ -52,7 +52,7 @@ setuptools.setup(
     version=version,
     author="CHEN Si Yu",
     author_email="sychen@zju.edu.cn",
-    description="A collection of small functions that supplements torch functionality",
+    description="A collection of functions/classes that supplements torch functionality.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/sorenchiron/torchfun",

@@ -26,6 +26,29 @@ def print_verbose(*args,verbose=True):
     if verbose:
         print(*args)
 
+def safe_open(*args,encoding=None,**kws):
+    '''automatically determine the encoding of the file.
+    so that there will not be so many stupid encoding errors occuring during coding.
+
+    Note: the file needs to be fully loaded into RAM to examine the encodings. 
+        OOM(Out Of Memory) exception may be raised when encountering large text files.'''
+    encs = ['utf_8','utf_16','utf_16_be','utf_16_le','utf_7','gb2312','gbk','gb18030','ascii','big5','big5hkscs','cp037','cp424','cp437','cp500','cp737','cp775','cp850','cp852','cp855','cp856','cp857','cp860','cp861','cp862','cp863','cp864','cp865','cp866','cp869','cp874','cp875','cp932','cp949','cp950','cp1006','cp1026','cp1140','cp1250','cp1251','cp1252','cp1253','cp1254','cp1255','cp1256','cp1257','cp1258','euc_jp','euc_jis_2004','euc_jisx0213','euc_kr','hz','iso2022_jp','iso2022_jp_1','iso2022_jp_2','iso2022_jp_2004','iso2022_jp_3','iso2022_jp_ext','iso2022_kr','latin_1','iso8859_2','iso8859_3','iso8859_4','iso8859_5','iso8859_6','iso8859_7','iso8859_8','iso8859_9','iso8859_10','iso8859_13','iso8859_14','iso8859_15','johab','koi8_r','koi8_u','mac_cyrillic','mac_greek','mac_iceland','mac_latin2','mac_roman','mac_turkish','ptcp154','shift_jis','shift_jis_2004','shift_jisx0213',]
+    if encoding not in encs:
+        encs.append(encoding)
+    for enc in encs:
+        try:
+            f = open(*args,encoding=enc,**kws)
+            f.readline()
+            f.read()
+            f.close()
+        except:
+            print('safe_open:','trying other encodings.')
+        else:
+            return open(*args,encoding=enc,**kws)
+    print('tried encodings:',','.join(encs),'. None of them are supported.')
+    return None
+
+
 def sort_args(args_or_types,types_or_args):
     '''
     This is a very interesting function.
@@ -101,7 +124,7 @@ def to_numpy(tensor,keep_dim=False):
     if isinstance(tensor,np.ndarray):
         return tensor 
     elif isinstance(tensor,torch.Tensor):
-        tensor = tensor.cpu().numpy()
+        tensor = tensor.cpu().detach().numpy()
         dims = len(tensor.shape)
         if dims == 4:
             n,c,h,w = tensor.shape
@@ -207,13 +230,17 @@ def _force_image_range(npimg,out_range=(0,1),verbose=True):
         # -0.5 - 0.5
         npimg += 0.5
         print_verbose('TorchFun:imshow:Guessed pixel value range:-0.5~0.5',verbose=verbose)
+    elif min_intensity>=0 and max_intensity<=1:
+        print_verbose('TorchFun:imshow:Guessed pixel value range:0~1',verbose=verbose)
     elif min_intensity<-0.5 and min_intensity>=-1 and max_intensity>0.5 and max_intensity <=1:
         # -1 - 1
         npimg = npimg/2
         npimg += 0.5
         print_verbose('TorchFun:imshow:Guessed pixel value range:-1~1',verbose=verbose)
-    elif min_intensity>=0 and max_intensity<=1:
-        print_verbose('TorchFun:imshow:Guessed pixel value range:0~1',verbose=verbose)
+    elif min_intensity>=-1 and max_intensity<=1:
+        npimg = npimg/2
+        npimg += 0.5
+        print_verbose('TorchFun:imshow:Cannot speculate the value-range of this image!, Trying -1~1.',verbose=verbose)
     else:
         msg='TorchFun:imshow:Cannot speculate the value-range of this image. Please normalize the image manually before using imshow.'
         print_verbose(msg,verbose=verbose)
@@ -1099,5 +1126,8 @@ def documentation(search=None):
     else:
         if not isinstance(search,str):
             search = search.__name__
-            search_url = search_page+search
-            omini_open(search_url)
+        else:
+            search = search
+        search_url = search_page+search
+        omini_open(search_url)
+

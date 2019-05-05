@@ -65,12 +65,55 @@ def cpu_memory(print_on_screen=True):
     return rss,vms
 
 
+def change_suffix(fpath,new_suffix):
+    '''
+    change the suffix of fpath to new_suffix.
+    if the original path fpath has no suffix, then new_suffix will be
+    directly applied at the end of the fpath string, joint by separator `.`
+
+    In : change_suffix('xxx/ddd/www.x','aa')
+    Out: 'xxx/ddd/www.aa'
+
+    In : change_suffix('xxx/ddd/www','aa')
+    Out: 'xxx/ddd/www.aa'
+    '''
+    fname = os.path.basename(fpath)
+    if '.' in fname:
+        # xxx/xxx/xxx.suffix
+        path_with_name = '.'.join(fpath.split('.')[:-1])
+    else:
+        path_with_name = fpath
+    new_path = path_with_name+'.'+new_suffix
+    return os.path.normpath(new_path) 
 
 
+def change_fname(fpath,new_fname):
+    '''
+    change the name of file in the given fpath.
+    the suffix (if exists) separated by `.` will be kept.
 
+    
+    In : change_fname('xxx/ddd/www','aa')
+    Out: 'xxx\\ddd\\aa'
 
+    In : change_fname('xxx/ddd/www.txt','aa')
+    Out: 'xxx\\ddd\\aa.txt'    
+    '''
+    fname = os.path.basename(fpath)
+    if '.' in fname:
+        # xxx/xxx/xxx.suffix
+        suffix = fpath.split('.')[-1]
+    else:
+        suffix = None
+    
+    if suffix is not None:
+        fname_suffix = new_fname+'.'+suffix
+    else:
+        fname_suffix = new_fname
 
-
+    topdir = os.path.dirname(fpath)
+    new_path = os.path.join(topdir,fname_suffix)
+    return os.path.normpath(new_path)
 
 
 

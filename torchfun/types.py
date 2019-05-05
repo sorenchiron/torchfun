@@ -25,15 +25,11 @@ def argparse_list_type(element_type=int):
     '''
     def list_type(option_string):
         a = option_string
-        a = a.strip()
+        a = a.strip().strip('[]()\{\}')
         sep = ' '
         if ',' in a:
             sep = ','
         elems = [i.strip() for i in a.split(sep)]
-        if elems[0] in ('[]()'):
-            del elems[0]
-        if elems[1] in ('[]()'):
-            del elems[1]
 
         return [element_type(i) for i in elems]
     return list_type
@@ -55,7 +51,7 @@ def argparse_bool_type(option_string):
         raise Exception('un-parsable argument value %s for bool-type'%option_string)
 
 bool=argparse_bool_type
-
+Bool=argparse_bool_type
 
 class TorchEasyList(list):
     def cat(self,dim=0):

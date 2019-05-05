@@ -82,7 +82,7 @@ def clip_(in_tensor,max_or_min,min_or_max):
     the operation is not in-place, that saves you alot troubles.
     Notice: this clip is not inplace.
             But, for clipped values, the gradients will always be passed backwards.
-            This is useful when 
+            This is useful when you want `clip` as a value-normalizer, but don not want the gradient to vanish.
     '''
     minv,maxv = sorted((max_or_min,min_or_max))
 
