@@ -10,6 +10,7 @@ import io,os,importlib,sys
 from tqdm import tqdm
 import types
 from .types import argparse_list_type,list_of_int,list_of_float,argparse_bool_type
+from .ui import *
 t = torch
 
 def printf(format_str,*args):
@@ -137,6 +138,26 @@ def to_numpy(tensor,keep_dim=False):
 
     else:
         raise Exception('unknown input type:%s'%(tensor.__class__.__name__))
+
+
+def dtype(obj):
+    '''
+    return the data type of:
+        a model
+        a tensor
+        or, something else
+    '''
+    dtype = None
+    if isinstance(obj,torch.nn.Module):
+        dtype = obj.parameters().send(None).dtype
+        # get param generator, then used send() to extract the first weight tensor
+    elif isinstance(obj,torch.Tensor):
+        dtype = obj.dtype
+    else:
+        dtype = type(obj)
+        warn('data type of object',obj,dtype,'is not torch data-type')
+    return dtype
+
 
 def imread(fname,out_range=(0,1),dtype=torch.float):
     '''read jpg/png/gif/bmp/tiff... image file, and cat to tensor

@@ -82,7 +82,8 @@ setuptools.setup(
         'img2pdf'],
     entry_points={
         'console_scripts': [
-            'imgformat = torchfun.tools.imgformat:main'
+            'imgformat = torchfun.tools.imgformat:main',
+            'paper_image_extractor = torchfun.tools.paper_image_extractor:main'
         ],
         'gui_scripts': [
         ]
