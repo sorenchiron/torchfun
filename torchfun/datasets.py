@@ -3,7 +3,7 @@ import torch.utils.data as data
 from PIL import Image
 import os
 import numpy as np
-from torchvision.datasets.folder import find_classes,make_dataset
+from torchvision.datasets.folder import make_dataset
 from torchvision.datasets.folder import DatasetFolder,ImageFolder
 from torchvision.datasets.folder import default_loader,IMG_EXTENSIONS
 
