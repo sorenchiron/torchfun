@@ -115,9 +115,63 @@ def change_fname(fpath,new_fname):
     new_path = os.path.join(topdir,fname_suffix)
     return os.path.normpath(new_path)
 
+_named_time_table={}
+_anonymous_time = [None]
+def time(message=None,name=None,named_time_table=_named_time_table,anonymous_time=_anonymous_time):
+    '''show running time
+    dict-key locating costs 1e-6 second = 1 micro-second
+    context switching costs 5e-5 second.
 
+    Usage 1:
+        tf.time()
+        ...
+        elapsed = tf.time()
 
+    Usage 2:
+        tf.time()
+        ...
+        tf.time('elapsed:')
+        out: elapsed: 0.02 sec
 
+    Usage 3:
+        tf.time(name='clock1')
+        ...
+        tf.time('elapsed',name='clock1')
+        out: elapsed 0.02 sec
+        '''
+    enter_time = time_pkg.time()
+    assign_exit_time_to_anonymous = False
+    assign_exit_time_to_named = False
+    if name is None:
+        if anonymous_time[0] is None:
+            assign_exit_time_to_anonymous = True # assign time at the end
+        else:
+            elapsed = enter_time - anonymous_time[0]
+            anonymous_time[0] = None
+            if message is not None:
+                print(message,elapsed,'sec')
+            return elapsed
+    else:
+        if name not in named_time_table:
+            assign_exit_time_to_named = True
+        else:
+            elapsed = enter_time - named_time_table[name]
+            del named_time_table[name]
+            if message is not None:
+                print(message,elapsed,'sec')
+            return elapsed
+
+    if assign_exit_time_to_anonymous:
+        anonymous_time[0] = time_pkg.time()
+        return anonymous_time[0]
+
+    if assign_exit_time_to_named:
+        named_time_table[name] = time_pkg.time()
+        return named_time_table[name]
+
+def reset_timer(named_time_table=_named_time_table,anonymous_time=_anonymous_time):
+    named_time_table.clear()
+    anonymous_time.clear()
 
 
 
