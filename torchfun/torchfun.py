@@ -27,7 +27,7 @@ def print_verbose(*args,verbose=True):
     if verbose:
         print(*args)
 
-def safe_open(*args,encoding=None,**kws):
+def safe_open(*args,encoding=None,return_encoding=False,verbose=True,**kws):
     '''automatically determine the encoding of the file.
     so that there will not be so many stupid encoding errors occuring during coding.
 
@@ -45,9 +45,16 @@ def safe_open(*args,encoding=None,**kws):
         except:
             print('safe_open:','trying other encodings.')
         else:
-            return open(*args,encoding=enc,**kws)
-    print('tried encodings:',','.join(encs),'. None of them are supported.')
-    return None
+            f = open(*args,encoding=enc,**kws)
+            if return_encodings:
+                return f,enc
+            else:
+                return f
+    print_verbose('tried encodings:',','.join(encs),'. None of them are supported.',verbose=verbose)
+    if return_encodings:
+        return None,None
+    else:
+        return None
 
 
 def sort_args(args_or_types,types_or_args):
@@ -193,6 +200,7 @@ def imsave(img_or_dest,dest_or_img):
     Notice: images must have non-zero channels, even for grey-scale images (1-channel images).
     
     behaviour: images will be concatenated into a long single image and save into destination file-name.
+            the concating will be taken horizontally.
     
     '''
     img,dest = sort_args((img_or_dest,dest_or_img),((torch.Tensor,np.ndarray,tuple,list),str))
