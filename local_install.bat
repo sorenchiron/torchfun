@@ -1,1 +1,1 @@
-pip install dist/torchfun-1.0.74-py3-none-any.whl
+pip install dist/torchfun-1.0.76-py3-none-any.whl

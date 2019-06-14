@@ -43,7 +43,7 @@ def safe_open(*args,encoding=None,return_encoding=False,verbose=True,**kws):
             f.read()
             f.close()
         except:
-            print('safe_open:','trying other encodings.')
+            print_verbose('safe_open:','trying other encodings.',verbose=verbose)
         else:
             f = open(*args,encoding=enc,**kws)
             if return_encoding:

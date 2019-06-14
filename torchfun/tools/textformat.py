@@ -69,7 +69,8 @@ def textformat():
             else:
                 text = f.read()
                 f.close()
-                with open(textpath,'w',encoding=opt.type) as f:
+                text = text.encode(opt.type)
+                with open(textpath,'wb') as f:
                     f.write(text)
                     if opt.verbose:
                         print(textpath,enc,'==>',opt.type)
