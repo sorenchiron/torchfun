@@ -83,7 +83,8 @@ setuptools.setup(
     entry_points={
         'console_scripts': [
             'imgformat = torchfun.tools.imgformat:main',
-            'paper_image_extractor = torchfun.tools.paper_image_extractor:main'
+            'paper_image_extractor = torchfun.tools.paper_image_extractor:main',
+            'textformat = torchfun.tools.textformat:main'
         ],
         'gui_scripts': [
         ]

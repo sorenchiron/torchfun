@@ -1,3 +1,9 @@
+# LICENSE: MIT
+# Author: CHEN Si Yu.
+# Date: 2018
+# Appended constrains: If the content in this project is used in your source-codes, this author's name must be cited at the begining of your source-code. 
+
+
 import os,shutil
 from glob import glob
 from tqdm import tqdm

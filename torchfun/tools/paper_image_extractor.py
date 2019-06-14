@@ -1,3 +1,8 @@
+# LICENSE: MIT
+# Author: CHEN Si Yu.
+# Date: 2018
+# Appended constrains: If the content in this project is used in your source-codes, this author's name must be cited at the begining of your source-code. 
+
 from __future__ import print_function
 from __future__ import division
 import argparse,re,os
