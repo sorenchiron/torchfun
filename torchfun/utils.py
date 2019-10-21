@@ -1,9 +1,147 @@
+# LICENSE: MIT
+# Author: CHEN Si Yu.
+# Date: 2018
+# Appended constrains: If the content in this project is used in your source-codes, this author's name must be cited at the begining of your source-code. 
+
+
 import time as time_pkg
-from .torchfun import force_exist
+#from .torchfun import force_exist
 import os
 
 
 __doc__='utilities for pytorch experiment. Non-mathematical tools.'
+
+
+def printf(format_str,*args):
+    '''works like C printf.
+    '''
+    print(format_str % tuple(args))
+
+def print_verbose(*args,verbose=True):
+    '''programmable print function. with an option to control
+    if the inputs are really printed.
+    used to control verbose levels of a function.
+    verbose: default True.
+    '''
+    if verbose:
+        print(*args)
+
+def safe_open(*args,encoding=None,return_encoding=False,verbose=True,**kws):
+    '''automatically determine the encoding of the file.
+    so that there will not be so many stupid encoding errors occuring during coding.
+
+    Note: the file needs to be fully loaded into RAM to examine the encodings. 
+        OOM(Out Of Memory) exception may be raised when encountering large text files.'''
+    encs = ['ascii','utf_8','gb2312','gbk','utf_16','utf_16_be','utf_16_le','utf_7','gb18030','big5','big5hkscs','cp037','cp424','cp437','cp500','cp737','cp775','cp850','cp852','cp855','cp856','cp857','cp860','cp861','cp862','cp863','cp864','cp865','cp866','cp869','cp874','cp875','cp932','cp949','cp950','cp1006','cp1026','cp1140','cp1250','cp1251','cp1252','cp1253','cp1254','cp1255','cp1256','cp1257','cp1258','euc_jp','euc_jis_2004','euc_jisx0213','euc_kr','hz','iso2022_jp','iso2022_jp_1','iso2022_jp_2','iso2022_jp_2004','iso2022_jp_3','iso2022_jp_ext','iso2022_kr','latin_1','iso8859_2','iso8859_3','iso8859_4','iso8859_5','iso8859_6','iso8859_7','iso8859_8','iso8859_9','iso8859_10','iso8859_13','iso8859_14','iso8859_15','johab','koi8_r','koi8_u','mac_cyrillic','mac_greek','mac_iceland','mac_latin2','mac_roman','mac_turkish','ptcp154','shift_jis','shift_jis_2004','shift_jisx0213',]
+    if encoding not in encs:
+        encs.append(encoding)
+    for enc in encs:
+        try:
+            f = open(*args,encoding=enc,**kws)
+            f.readline()
+            f.read()
+            f.close()
+        except:
+            print_verbose('safe_open:','trying other encodings.',verbose=verbose)
+        else:
+            f = open(*args,encoding=enc,**kws)
+            if return_encoding:
+                return f,enc
+            else:
+                return f
+    print_verbose('tried encodings:',','.join(encs),'. None of them are supported.',verbose=verbose)
+    if return_encoding:
+        return None,None
+    else:
+        return None
+
+
+def sort_args(args_or_types,types_or_args):
+    '''
+    This is a very interesting function.
+    It is used to support __arbitrary-arguments-ordering__ in TorchFun.
+
+    Input:
+        The function takes a list of types, and a list of arguments.
+
+    Returns:
+        a list of arguments, with the same order as the types-list.
+
+    Of course, `sort_args` supports arbitrary-arguments-ordering by itself.
+
+    '''
+    if (
+            (type(args_or_types[0]) is type) # one type
+            or 
+            ( # type list
+                isinstance(args_or_types[0],(list,tuple)) and 
+                (type(args_or_types[0][0]) is type)
+            )
+        ):
+        types = args_or_types
+        args = types_or_args
+    else:
+        types = types_or_args
+        args = args_or_types
+
+    type_arg_tuples = [(type(a),a) for a in args]
+    res=[]
+    for t in types:
+        found = False
+        for type_arg in type_arg_tuples:
+            arg_type,arg_val = type_arg
+            if issubclass(arg_type,t):
+                found=True
+                break
+        if found:
+            res.append(arg_val)
+            type_arg_tuples.remove(type_arg)
+        else:
+            raise TypeError('One of the required argument is of type '+ t.__name__ + ', but none of the given arguments is of this type.')
+
+    return res
+
+def omini_open(path):
+    '''
+    Opens everything using system default viwer.
+
+    This function can call system GUI to open folders,images,files,videos...
+    '''
+    import subprocess
+    import platform
+    if platform.system() == "Windows":
+        os.startfile(path)
+    elif platform.system() == "Darwin":
+        subprocess.Popen(["open", path])
+    else:# linux
+        if path[:4] == 'http': # browser
+            command = 'firefox'
+        else:
+            command = 'xdg-open'
+        subprocess.Popen([command, path])
+
+def force_exist(dirname,verbose=True):
+    '''force a directory to exist.
+    force_exist can automatically create directory with any depth.
+    Arguements:
+        dirname: path of the desired directory
+        verbose: print every directory creation. default True.
+    Usage:
+        force_exist('a/b/c/d/e/f')
+        force_exist('a/b/c/d/e/f',verbose=False)
+    '''
+    
+    if dirname == '' or dirname == '.':
+        return True
+    top = os.path.dirname(dirname)
+    force_exist(top)
+    if not os.path.exists(dirname):
+        if verbose:
+            print('creating',dirname)
+        os.makedirs(dirname)
+        return False
+    else:
+        return True
 
 def record_experiment(exp_dir='not-specified',record_top_dir='records',logfilename='record.txt',comment=''):
     '''Arguments:

@@ -11,115 +11,14 @@ from tqdm import tqdm
 import types
 from .types import argparse_list_type,list_of_int,list_of_float,argparse_bool_type
 from .ui import *
+from .utils import printf
+from .utils import print_verbose
+from .utils import safe_open
+from .utils import sort_args
+from .utils import omini_open
+from .utils import force_exist
+
 t = torch
-
-def printf(format_str,*args):
-    '''works like C printf.
-    '''
-    print(format_str % tuple(args))
-
-def print_verbose(*args,verbose=True):
-    '''programmable print function. with an option to control
-    if the inputs are really printed.
-    used to control verbose levels of a function.
-    verbose: default True.
-    '''
-    if verbose:
-        print(*args)
-
-def safe_open(*args,encoding=None,return_encoding=False,verbose=True,**kws):
-    '''automatically determine the encoding of the file.
-    so that there will not be so many stupid encoding errors occuring during coding.
-
-    Note: the file needs to be fully loaded into RAM to examine the encodings. 
-        OOM(Out Of Memory) exception may be raised when encountering large text files.'''
-    encs = ['utf_8','gb2312','gbk','ascii','utf_16','utf_16_be','utf_16_le','utf_7','gb18030','big5','big5hkscs','cp037','cp424','cp437','cp500','cp737','cp775','cp850','cp852','cp855','cp856','cp857','cp860','cp861','cp862','cp863','cp864','cp865','cp866','cp869','cp874','cp875','cp932','cp949','cp950','cp1006','cp1026','cp1140','cp1250','cp1251','cp1252','cp1253','cp1254','cp1255','cp1256','cp1257','cp1258','euc_jp','euc_jis_2004','euc_jisx0213','euc_kr','hz','iso2022_jp','iso2022_jp_1','iso2022_jp_2','iso2022_jp_2004','iso2022_jp_3','iso2022_jp_ext','iso2022_kr','latin_1','iso8859_2','iso8859_3','iso8859_4','iso8859_5','iso8859_6','iso8859_7','iso8859_8','iso8859_9','iso8859_10','iso8859_13','iso8859_14','iso8859_15','johab','koi8_r','koi8_u','mac_cyrillic','mac_greek','mac_iceland','mac_latin2','mac_roman','mac_turkish','ptcp154','shift_jis','shift_jis_2004','shift_jisx0213',]
-    if encoding not in encs:
-        encs.append(encoding)
-    for enc in encs:
-        try:
-            f = open(*args,encoding=enc,**kws)
-            f.readline()
-            f.read()
-            f.close()
-        except:
-            print_verbose('safe_open:','trying other encodings.',verbose=verbose)
-        else:
-            f = open(*args,encoding=enc,**kws)
-            if return_encoding:
-                return f,enc
-            else:
-                return f
-    print_verbose('tried encodings:',','.join(encs),'. None of them are supported.',verbose=verbose)
-    if return_encoding:
-        return None,None
-    else:
-        return None
-
-
-def sort_args(args_or_types,types_or_args):
-    '''
-    This is a very interesting function.
-    It is used to support __arbitrary-arguments-ordering__ in TorchFun.
-
-    Input:
-        The function takes a list of types, and a list of arguments.
-
-    Returns:
-        a list of arguments, with the same order as the types-list.
-
-    Of course, `sort_args` supports arbitrary-arguments-ordering by itself.
-
-    '''
-    if (
-            (type(args_or_types[0]) is type) # one type
-            or 
-            ( # type list
-                isinstance(args_or_types[0],(list,tuple)) and 
-                (type(args_or_types[0][0]) is type)
-            )
-        ):
-        types = args_or_types
-        args = types_or_args
-    else:
-        types = types_or_args
-        args = args_or_types
-
-    type_arg_tuples = [(type(a),a) for a in args]
-    res=[]
-    for t in types:
-        found = False
-        for type_arg in type_arg_tuples:
-            arg_type,arg_val = type_arg
-            if issubclass(arg_type,t):
-                found=True
-                break
-        if found:
-            res.append(arg_val)
-            type_arg_tuples.remove(type_arg)
-        else:
-            raise TypeError('One of the required argument is of type '+ t.__name__ + ', but none of the given arguments is of this type.')
-
-    return res
-
-def omini_open(path):
-    '''
-    Opens everything using system default viwer.
-
-    This function can call system GUI to open folders,images,files,videos...
-    '''
-    import subprocess
-    import platform
-    if platform.system() == "Windows":
-        os.startfile(path)
-    elif platform.system() == "Darwin":
-        subprocess.Popen(["open", path])
-    else:# linux
-        if path[:4] == 'http': # browser
-            command = 'firefox'
-        else:
-            command = 'xdg-open'
-        subprocess.Popen([command, path])
 
 def to_numpy(tensor,keep_dim=False):
     '''convert a NCHW tensor to NHWC numpy array.
@@ -150,9 +49,13 @@ def to_numpy(tensor,keep_dim=False):
 def dtype(obj):
     '''
     return the data type of:
+
         a model
+
         a tensor
-        or, something else
+
+        or, the type() of anything else
+
     '''
     dtype = None
     if isinstance(obj,torch.nn.Module):
@@ -169,10 +72,15 @@ def dtype(obj):
 def imread(fname,out_range=(0,1),dtype=torch.float):
     '''read jpg/png/gif/bmp/tiff... image file, and cat to tensor
     function based on imageio.
+
     args:
+        
         fname: string of the file path
+        
         out_range: tuple, output pixel value range.
+        
         dtype: torch datatype
+
     Notice:
         the returned image is 1xCxHxW (NCHW).
     '''
@@ -191,10 +99,15 @@ def imread(fname,out_range=(0,1),dtype=torch.float):
 
 def imsave(img_or_dest,dest_or_img):
     '''save torch tensor image(s) or numpy image(s).
+
     img: can be numpy image, numpy image batch. 
+
         or single torch-tensor image
+
         or torch-tensor-image-batch.
+
         or list/tuple of numpy images
+
         or list/tuple of pytorch-tensor images
 
     Notice: images must have non-zero channels, even for grey-scale images (1-channel images).
@@ -241,7 +154,9 @@ def _force_image_range(npimg,out_range=(0,1),verbose=True):
     '''input must be numpy image. input tensors will be cat to numpy arrray
     This function automatically detects the domain of the input img batch,
     and force the input to be between the out_range.
+
     args:
+
         out_range: (min,max)
 
     Notice:
@@ -284,15 +199,19 @@ def _force_image_range(npimg,out_range=(0,1),verbose=True):
 
 def imshow(x,title=None,auto_close=True,cols=8,backend=None):
     '''only deal with torch channel-first image batch,
+    
     title: add title to plot. (Default None)
         title can be string, or any string-able object.
+   
     auto_close: (default True) 
         Close the pyplot session afterwards. 
         Clean the environment just like you had 
         never used matplotlib here.
         if set to False, the plot will remain in the memory for further drawings.
+    
     cols: columns(default 8)
         the width of the output grid, aka, number of images per row.
+   
     backend: None to use default gui. options are:
         WebAgg,  GTK3Agg,
         WX,      GTK3Cairo,
@@ -307,12 +226,14 @@ def imshow(x,title=None,auto_close=True,cols=8,backend=None):
         template        
  
     Usage:
+
     ```python
         imshow(batch)
         imshow(batch,title=[a,b,c])
         imshow(batch,title='title')
         imshow(batch,auto_close=False) 
     ```
+
     Warnings:
     ```text
         TorchFun:imshow:Warning, you are using WebAgg backend for Matplotlib. 
@@ -411,17 +332,22 @@ def pil_imshow(arr):
 
     Parameters
     ----------
+
     arr : ndarray
         Array of image data to show.
 
     Returns
     -------
+
     None
 
     Examples
     --------
+
     >>> a = np.tile(np.arange(255), (255,1))
+
     >>> from scipy import misc
+
     >>> misc.imshow(a)
 
     Ported and upgraded based on scipy.misc.imshow
@@ -464,8 +390,11 @@ def pil_imshow(arr):
 
 def imresize(tensor_or_size,size_or_tensor):
     '''stretch pytorch image NCHW, into given shape
+
     arguments
+
             tensor: NCHW tensor
+
             size: tuple or list of [height,width], or a scale factor
     '''
     x,siz = sort_args([tensor_or_size,size_or_tensor],[torch.Tensor,(tuple,list,int,float)])
@@ -477,8 +406,11 @@ def imresize(tensor_or_size,size_or_tensor):
 
 def imcrop_center(tensor_or_size,size_or_tensor):
     '''crop a center patch from pytorch image NCHW
+
     arguments
+
             tensor: NCHW tensor
+
             size: tuple or list of [height,width], or a scale factor
                     given a tuple of height,width, this returns a scaled patch of the 
                     largest center crop.
@@ -514,17 +446,27 @@ def load(a,b):
     '''
     Load weight `a` into model `b`, or load model `b` using weight `a`
     The order of the arguments doesn't matter.
+
     Example:
+
         >load('weights.pts',model)
+
     or
+
         >load(model,'weights.pts')
+
     or
+
         >f = open('weight.pts')
+
         >load(f,model)
+
     or
+
         >load(model,f)
 
     Return value: None
+
     Behaviour: the loaded state-dict will be transformed to the same device as model,
             so that torch won't complain about CUDA-memory-insufficient when you just want to load
             weights from disk directly to cpu-model.
@@ -615,23 +557,42 @@ def save(a,b):
 
 def count_parameters(model_or_dict_or_param, verbose=True):
     '''Count parameter numer of a module/state_dict/layer/tensor.
+
     This function can also print the occupied memory of parameters in MBs
+
     Arguements:
+
     model_or_dict_or_param: model or state dictionary or model.parameter(), or numpy-array, or tensor.
+
     Return: parameter amount in python-int
+
             Returns 0 if datatype not understood
+
     Usage:
+
     1. count trainable and untrainbale params
+
         count_parameters(model)
+
     same as    
+
         count_parameters(state_dict)
+
     2. count only trainable params:
+
         count_parameters(model.parameters())
+
     3. count data matrix
+
         count_parameters(weight_tensor)
+
         count_parameters(numpy_array)
+
     Notice:
+
         return value is parameter Number.
+
+
 
     Alias: parameters()
     '''
@@ -672,9 +633,13 @@ def hash_parameters(model_or_statdict_or_param,use_sum=False):
     By default, This only hash the trainable parameters!
 
     arguements:
+
     module_or_statdict_or_param: torch.nn.module, 
+
                     or model.state_dict(), 
+
                     or model.parameters().
+
     use_sum: return the sum instead of mean value of all params.'''
     m = model_or_statdict_or_param
     means = []
@@ -704,8 +669,11 @@ def vectorize_parameter(model_or_statdict_or_param):
     This is used to detect chaotic changes of weights.
 
     arguements:
+
     module_or_statdict_or_param: torch.nn.module, 
+
                     or model.state_dict(), 
+
                     or model.parameters().
    
     '''
@@ -748,8 +716,11 @@ def show(net,input_shape=(1,3,32,32),logdir='tensorboard',port=8888):
     network strctures descriptions will be written to logdir.
     a tensorboard daemon will be launched to read the logdir and start a web server
     on given port.
+
     Notice: 
-        input shape must be 
+
+        input shape must be NCHW, following pytorch style.
+
         This program overwrites the system argument lists (sys.argv)
     '''
     try:
@@ -783,24 +754,43 @@ def show(net,input_shape=(1,3,32,32),logdir='tensorboard',port=8888):
 
 class Packsearch(object):
     '''Search names inside a package.
+
     Given an module object as input:
+
     > p = Packsearch(torch)
+
     or
+
     > p = Packsearch('torch')
+
     the instance p provide p.search() method. So that you can 
+
     search everything inside this package
+
     > p.search('maxpoo')
+
     or simply
+
     > p('maxpoo')
+
     output:
+
         Packsearch: 35 results found:
+
         -------------results start-------------
+
         0        torch.nn.AdaptiveMaxPool1d
+
         1        torch.nn.AdaptiveMaxPool2d
+
         2        torch.nn.AdaptiveMaxPool3d
+
         3        torch.nn.FractionalMaxPool2d
+
         4        torch.nn.MaxPool1d
+
         5        torch.nn.MaxPool2d
+
         ...
     '''
     def __init__(self,module_object,auto_init=True,verbose=False):
@@ -953,19 +943,33 @@ class Packsearch(object):
 
 def packsearch(module_or_str,str_or_module,verbose=False):
     '''Given an module object, and search pattern string as input:
+
     > packsearch(torch,'maxpoo')
+
     or
+
     > packsearch('maxpoo',torch)
+
     you can search everything inside this package
+
     output:
+
         Packsearch: 35 results found:
+
         -------------results start-------------
+
         0        torch.nn.AdaptiveMaxPool1d
+
         1        torch.nn.AdaptiveMaxPool2d
+
         2        torch.nn.AdaptiveMaxPool3d
+
         3        torch.nn.FractionalMaxPool2d
+
         4        torch.nn.MaxPool1d
+
         5        torch.nn.MaxPool2d
+
         ...
     '''
     mod,name = sort_args([types.ModuleType,str],[module_or_str,str_or_module])
@@ -980,36 +984,41 @@ def packsearch(module_or_str,str_or_module,verbose=False):
     else:
         print('Packsearch: search done,',res_counter,'results found.')
 
-def force_exist(dirname,verbose=True):
-    '''force a directory to exist.
-    force_exist can automatically create directory with any depth.
-    Arguements:
-        dirname: path of the desired directory
-        verbose: print every directory creation. default True.
-    Usage:
-        force_exist('a/b/c/d/e/f')
-        force_exist('a/b/c/d/e/f',verbose=False)
-    '''
-    
-    if dirname == '' or dirname == '.':
-        return True
-    top = os.path.dirname(dirname)
-    force_exist(top)
-    if not os.path.exists(dirname):
-        if verbose:
-            print('creating',dirname)
-        os.makedirs(dirname)
-        return False
-    else:
-        return True
+#def force_exist(dirname,verbose=True):
+#    '''force a directory to exist.
+#    force_exist can automatically create directory with any depth.
+#    Arguements:
+#        dirname: path of the desired directory
+#        verbose: print every directory creation. default True.
+#    Usage:
+#        force_exist('a/b/c/d/e/f')
+#        force_exist('a/b/c/d/e/f',verbose=False)
+#    '''
+#    
+#    if dirname == '' or dirname == '.':
+#        return True
+#    top = os.path.dirname(dirname)
+#    force_exist(top)
+#    if not os.path.exists(dirname):
+#        if verbose:
+#            print('creating',dirname)
+#        os.makedirs(dirname)
+#        return False
+#    else:
+#        return True
 
 def whereis(module_or_string,open_gui=True):
     '''
     find the source file location of a module
+
     arguments:
+
         module_or_string: target module object, or it's string path like `torch.nn`
+
         open_gui: open the folder with default window-manager.
+
     returns:
+    
         module file name, or None
 
     '''
@@ -1058,7 +1067,7 @@ def tf_session(allow_growth=True):
     config.gpu_options.allow_growth = allow_growth
     return tensorflow.Session(config=config)
 
-class Options(object):
+class Options(dict):
     '''A simple yet effective option class for debugging use.
     key features: you can set attributes to it directly.
     like:
@@ -1067,17 +1076,25 @@ class Options(object):
             o.hahah=123
 
     '''
-    def __init__(self):
-        super().__init__()
+    def __init__(self,*args,**kws):
+        super().__init__(*args,**kws)
     def __setattr__(self,name,value):
-        if hasattr(self,name):
-            super().__setattr__(name,value)
+        self[name]=value
+    def __getattr__(self,name):
+        if name in self:
+            return self[name]
         else:
-            self.__dict__[name]=value
+            return self[name]
+    def __getitem__(self,name):
+        if name in self:
+            return super().__getitem__(name)
+        else:
+            self[name] = Options()
+            return self[name]
     def __str__(self):
         return str(self.__dict__)
     def __repr__(self):
-        contents=['\t%s:%s'%(name,str(self.__dict__[name])) for name in self.__dict__]
+        contents=['\t%s:%s'%(name,str(self[name])) for name in self]
         contents.insert(0,'Options containing:')
         return os.linesep.join(contents)
 
@@ -1098,8 +1115,14 @@ class Unimodel(torch.nn.Module):
     usage:
 
         unimodel = Unimodel(resnet1,resnet2,resnet3)
+
         unimodel.save('xxxx.pth')
+
         unimodel.load('ssss.pth')
+
+        resnet1 = unimodel.resnet1
+
+        ...
 
     '''
     def __init__(self,*models,**named_models):
@@ -1146,6 +1169,7 @@ def documentation(search=None):
     ''' help documentation on Torchfun
     Argument:
         search: give None to go to the latest doc site
+
                 give string or object to search the object
     '''
     index_page = 'https://sorenchiron.github.io/torchfun/genindex.html'

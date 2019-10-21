@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>torchfun package &#8212; torchfun 1.0.42 documentation</title>
+    <title>torchfun package &#8212; torchfun 1.0.80 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
@@ -27,7 +27,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">torchfun 1.0.42 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">torchfun 1.0.80 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -981,8 +981,8 @@ dir_path/filename{tag}.suffix</p>
 <span id="torchfun-torchfun-module"></span><h2>torchfun.torchfun module<a class="headerlink" href="#module-torchfun.torchfun" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="torchfun.torchfun.Options">
-<em class="property">class </em><code class="descclassname">torchfun.torchfun.</code><code class="descname">Options</code><a class="headerlink" href="#torchfun.torchfun.Options" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<em class="property">class </em><code class="descclassname">torchfun.torchfun.</code><code class="descname">Options</code><span class="sig-paren">(</span><em>*args</em>, <em>**kws</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.torchfun.Options" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
 <p>A simple yet effective option class for debugging use.
 key features: you can set attributes to it directly.
 like:</p>
@@ -997,27 +997,27 @@ o.hahah=123</p>
 <dt id="torchfun.torchfun.Packsearch">
 <em class="property">class </em><code class="descclassname">torchfun.torchfun.</code><code class="descname">Packsearch</code><span class="sig-paren">(</span><em>module_object</em>, <em>auto_init=True</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.torchfun.Packsearch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Search names inside a package.
-Given an module object as input:
-&gt; p = Packsearch(torch)
-or
-&gt; p = Packsearch(‘torch’)
-the instance p provide p.search() method. So that you can 
-search everything inside this package
-&gt; p.search(‘maxpoo’)
-or simply
-&gt; p(‘maxpoo’)
-output:</p>
+<p>Search names inside a package.</p>
+<p>Given an module object as input:</p>
+<p>&gt; p = Packsearch(torch)</p>
+<p>or</p>
+<p>&gt; p = Packsearch(‘torch’)</p>
+<p>the instance p provide p.search() method. So that you can</p>
+<p>search everything inside this package</p>
+<p>&gt; p.search(‘maxpoo’)</p>
+<p>or simply</p>
+<p>&gt; p(‘maxpoo’)</p>
+<p>output:</p>
 <blockquote>
-<div><p>Packsearch: 35 results found:
-————-results start————-
-0        torch.nn.AdaptiveMaxPool1d
-1        torch.nn.AdaptiveMaxPool2d
-2        torch.nn.AdaptiveMaxPool3d
-3        torch.nn.FractionalMaxPool2d
-4        torch.nn.MaxPool1d
-5        torch.nn.MaxPool2d
-…</p>
+<div><p>Packsearch: 35 results found:</p>
+<p>————-results start————-</p>
+<p>0        torch.nn.AdaptiveMaxPool1d</p>
+<p>1        torch.nn.AdaptiveMaxPool2d</p>
+<p>2        torch.nn.AdaptiveMaxPool3d</p>
+<p>3        torch.nn.FractionalMaxPool2d</p>
+<p>4        torch.nn.MaxPool1d</p>
+<p>5        torch.nn.MaxPool2d</p>
+<p>…</p>
 </div></blockquote>
 <dl class="method">
 <dt id="torchfun.torchfun.Packsearch.dynamic_traverse">
@@ -1052,9 +1052,11 @@ search_attributes: whether to include class attributes or method names</p>
 you can save/load them together.</p>
 <p>usage:</p>
 <blockquote>
-<div><p>unimodel = Unimodel(resnet1,resnet2,resnet3)
-unimodel.save(‘xxxx.pth’)
-unimodel.load(‘ssss.pth’)</p>
+<div><p>unimodel = Unimodel(resnet1,resnet2,resnet3)</p>
+<p>unimodel.save(‘xxxx.pth’)</p>
+<p>unimodel.load(‘ssss.pth’)</p>
+<p>resnet1 = unimodel.resnet1</p>
+<p>…</p>
 </div></blockquote>
 <dl class="method">
 <dt id="torchfun.torchfun.Unimodel.load">
@@ -1073,40 +1075,43 @@ unimodel.load(‘ssss.pth’)</p>
 <dl class="function">
 <dt id="torchfun.torchfun.count_parameters">
 <code class="descclassname">torchfun.torchfun.</code><code class="descname">count_parameters</code><span class="sig-paren">(</span><em>model_or_dict_or_param</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.torchfun.count_parameters" title="Permalink to this definition">¶</a></dt>
-<dd><p>Count parameter numer of a module/state_dict/layer/tensor.
-This function can also print the occupied memory of parameters in MBs
-Arguements:
-model_or_dict_or_param: model or state dictionary or model.parameter(), or numpy-array, or tensor.
-Return: parameter amount in python-int</p>
+<dd><p>Count parameter numer of a module/state_dict/layer/tensor.</p>
+<p>This function can also print the occupied memory of parameters in MBs</p>
+<p>Arguements:</p>
+<p>model_or_dict_or_param: model or state dictionary or model.parameter(), or numpy-array, or tensor.</p>
+<p>Return: parameter amount in python-int</p>
 <blockquote>
 <div><p>Returns 0 if datatype not understood</p>
 </div></blockquote>
-<p>Usage:
-1. count trainable and untrainbale params</p>
+<p>Usage:</p>
+<ol class="arabic">
+<li><p>count trainable and untrainbale params</p>
 <blockquote>
 <div><p>count_parameters(model)</p>
 </div></blockquote>
-<dl class="simple">
-<dt>same as    </dt><dd><p>count_parameters(state_dict)</p>
-</dd>
-</dl>
-<ol class="arabic simple" start="2">
-<li><dl class="simple">
-<dt>count only trainable params:</dt><dd><p>count_parameters(model.parameters())</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>count data matrix</dt><dd><p>count_parameters(weight_tensor)
-count_parameters(numpy_array)</p>
-</dd>
-</dl>
 </li>
 </ol>
-<dl class="simple">
-<dt>Notice:</dt><dd><p>return value is parameter Number.</p>
-</dd>
-</dl>
+<p>same as</p>
+<blockquote>
+<div><p>count_parameters(state_dict)</p>
+</div></blockquote>
+<ol class="arabic" start="2">
+<li><p>count only trainable params:</p>
+<blockquote>
+<div><p>count_parameters(model.parameters())</p>
+</div></blockquote>
+</li>
+<li><p>count data matrix</p>
+<blockquote>
+<div><p>count_parameters(weight_tensor)</p>
+<p>count_parameters(numpy_array)</p>
+</div></blockquote>
+</li>
+</ol>
+<p>Notice:</p>
+<blockquote>
+<div><p>return value is parameter Number.</p>
+</div></blockquote>
 <p>Alias: parameters()</p>
 </dd></dl>
 
@@ -1116,28 +1121,22 @@ count_parameters(numpy_array)</p>
 <dd><p>help documentation on Torchfun
 Argument:</p>
 <blockquote>
-<div><dl class="simple">
-<dt>search: give None to go to the latest doc site</dt><dd><p>give string or object to search the object</p>
-</dd>
-</dl>
+<div><p>search: give None to go to the latest doc site</p>
+<blockquote>
+<div><p>give string or object to search the object</p>
+</div></blockquote>
 </div></blockquote>
 </dd></dl>
 
 <dl class="function">
-<dt id="torchfun.torchfun.force_exist">
-<code class="descclassname">torchfun.torchfun.</code><code class="descname">force_exist</code><span class="sig-paren">(</span><em>dirname</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.torchfun.force_exist" title="Permalink to this definition">¶</a></dt>
-<dd><p>force a directory to exist.
-force_exist can automatically create directory with any depth.
-Arguements:</p>
+<dt id="torchfun.torchfun.dtype">
+<code class="descclassname">torchfun.torchfun.</code><code class="descname">dtype</code><span class="sig-paren">(</span><em>obj</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.torchfun.dtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the data type of:</p>
 <blockquote>
-<div><p>dirname: path of the desired directory
-verbose: print every directory creation. default True.</p>
+<div><p>a model</p>
+<p>a tensor</p>
+<p>or, the type() of anything else</p>
 </div></blockquote>
-<dl class="simple">
-<dt>Usage:</dt><dd><p>force_exist(‘a/b/c/d/e/f’)
-force_exist(‘a/b/c/d/e/f’,verbose=False)</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="function">
@@ -1149,11 +1148,11 @@ You can check the sum_parameters before and after some operations, to know
 if there is any change made to the params.</p>
 <p>I use this function to verify gradient behaviours.</p>
 <p>By default, This only hash the trainable parameters!</p>
-<p>arguements:
-module_or_statdict_or_param: torch.nn.module,</p>
+<p>arguements:</p>
+<p>module_or_statdict_or_param: torch.nn.module,</p>
 <blockquote>
-<div><p>or model.state_dict(), 
-or model.parameters().</p>
+<div><p>or model.state_dict(),</p>
+<p>or model.parameters().</p>
 </div></blockquote>
 <p>use_sum: return the sum instead of mean value of all params.</p>
 </dd></dl>
@@ -1161,16 +1160,16 @@ or model.parameters().</p>
 <dl class="function">
 <dt id="torchfun.torchfun.imcrop_center">
 <code class="descclassname">torchfun.torchfun.</code><code class="descname">imcrop_center</code><span class="sig-paren">(</span><em>tensor_or_size</em>, <em>size_or_tensor</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.torchfun.imcrop_center" title="Permalink to this definition">¶</a></dt>
-<dd><p>crop a center patch from pytorch image NCHW
-arguments</p>
+<dd><p>crop a center patch from pytorch image NCHW</p>
+<p>arguments</p>
 <blockquote>
-<div><p>tensor: NCHW tensor
-size: tuple or list of [height,width], or a scale factor</p>
-<blockquote>
-<div><p>given a tuple of height,width, this returns a scaled patch of the 
+<div><p>tensor: NCHW tensor</p>
+<dl class="simple">
+<dt>size: tuple or list of [height,width], or a scale factor</dt><dd><p>given a tuple of height,width, this returns a scaled patch of the 
 largest center crop.
 given a factor of scale, this will return a scaled square maximum center crop</p>
-</div></blockquote>
+</dd>
+</dl>
 </div></blockquote>
 </dd></dl>
 
@@ -1178,12 +1177,12 @@ given a factor of scale, this will return a scaled square maximum center crop</p
 <dt id="torchfun.torchfun.imread">
 <code class="descclassname">torchfun.torchfun.</code><code class="descname">imread</code><span class="sig-paren">(</span><em>fname</em>, <em>out_range=(0</em>, <em>1)</em>, <em>dtype=torch.float32</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.torchfun.imread" title="Permalink to this definition">¶</a></dt>
 <dd><p>read jpg/png/gif/bmp/tiff… image file, and cat to tensor
-function based on imageio.
-args:</p>
+function based on imageio.</p>
+<p>args:</p>
 <blockquote>
-<div><p>fname: string of the file path
-out_range: tuple, output pixel value range.
-dtype: torch datatype</p>
+<div><p>fname: string of the file path</p>
+<p>out_range: tuple, output pixel value range.</p>
+<p>dtype: torch datatype</p>
 </div></blockquote>
 <dl class="simple">
 <dt>Notice:</dt><dd><p>the returned image is 1xCxHxW (NCHW).</p>
@@ -1194,38 +1193,39 @@ dtype: torch datatype</p>
 <dl class="function">
 <dt id="torchfun.torchfun.imresize">
 <code class="descclassname">torchfun.torchfun.</code><code class="descname">imresize</code><span class="sig-paren">(</span><em>tensor_or_size</em>, <em>size_or_tensor</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.torchfun.imresize" title="Permalink to this definition">¶</a></dt>
-<dd><p>stretch pytorch image NCHW, into given shape
-arguments</p>
+<dd><p>stretch pytorch image NCHW, into given shape</p>
+<p>arguments</p>
 <blockquote>
-<div><p>tensor: NCHW tensor
-size: tuple or list of [height,width], or a scale factor</p>
+<div><p>tensor: NCHW tensor</p>
+<p>size: tuple or list of [height,width], or a scale factor</p>
 </div></blockquote>
 </dd></dl>
 
 <dl class="function">
 <dt id="torchfun.torchfun.imsave">
 <code class="descclassname">torchfun.torchfun.</code><code class="descname">imsave</code><span class="sig-paren">(</span><em>img_or_dest</em>, <em>dest_or_img</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.torchfun.imsave" title="Permalink to this definition">¶</a></dt>
-<dd><p>save torch tensor image(s) or numpy image(s).
-img: can be numpy image, numpy image batch.</p>
+<dd><p>save torch tensor image(s) or numpy image(s).</p>
+<p>img: can be numpy image, numpy image batch.</p>
 <blockquote>
-<div><p>or single torch-tensor image
-or torch-tensor-image-batch.
-or list/tuple of numpy images
-or list/tuple of pytorch-tensor images</p>
+<div><p>or single torch-tensor image</p>
+<p>or torch-tensor-image-batch.</p>
+<p>or list/tuple of numpy images</p>
+<p>or list/tuple of pytorch-tensor images</p>
 </div></blockquote>
 <p>Notice: images must have non-zero channels, even for grey-scale images (1-channel images).</p>
-<p>behaviour: images will be concatenated into a long single image and save into destination file-name.</p>
+<dl class="simple">
+<dt>behaviour: images will be concatenated into a long single image and save into destination file-name.</dt><dd><p>the concating will be taken horizontally.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="torchfun.torchfun.imshow">
 <code class="descclassname">torchfun.torchfun.</code><code class="descname">imshow</code><span class="sig-paren">(</span><em>x</em>, <em>title=None</em>, <em>auto_close=True</em>, <em>cols=8</em>, <em>backend=None</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.torchfun.imshow" title="Permalink to this definition">¶</a></dt>
-<dd><p>only deal with torch channel-first image batch,
-title: add title to plot. (Default None)</p>
-<blockquote>
-<div><p>title can be string, or any string-able object.</p>
-</div></blockquote>
+<dd><p>only deal with torch channel-first image batch,</p>
 <dl class="simple">
+<dt>title: add title to plot. (Default None)</dt><dd><p>title can be string, or any string-able object.</p>
+</dd>
 <dt>auto_close: (default True) </dt><dd><p>Close the pyplot session afterwards. 
 Clean the environment just like you had 
 never used matplotlib here.
@@ -1246,17 +1246,17 @@ svg,     TkCairo,
 template</p>
 </dd>
 </dl>
-<p>Usage:
-<a href="#id3"><span class="problematic" id="id4">``</span></a><a href="#id5"><span class="problematic" id="id6">`</span></a>python</p>
-<blockquote>
-<div><p>imshow(batch)
+<p>Usage:</p>
+<dl class="simple">
+<dt><a href="#id3"><span class="problematic" id="id4">``</span></a><a href="#id5"><span class="problematic" id="id6">`</span></a>python</dt><dd><p>imshow(batch)
 imshow(batch,title=[a,b,c])
 imshow(batch,title=’title’)
 imshow(batch,auto_close=False)</p>
-</div></blockquote>
-<p><a href="#id7"><span class="problematic" id="id8">``</span></a>`
-Warnings:
-<a href="#id9"><span class="problematic" id="id10">``</span></a><a href="#id11"><span class="problematic" id="id12">`</span></a>text</p>
+</dd>
+</dl>
+<p><a href="#id7"><span class="problematic" id="id8">``</span></a><a href="#id9"><span class="problematic" id="id10">`</span></a></p>
+<p>Warnings:
+<a href="#id11"><span class="problematic" id="id12">``</span></a><a href="#id13"><span class="problematic" id="id14">`</span></a>text</p>
 <blockquote>
 <div><p>TorchFun:imshow:Warning, you are using WebAgg backend for Matplotlib. 
 Please consider windowed display SDKs such as TkAgg backend and GTK* backends.</p>
@@ -1296,49 +1296,49 @@ or on windows:</p>
 <dl class="function">
 <dt id="torchfun.torchfun.imwrite">
 <code class="descclassname">torchfun.torchfun.</code><code class="descname">imwrite</code><span class="sig-paren">(</span><em>img_or_dest</em>, <em>dest_or_img</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.torchfun.imwrite" title="Permalink to this definition">¶</a></dt>
-<dd><p>save torch tensor image(s) or numpy image(s).
-img: can be numpy image, numpy image batch.</p>
+<dd><p>save torch tensor image(s) or numpy image(s).</p>
+<p>img: can be numpy image, numpy image batch.</p>
 <blockquote>
-<div><p>or single torch-tensor image
-or torch-tensor-image-batch.
-or list/tuple of numpy images
-or list/tuple of pytorch-tensor images</p>
+<div><p>or single torch-tensor image</p>
+<p>or torch-tensor-image-batch.</p>
+<p>or list/tuple of numpy images</p>
+<p>or list/tuple of pytorch-tensor images</p>
 </div></blockquote>
 <p>Notice: images must have non-zero channels, even for grey-scale images (1-channel images).</p>
-<p>behaviour: images will be concatenated into a long single image and save into destination file-name.</p>
+<dl class="simple">
+<dt>behaviour: images will be concatenated into a long single image and save into destination file-name.</dt><dd><p>the concating will be taken horizontally.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="torchfun.torchfun.load">
 <code class="descclassname">torchfun.torchfun.</code><code class="descname">load</code><span class="sig-paren">(</span><em>a</em>, <em>b</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.torchfun.load" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load weight <cite>a</cite> into model <cite>b</cite>, or load model <cite>b</cite> using weight <cite>a</cite>
-The order of the arguments doesn’t matter.
-Example:</p>
+The order of the arguments doesn’t matter.</p>
+<p>Example:</p>
 <blockquote>
 <div><p>&gt;load(‘weights.pts’,model)</p>
 </div></blockquote>
+<p>or</p>
+<blockquote>
+<div><p>&gt;load(model,’weights.pts’)</p>
+</div></blockquote>
+<p>or</p>
+<blockquote>
+<div><p>&gt;f = open(‘weight.pts’)</p>
+<p>&gt;load(f,model)</p>
+</div></blockquote>
+<p>or</p>
+<blockquote>
+<div><p>&gt;load(model,f)</p>
+</div></blockquote>
+<p>Return value: None</p>
 <dl class="simple">
-<dt>or</dt><dd><p>&gt;load(model,’weights.pts’)</p>
-</dd>
-<dt>or</dt><dd><p>&gt;f = open(‘weight.pts’)
-&gt;load(f,model)</p>
-</dd>
-<dt>or</dt><dd><p>&gt;load(model,f)</p>
+<dt>Behaviour: the loaded state-dict will be transformed to the same device as model,</dt><dd><p>so that torch won’t complain about CUDA-memory-insufficient when you just want to load
+weights from disk directly to cpu-model.</p>
 </dd>
 </dl>
-<p>Return value: None
-Behaviour: the loaded state-dict will be transformed to the same device as model,</p>
-<blockquote>
-<div><p>so that torch won’t complain about CUDA-memory-insufficient when you just want to load
-weights from disk directly to cpu-model.</p>
-</div></blockquote>
-</dd></dl>
-
-<dl class="function">
-<dt id="torchfun.torchfun.omini_open">
-<code class="descclassname">torchfun.torchfun.</code><code class="descname">omini_open</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.torchfun.omini_open" title="Permalink to this definition">¶</a></dt>
-<dd><p>Opens everything using system default viwer.</p>
-<p>This function can call system GUI to open folders,images,files,videos…</p>
 </dd></dl>
 
 <dl class="function">
@@ -1352,62 +1352,65 @@ please refer to Option class for more information</p>
 <dl class="function">
 <dt id="torchfun.torchfun.packsearch">
 <code class="descclassname">torchfun.torchfun.</code><code class="descname">packsearch</code><span class="sig-paren">(</span><em>module_or_str</em>, <em>str_or_module</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.torchfun.packsearch" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given an module object, and search pattern string as input:
-&gt; packsearch(torch,’maxpoo’)
-or
-&gt; packsearch(‘maxpoo’,torch)
-you can search everything inside this package
-output:</p>
+<dd><p>Given an module object, and search pattern string as input:</p>
+<p>&gt; packsearch(torch,’maxpoo’)</p>
+<p>or</p>
+<p>&gt; packsearch(‘maxpoo’,torch)</p>
+<p>you can search everything inside this package</p>
+<p>output:</p>
 <blockquote>
-<div><p>Packsearch: 35 results found:
-————-results start————-
-0        torch.nn.AdaptiveMaxPool1d
-1        torch.nn.AdaptiveMaxPool2d
-2        torch.nn.AdaptiveMaxPool3d
-3        torch.nn.FractionalMaxPool2d
-4        torch.nn.MaxPool1d
-5        torch.nn.MaxPool2d
-…</p>
+<div><p>Packsearch: 35 results found:</p>
+<p>————-results start————-</p>
+<p>0        torch.nn.AdaptiveMaxPool1d</p>
+<p>1        torch.nn.AdaptiveMaxPool2d</p>
+<p>2        torch.nn.AdaptiveMaxPool3d</p>
+<p>3        torch.nn.FractionalMaxPool2d</p>
+<p>4        torch.nn.MaxPool1d</p>
+<p>5        torch.nn.MaxPool2d</p>
+<p>…</p>
 </div></blockquote>
 </dd></dl>
 
 <dl class="function">
 <dt id="torchfun.torchfun.parameters">
 <code class="descclassname">torchfun.torchfun.</code><code class="descname">parameters</code><span class="sig-paren">(</span><em>model_or_dict_or_param</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.torchfun.parameters" title="Permalink to this definition">¶</a></dt>
-<dd><p>Count parameter numer of a module/state_dict/layer/tensor.
-This function can also print the occupied memory of parameters in MBs
-Arguements:
-model_or_dict_or_param: model or state dictionary or model.parameter(), or numpy-array, or tensor.
-Return: parameter amount in python-int</p>
+<dd><p>Count parameter numer of a module/state_dict/layer/tensor.</p>
+<p>This function can also print the occupied memory of parameters in MBs</p>
+<p>Arguements:</p>
+<p>model_or_dict_or_param: model or state dictionary or model.parameter(), or numpy-array, or tensor.</p>
+<p>Return: parameter amount in python-int</p>
 <blockquote>
 <div><p>Returns 0 if datatype not understood</p>
 </div></blockquote>
-<p>Usage:
-1. count trainable and untrainbale params</p>
+<p>Usage:</p>
+<ol class="arabic">
+<li><p>count trainable and untrainbale params</p>
 <blockquote>
 <div><p>count_parameters(model)</p>
 </div></blockquote>
-<dl class="simple">
-<dt>same as    </dt><dd><p>count_parameters(state_dict)</p>
-</dd>
-</dl>
-<ol class="arabic simple" start="2">
-<li><dl class="simple">
-<dt>count only trainable params:</dt><dd><p>count_parameters(model.parameters())</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>count data matrix</dt><dd><p>count_parameters(weight_tensor)
-count_parameters(numpy_array)</p>
-</dd>
-</dl>
 </li>
 </ol>
-<dl class="simple">
-<dt>Notice:</dt><dd><p>return value is parameter Number.</p>
-</dd>
-</dl>
+<p>same as</p>
+<blockquote>
+<div><p>count_parameters(state_dict)</p>
+</div></blockquote>
+<ol class="arabic" start="2">
+<li><p>count only trainable params:</p>
+<blockquote>
+<div><p>count_parameters(model.parameters())</p>
+</div></blockquote>
+</li>
+<li><p>count data matrix</p>
+<blockquote>
+<div><p>count_parameters(weight_tensor)</p>
+<p>count_parameters(numpy_array)</p>
+</div></blockquote>
+</li>
+</ol>
+<p>Notice:</p>
+<blockquote>
+<div><p>return value is parameter Number.</p>
+</div></blockquote>
 <p>Alias: parameters()</p>
 </dd></dl>
 
@@ -1432,38 +1435,16 @@ It will also cast data for 2-D images to <code class="docutils literal notransla
 </dl>
 <p>None</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">255</span><span class="p">),</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">scipy</span> <span class="k">import</span> <span class="n">misc</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">misc</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">scipy</span> <span class="k">import</span> <span class="n">misc</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">misc</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Ported and upgraded based on scipy.misc.imshow
 Open-sourced according to the license.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="torchfun.torchfun.print_verbose">
-<code class="descclassname">torchfun.torchfun.</code><code class="descname">print_verbose</code><span class="sig-paren">(</span><em>*args</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.torchfun.print_verbose" title="Permalink to this definition">¶</a></dt>
-<dd><p>programmable print function. with an option to control
-if the inputs are really printed.
-used to control verbose levels of a function.
-verbose: default True.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="torchfun.torchfun.printf">
-<code class="descclassname">torchfun.torchfun.</code><code class="descname">printf</code><span class="sig-paren">(</span><em>format_str</em>, <em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.torchfun.printf" title="Permalink to this definition">¶</a></dt>
-<dd><p>works like C printf.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="torchfun.torchfun.safe_open">
-<code class="descclassname">torchfun.torchfun.</code><code class="descname">safe_open</code><span class="sig-paren">(</span><em>*args</em>, <em>encoding=None</em>, <em>**kws</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.torchfun.safe_open" title="Permalink to this definition">¶</a></dt>
-<dd><p>automatically determine the encoding of the file.
-so that there will not be so many stupid encoding errors occuring during coding.</p>
-<dl class="simple">
-<dt>Note: the file needs to be fully loaded into RAM to examine the encodings. </dt><dd><p>OOM(Out Of Memory) exception may be raised when encountering large text files.</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="function">
@@ -1508,11 +1489,11 @@ this tool will create a noise data according to given input_shape,
 and feed it directly to net, in order to probe its structure.
 network strctures descriptions will be written to logdir.
 a tensorboard daemon will be launched to read the logdir and start a web server
-on given port.
-Notice:</p>
+on given port.</p>
+<p>Notice:</p>
 <blockquote>
-<div><p>input shape must be 
-This program overwrites the system argument lists (sys.argv)</p>
+<div><p>input shape must be NCHW, following pytorch style.</p>
+<p>This program overwrites the system argument lists (sys.argv)</p>
 </div></blockquote>
 </dd></dl>
 
@@ -1520,20 +1501,6 @@ This program overwrites the system argument lists (sys.argv)</p>
 <dt id="torchfun.torchfun.show_layers_parameters">
 <code class="descclassname">torchfun.torchfun.</code><code class="descname">show_layers_parameters</code><span class="sig-paren">(</span><em>model</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.torchfun.show_layers_parameters" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="function">
-<dt id="torchfun.torchfun.sort_args">
-<code class="descclassname">torchfun.torchfun.</code><code class="descname">sort_args</code><span class="sig-paren">(</span><em>args_or_types</em>, <em>types_or_args</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.torchfun.sort_args" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is a very interesting function.
-It is used to support __arbitrary-<a href="#id27"><span class="problematic" id="id28">arguments-ordering__</span></a> in TorchFun.</p>
-<dl class="simple">
-<dt>Input:</dt><dd><p>The function takes a list of types, and a list of arguments.</p>
-</dd>
-<dt>Returns:</dt><dd><p>a list of arguments, with the same order as the types-list.</p>
-</dd>
-</dl>
-<p>Of course, <cite>sort_args</cite> supports arbitrary-arguments-ordering by itself.</p>
-</dd></dl>
 
 <dl class="function">
 <dt id="torchfun.torchfun.tf_session">
@@ -1560,27 +1527,27 @@ the tensor will be simply cat to np array</p>
 <code class="descclassname">torchfun.torchfun.</code><code class="descname">vectorize_parameter</code><span class="sig-paren">(</span><em>model_or_statdict_or_param</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.torchfun.vectorize_parameter" title="Permalink to this definition">¶</a></dt>
 <dd><p>return the vectorized form of all variables.
 This is used to detect chaotic changes of weights.</p>
-<p>arguements:
-module_or_statdict_or_param: torch.nn.module,</p>
+<p>arguements:</p>
+<p>module_or_statdict_or_param: torch.nn.module,</p>
 <blockquote>
-<div><p>or model.state_dict(), 
-or model.parameters().</p>
+<div><p>or model.state_dict(),</p>
+<p>or model.parameters().</p>
 </div></blockquote>
 </dd></dl>
 
 <dl class="function">
 <dt id="torchfun.torchfun.whereis">
 <code class="descclassname">torchfun.torchfun.</code><code class="descname">whereis</code><span class="sig-paren">(</span><em>module_or_string</em>, <em>open_gui=True</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.torchfun.whereis" title="Permalink to this definition">¶</a></dt>
-<dd><p>find the source file location of a module
-arguments:</p>
+<dd><p>find the source file location of a module</p>
+<p>arguments:</p>
 <blockquote>
-<div><p>module_or_string: target module object, or it’s string path like <cite>torch.nn</cite>
-open_gui: open the folder with default window-manager.</p>
+<div><p>module_or_string: target module object, or it’s string path like <cite>torch.nn</cite></p>
+<p>open_gui: open the folder with default window-manager.</p>
 </div></blockquote>
-<dl class="simple">
-<dt>returns:</dt><dd><p>module file name, or None</p>
-</dd>
-</dl>
+<p>returns:</p>
+<blockquote>
+<div><p>module file name, or None</p>
+</div></blockquote>
 </dd></dl>
 
 </div>
@@ -2142,6 +2109,45 @@ printed values are in MBs.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="torchfun.utils.force_exist">
+<code class="descclassname">torchfun.utils.</code><code class="descname">force_exist</code><span class="sig-paren">(</span><em>dirname</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.utils.force_exist" title="Permalink to this definition">¶</a></dt>
+<dd><p>force a directory to exist.
+force_exist can automatically create directory with any depth.
+Arguements:</p>
+<blockquote>
+<div><p>dirname: path of the desired directory
+verbose: print every directory creation. default True.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>force_exist(‘a/b/c/d/e/f’)
+force_exist(‘a/b/c/d/e/f’,verbose=False)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="torchfun.utils.omini_open">
+<code class="descclassname">torchfun.utils.</code><code class="descname">omini_open</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.utils.omini_open" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens everything using system default viwer.</p>
+<p>This function can call system GUI to open folders,images,files,videos…</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="torchfun.utils.print_verbose">
+<code class="descclassname">torchfun.utils.</code><code class="descname">print_verbose</code><span class="sig-paren">(</span><em>*args</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.utils.print_verbose" title="Permalink to this definition">¶</a></dt>
+<dd><p>programmable print function. with an option to control
+if the inputs are really printed.
+used to control verbose levels of a function.
+verbose: default True.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="torchfun.utils.printf">
+<code class="descclassname">torchfun.utils.</code><code class="descname">printf</code><span class="sig-paren">(</span><em>format_str</em>, <em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.utils.printf" title="Permalink to this definition">¶</a></dt>
+<dd><p>works like C printf.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="torchfun.utils.record_experiment">
 <code class="descclassname">torchfun.utils.</code><code class="descname">record_experiment</code><span class="sig-paren">(</span><em>exp_dir='not-specified'</em>, <em>record_top_dir='records'</em>, <em>logfilename='record.txt'</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.utils.record_experiment" title="Permalink to this definition">¶</a></dt>
 <dd><p>Arguments:
@@ -2159,6 +2165,60 @@ of this experiment later.</p>
 <li><p>logfilename : filename of this log, usually <cite>train_record</cite> <cite>evaluation_record</cite> etc.</p></li>
 <li><p>comment :string comment added to log paragraph. default is empty string.</p></li>
 </ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="torchfun.utils.reset_timer">
+<code class="descclassname">torchfun.utils.</code><code class="descname">reset_timer</code><span class="sig-paren">(</span><em>named_time_table={}, anonymous_time=[None]</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.utils.reset_timer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="torchfun.utils.safe_open">
+<code class="descclassname">torchfun.utils.</code><code class="descname">safe_open</code><span class="sig-paren">(</span><em>*args</em>, <em>encoding=None</em>, <em>return_encoding=False</em>, <em>verbose=True</em>, <em>**kws</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.utils.safe_open" title="Permalink to this definition">¶</a></dt>
+<dd><p>automatically determine the encoding of the file.
+so that there will not be so many stupid encoding errors occuring during coding.</p>
+<dl class="simple">
+<dt>Note: the file needs to be fully loaded into RAM to examine the encodings. </dt><dd><p>OOM(Out Of Memory) exception may be raised when encountering large text files.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="torchfun.utils.sort_args">
+<code class="descclassname">torchfun.utils.</code><code class="descname">sort_args</code><span class="sig-paren">(</span><em>args_or_types</em>, <em>types_or_args</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.utils.sort_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a very interesting function.
+It is used to support __arbitrary-<a href="#id31"><span class="problematic" id="id32">arguments-ordering__</span></a> in TorchFun.</p>
+<dl class="simple">
+<dt>Input:</dt><dd><p>The function takes a list of types, and a list of arguments.</p>
+</dd>
+<dt>Returns:</dt><dd><p>a list of arguments, with the same order as the types-list.</p>
+</dd>
+</dl>
+<p>Of course, <cite>sort_args</cite> supports arbitrary-arguments-ordering by itself.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="torchfun.utils.time">
+<code class="descclassname">torchfun.utils.</code><code class="descname">time</code><span class="sig-paren">(</span><em>message=None, name=None, named_time_table={}, anonymous_time=[None]</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.utils.time" title="Permalink to this definition">¶</a></dt>
+<dd><p>show running time
+dict-key locating costs 1e-6 second = 1 micro-second
+context switching costs 5e-5 second.</p>
+<dl class="simple">
+<dt>Usage 1:</dt><dd><p>tf.time()
+…
+elapsed = tf.time()</p>
+</dd>
+<dt>Usage 2:</dt><dd><p>tf.time()
+…
+tf.time(‘elapsed:’)
+out: elapsed: 0.02 sec</p>
+</dd>
+<dt>Usage 3:</dt><dd><p>tf.time(name=’clock1’)
+…
+tf.time(‘elapsed’,name=’clock1’)
+out: elapsed 0.02 sec</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -2209,6 +2269,36 @@ false False true True 0 1</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="torchfun.info">
+<code class="descclassname">torchfun.</code><code class="descname">info</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="torchfun.error">
+<code class="descclassname">torchfun.</code><code class="descname">error</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.error" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="torchfun.warning">
+<code class="descclassname">torchfun.</code><code class="descname">warning</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.warning" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="torchfun.warn">
+<code class="descclassname">torchfun.</code><code class="descname">warn</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.warn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="torchfun.wait">
+<code class="descclassname">torchfun.</code><code class="descname">wait</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.wait" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="torchfun.input_or">
+<code class="descclassname">torchfun.</code><code class="descname">input_or</code><span class="sig-paren">(</span><em>prompt</em>, <em>default='y'</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.input_or" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="torchfun.printf">
 <code class="descclassname">torchfun.</code><code class="descname">printf</code><span class="sig-paren">(</span><em>format_str</em>, <em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.printf" title="Permalink to this definition">¶</a></dt>
 <dd><p>works like C printf.</p>
@@ -2225,7 +2315,7 @@ verbose: default True.</p>
 
 <dl class="function">
 <dt id="torchfun.safe_open">
-<code class="descclassname">torchfun.</code><code class="descname">safe_open</code><span class="sig-paren">(</span><em>*args</em>, <em>encoding=None</em>, <em>**kws</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.safe_open" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">torchfun.</code><code class="descname">safe_open</code><span class="sig-paren">(</span><em>*args</em>, <em>encoding=None</em>, <em>return_encoding=False</em>, <em>verbose=True</em>, <em>**kws</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.safe_open" title="Permalink to this definition">¶</a></dt>
 <dd><p>automatically determine the encoding of the file.
 so that there will not be so many stupid encoding errors occuring during coding.</p>
 <dl class="simple">
@@ -2238,7 +2328,7 @@ so that there will not be so many stupid encoding errors occuring during coding.
 <dt id="torchfun.sort_args">
 <code class="descclassname">torchfun.</code><code class="descname">sort_args</code><span class="sig-paren">(</span><em>args_or_types</em>, <em>types_or_args</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.sort_args" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is a very interesting function.
-It is used to support __arbitrary-<a href="#id27"><span class="problematic" id="id29">arguments-ordering__</span></a> in TorchFun.</p>
+It is used to support __arbitrary-<a href="#id31"><span class="problematic" id="id33">arguments-ordering__</span></a> in TorchFun.</p>
 <dl class="simple">
 <dt>Input:</dt><dd><p>The function takes a list of types, and a list of arguments.</p>
 </dd>
@@ -2256,6 +2346,23 @@ It is used to support __arbitrary-<a href="#id27"><span class="problematic" id="
 </dd></dl>
 
 <dl class="function">
+<dt id="torchfun.force_exist">
+<code class="descclassname">torchfun.</code><code class="descname">force_exist</code><span class="sig-paren">(</span><em>dirname</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.force_exist" title="Permalink to this definition">¶</a></dt>
+<dd><p>force a directory to exist.
+force_exist can automatically create directory with any depth.
+Arguements:</p>
+<blockquote>
+<div><p>dirname: path of the desired directory
+verbose: print every directory creation. default True.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>force_exist(‘a/b/c/d/e/f’)
+force_exist(‘a/b/c/d/e/f’,verbose=False)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
 <dt id="torchfun.to_numpy">
 <code class="descclassname">torchfun.</code><code class="descname">to_numpy</code><span class="sig-paren">(</span><em>tensor</em>, <em>keep_dim=False</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.to_numpy" title="Permalink to this definition">¶</a></dt>
 <dd><p>convert a NCHW tensor to NHWC numpy array.
@@ -2266,15 +2373,26 @@ the tensor will be simply cat to np array</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="torchfun.dtype">
+<code class="descclassname">torchfun.</code><code class="descname">dtype</code><span class="sig-paren">(</span><em>obj</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.dtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the data type of:</p>
+<blockquote>
+<div><p>a model</p>
+<p>a tensor</p>
+<p>or, the type() of anything else</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
 <dt id="torchfun.imread">
 <code class="descclassname">torchfun.</code><code class="descname">imread</code><span class="sig-paren">(</span><em>fname</em>, <em>out_range=(0</em>, <em>1)</em>, <em>dtype=torch.float32</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.imread" title="Permalink to this definition">¶</a></dt>
 <dd><p>read jpg/png/gif/bmp/tiff… image file, and cat to tensor
-function based on imageio.
-args:</p>
+function based on imageio.</p>
+<p>args:</p>
 <blockquote>
-<div><p>fname: string of the file path
-out_range: tuple, output pixel value range.
-dtype: torch datatype</p>
+<div><p>fname: string of the file path</p>
+<p>out_range: tuple, output pixel value range.</p>
+<p>dtype: torch datatype</p>
 </div></blockquote>
 <dl class="simple">
 <dt>Notice:</dt><dd><p>the returned image is 1xCxHxW (NCHW).</p>
@@ -2285,42 +2403,46 @@ dtype: torch datatype</p>
 <dl class="function">
 <dt id="torchfun.imsave">
 <code class="descclassname">torchfun.</code><code class="descname">imsave</code><span class="sig-paren">(</span><em>img_or_dest</em>, <em>dest_or_img</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.imsave" title="Permalink to this definition">¶</a></dt>
-<dd><p>save torch tensor image(s) or numpy image(s).
-img: can be numpy image, numpy image batch.</p>
+<dd><p>save torch tensor image(s) or numpy image(s).</p>
+<p>img: can be numpy image, numpy image batch.</p>
 <blockquote>
-<div><p>or single torch-tensor image
-or torch-tensor-image-batch.
-or list/tuple of numpy images
-or list/tuple of pytorch-tensor images</p>
+<div><p>or single torch-tensor image</p>
+<p>or torch-tensor-image-batch.</p>
+<p>or list/tuple of numpy images</p>
+<p>or list/tuple of pytorch-tensor images</p>
 </div></blockquote>
 <p>Notice: images must have non-zero channels, even for grey-scale images (1-channel images).</p>
-<p>behaviour: images will be concatenated into a long single image and save into destination file-name.</p>
+<dl class="simple">
+<dt>behaviour: images will be concatenated into a long single image and save into destination file-name.</dt><dd><p>the concating will be taken horizontally.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="torchfun.imwrite">
 <code class="descclassname">torchfun.</code><code class="descname">imwrite</code><span class="sig-paren">(</span><em>img_or_dest</em>, <em>dest_or_img</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.imwrite" title="Permalink to this definition">¶</a></dt>
-<dd><p>save torch tensor image(s) or numpy image(s).
-img: can be numpy image, numpy image batch.</p>
+<dd><p>save torch tensor image(s) or numpy image(s).</p>
+<p>img: can be numpy image, numpy image batch.</p>
 <blockquote>
-<div><p>or single torch-tensor image
-or torch-tensor-image-batch.
-or list/tuple of numpy images
-or list/tuple of pytorch-tensor images</p>
+<div><p>or single torch-tensor image</p>
+<p>or torch-tensor-image-batch.</p>
+<p>or list/tuple of numpy images</p>
+<p>or list/tuple of pytorch-tensor images</p>
 </div></blockquote>
 <p>Notice: images must have non-zero channels, even for grey-scale images (1-channel images).</p>
-<p>behaviour: images will be concatenated into a long single image and save into destination file-name.</p>
+<dl class="simple">
+<dt>behaviour: images will be concatenated into a long single image and save into destination file-name.</dt><dd><p>the concating will be taken horizontally.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="torchfun.imshow">
 <code class="descclassname">torchfun.</code><code class="descname">imshow</code><span class="sig-paren">(</span><em>x</em>, <em>title=None</em>, <em>auto_close=True</em>, <em>cols=8</em>, <em>backend=None</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.imshow" title="Permalink to this definition">¶</a></dt>
-<dd><p>only deal with torch channel-first image batch,
-title: add title to plot. (Default None)</p>
-<blockquote>
-<div><p>title can be string, or any string-able object.</p>
-</div></blockquote>
+<dd><p>only deal with torch channel-first image batch,</p>
 <dl class="simple">
+<dt>title: add title to plot. (Default None)</dt><dd><p>title can be string, or any string-able object.</p>
+</dd>
 <dt>auto_close: (default True) </dt><dd><p>Close the pyplot session afterwards. 
 Clean the environment just like you had 
 never used matplotlib here.
@@ -2341,17 +2463,17 @@ svg,     TkCairo,
 template</p>
 </dd>
 </dl>
-<p>Usage:
-<a href="#id13"><span class="problematic" id="id14">``</span></a><a href="#id15"><span class="problematic" id="id16">`</span></a>python</p>
-<blockquote>
-<div><p>imshow(batch)
+<p>Usage:</p>
+<dl class="simple">
+<dt><a href="#id15"><span class="problematic" id="id16">``</span></a><a href="#id17"><span class="problematic" id="id18">`</span></a>python</dt><dd><p>imshow(batch)
 imshow(batch,title=[a,b,c])
 imshow(batch,title=’title’)
 imshow(batch,auto_close=False)</p>
-</div></blockquote>
-<p><a href="#id17"><span class="problematic" id="id18">``</span></a>`
-Warnings:
-<a href="#id19"><span class="problematic" id="id20">``</span></a><a href="#id21"><span class="problematic" id="id22">`</span></a>text</p>
+</dd>
+</dl>
+<p><a href="#id19"><span class="problematic" id="id20">``</span></a><a href="#id21"><span class="problematic" id="id22">`</span></a></p>
+<p>Warnings:
+<a href="#id23"><span class="problematic" id="id24">``</span></a><a href="#id25"><span class="problematic" id="id26">`</span></a>text</p>
 <blockquote>
 <div><p>TorchFun:imshow:Warning, you are using WebAgg backend for Matplotlib. 
 Please consider windowed display SDKs such as TkAgg backend and GTK* backends.</p>
@@ -2409,8 +2531,12 @@ It will also cast data for 2-D images to <code class="docutils literal notransla
 </dl>
 <p>None</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">255</span><span class="p">),</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">scipy</span> <span class="k">import</span> <span class="n">misc</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">misc</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">scipy</span> <span class="k">import</span> <span class="n">misc</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">misc</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Ported and upgraded based on scipy.misc.imshow
@@ -2420,27 +2546,27 @@ Open-sourced according to the license.</p>
 <dl class="function">
 <dt id="torchfun.imresize">
 <code class="descclassname">torchfun.</code><code class="descname">imresize</code><span class="sig-paren">(</span><em>tensor_or_size</em>, <em>size_or_tensor</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.imresize" title="Permalink to this definition">¶</a></dt>
-<dd><p>stretch pytorch image NCHW, into given shape
-arguments</p>
+<dd><p>stretch pytorch image NCHW, into given shape</p>
+<p>arguments</p>
 <blockquote>
-<div><p>tensor: NCHW tensor
-size: tuple or list of [height,width], or a scale factor</p>
+<div><p>tensor: NCHW tensor</p>
+<p>size: tuple or list of [height,width], or a scale factor</p>
 </div></blockquote>
 </dd></dl>
 
 <dl class="function">
 <dt id="torchfun.imcrop_center">
 <code class="descclassname">torchfun.</code><code class="descname">imcrop_center</code><span class="sig-paren">(</span><em>tensor_or_size</em>, <em>size_or_tensor</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.imcrop_center" title="Permalink to this definition">¶</a></dt>
-<dd><p>crop a center patch from pytorch image NCHW
-arguments</p>
+<dd><p>crop a center patch from pytorch image NCHW</p>
+<p>arguments</p>
 <blockquote>
-<div><p>tensor: NCHW tensor
-size: tuple or list of [height,width], or a scale factor</p>
-<blockquote>
-<div><p>given a tuple of height,width, this returns a scaled patch of the 
+<div><p>tensor: NCHW tensor</p>
+<dl class="simple">
+<dt>size: tuple or list of [height,width], or a scale factor</dt><dd><p>given a tuple of height,width, this returns a scaled patch of the 
 largest center crop.
 given a factor of scale, this will return a scaled square maximum center crop</p>
-</div></blockquote>
+</dd>
+</dl>
 </div></blockquote>
 </dd></dl>
 
@@ -2448,26 +2574,30 @@ given a factor of scale, this will return a scaled square maximum center crop</p
 <dt id="torchfun.load">
 <code class="descclassname">torchfun.</code><code class="descname">load</code><span class="sig-paren">(</span><em>a</em>, <em>b</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.load" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load weight <cite>a</cite> into model <cite>b</cite>, or load model <cite>b</cite> using weight <cite>a</cite>
-The order of the arguments doesn’t matter.
-Example:</p>
+The order of the arguments doesn’t matter.</p>
+<p>Example:</p>
 <blockquote>
 <div><p>&gt;load(‘weights.pts’,model)</p>
 </div></blockquote>
+<p>or</p>
+<blockquote>
+<div><p>&gt;load(model,’weights.pts’)</p>
+</div></blockquote>
+<p>or</p>
+<blockquote>
+<div><p>&gt;f = open(‘weight.pts’)</p>
+<p>&gt;load(f,model)</p>
+</div></blockquote>
+<p>or</p>
+<blockquote>
+<div><p>&gt;load(model,f)</p>
+</div></blockquote>
+<p>Return value: None</p>
 <dl class="simple">
-<dt>or</dt><dd><p>&gt;load(model,’weights.pts’)</p>
-</dd>
-<dt>or</dt><dd><p>&gt;f = open(‘weight.pts’)
-&gt;load(f,model)</p>
-</dd>
-<dt>or</dt><dd><p>&gt;load(model,f)</p>
+<dt>Behaviour: the loaded state-dict will be transformed to the same device as model,</dt><dd><p>so that torch won’t complain about CUDA-memory-insufficient when you just want to load
+weights from disk directly to cpu-model.</p>
 </dd>
 </dl>
-<p>Return value: None
-Behaviour: the loaded state-dict will be transformed to the same device as model,</p>
-<blockquote>
-<div><p>so that torch won’t complain about CUDA-memory-insufficient when you just want to load
-weights from disk directly to cpu-model.</p>
-</div></blockquote>
 </dd></dl>
 
 <dl class="function">
@@ -2506,80 +2636,86 @@ Example:</p>
 <dl class="function">
 <dt id="torchfun.count_parameters">
 <code class="descclassname">torchfun.</code><code class="descname">count_parameters</code><span class="sig-paren">(</span><em>model_or_dict_or_param</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.count_parameters" title="Permalink to this definition">¶</a></dt>
-<dd><p>Count parameter numer of a module/state_dict/layer/tensor.
-This function can also print the occupied memory of parameters in MBs
-Arguements:
-model_or_dict_or_param: model or state dictionary or model.parameter(), or numpy-array, or tensor.
-Return: parameter amount in python-int</p>
+<dd><p>Count parameter numer of a module/state_dict/layer/tensor.</p>
+<p>This function can also print the occupied memory of parameters in MBs</p>
+<p>Arguements:</p>
+<p>model_or_dict_or_param: model or state dictionary or model.parameter(), or numpy-array, or tensor.</p>
+<p>Return: parameter amount in python-int</p>
 <blockquote>
 <div><p>Returns 0 if datatype not understood</p>
 </div></blockquote>
-<p>Usage:
-1. count trainable and untrainbale params</p>
+<p>Usage:</p>
+<ol class="arabic">
+<li><p>count trainable and untrainbale params</p>
 <blockquote>
 <div><p>count_parameters(model)</p>
 </div></blockquote>
-<dl class="simple">
-<dt>same as    </dt><dd><p>count_parameters(state_dict)</p>
-</dd>
-</dl>
-<ol class="arabic simple" start="2">
-<li><dl class="simple">
-<dt>count only trainable params:</dt><dd><p>count_parameters(model.parameters())</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>count data matrix</dt><dd><p>count_parameters(weight_tensor)
-count_parameters(numpy_array)</p>
-</dd>
-</dl>
 </li>
 </ol>
-<dl class="simple">
-<dt>Notice:</dt><dd><p>return value is parameter Number.</p>
-</dd>
-</dl>
+<p>same as</p>
+<blockquote>
+<div><p>count_parameters(state_dict)</p>
+</div></blockquote>
+<ol class="arabic" start="2">
+<li><p>count only trainable params:</p>
+<blockquote>
+<div><p>count_parameters(model.parameters())</p>
+</div></blockquote>
+</li>
+<li><p>count data matrix</p>
+<blockquote>
+<div><p>count_parameters(weight_tensor)</p>
+<p>count_parameters(numpy_array)</p>
+</div></blockquote>
+</li>
+</ol>
+<p>Notice:</p>
+<blockquote>
+<div><p>return value is parameter Number.</p>
+</div></blockquote>
 <p>Alias: parameters()</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="torchfun.parameters">
 <code class="descclassname">torchfun.</code><code class="descname">parameters</code><span class="sig-paren">(</span><em>model_or_dict_or_param</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.parameters" title="Permalink to this definition">¶</a></dt>
-<dd><p>Count parameter numer of a module/state_dict/layer/tensor.
-This function can also print the occupied memory of parameters in MBs
-Arguements:
-model_or_dict_or_param: model or state dictionary or model.parameter(), or numpy-array, or tensor.
-Return: parameter amount in python-int</p>
+<dd><p>Count parameter numer of a module/state_dict/layer/tensor.</p>
+<p>This function can also print the occupied memory of parameters in MBs</p>
+<p>Arguements:</p>
+<p>model_or_dict_or_param: model or state dictionary or model.parameter(), or numpy-array, or tensor.</p>
+<p>Return: parameter amount in python-int</p>
 <blockquote>
 <div><p>Returns 0 if datatype not understood</p>
 </div></blockquote>
-<p>Usage:
-1. count trainable and untrainbale params</p>
+<p>Usage:</p>
+<ol class="arabic">
+<li><p>count trainable and untrainbale params</p>
 <blockquote>
 <div><p>count_parameters(model)</p>
 </div></blockquote>
-<dl class="simple">
-<dt>same as    </dt><dd><p>count_parameters(state_dict)</p>
-</dd>
-</dl>
-<ol class="arabic simple" start="2">
-<li><dl class="simple">
-<dt>count only trainable params:</dt><dd><p>count_parameters(model.parameters())</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>count data matrix</dt><dd><p>count_parameters(weight_tensor)
-count_parameters(numpy_array)</p>
-</dd>
-</dl>
 </li>
 </ol>
-<dl class="simple">
-<dt>Notice:</dt><dd><p>return value is parameter Number.</p>
-</dd>
-</dl>
+<p>same as</p>
+<blockquote>
+<div><p>count_parameters(state_dict)</p>
+</div></blockquote>
+<ol class="arabic" start="2">
+<li><p>count only trainable params:</p>
+<blockquote>
+<div><p>count_parameters(model.parameters())</p>
+</div></blockquote>
+</li>
+<li><p>count data matrix</p>
+<blockquote>
+<div><p>count_parameters(weight_tensor)</p>
+<p>count_parameters(numpy_array)</p>
+</div></blockquote>
+</li>
+</ol>
+<p>Notice:</p>
+<blockquote>
+<div><p>return value is parameter Number.</p>
+</div></blockquote>
 <p>Alias: parameters()</p>
 </dd></dl>
 
@@ -2592,11 +2728,11 @@ You can check the sum_parameters before and after some operations, to know
 if there is any change made to the params.</p>
 <p>I use this function to verify gradient behaviours.</p>
 <p>By default, This only hash the trainable parameters!</p>
-<p>arguements:
-module_or_statdict_or_param: torch.nn.module,</p>
+<p>arguements:</p>
+<p>module_or_statdict_or_param: torch.nn.module,</p>
 <blockquote>
-<div><p>or model.state_dict(), 
-or model.parameters().</p>
+<div><p>or model.state_dict(),</p>
+<p>or model.parameters().</p>
 </div></blockquote>
 <p>use_sum: return the sum instead of mean value of all params.</p>
 </dd></dl>
@@ -2606,11 +2742,11 @@ or model.parameters().</p>
 <code class="descclassname">torchfun.</code><code class="descname">vectorize_parameter</code><span class="sig-paren">(</span><em>model_or_statdict_or_param</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.vectorize_parameter" title="Permalink to this definition">¶</a></dt>
 <dd><p>return the vectorized form of all variables.
 This is used to detect chaotic changes of weights.</p>
-<p>arguements:
-module_or_statdict_or_param: torch.nn.module,</p>
+<p>arguements:</p>
+<p>module_or_statdict_or_param: torch.nn.module,</p>
 <blockquote>
-<div><p>or model.state_dict(), 
-or model.parameters().</p>
+<div><p>or model.state_dict(),</p>
+<p>or model.parameters().</p>
 </div></blockquote>
 </dd></dl>
 
@@ -2628,11 +2764,11 @@ this tool will create a noise data according to given input_shape,
 and feed it directly to net, in order to probe its structure.
 network strctures descriptions will be written to logdir.
 a tensorboard daemon will be launched to read the logdir and start a web server
-on given port.
-Notice:</p>
+on given port.</p>
+<p>Notice:</p>
 <blockquote>
-<div><p>input shape must be 
-This program overwrites the system argument lists (sys.argv)</p>
+<div><p>input shape must be NCHW, following pytorch style.</p>
+<p>This program overwrites the system argument lists (sys.argv)</p>
 </div></blockquote>
 </dd></dl>
 
@@ -2640,27 +2776,27 @@ This program overwrites the system argument lists (sys.argv)</p>
 <dt id="torchfun.Packsearch">
 <em class="property">class </em><code class="descclassname">torchfun.</code><code class="descname">Packsearch</code><span class="sig-paren">(</span><em>module_object</em>, <em>auto_init=True</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.Packsearch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Search names inside a package.
-Given an module object as input:
-&gt; p = Packsearch(torch)
-or
-&gt; p = Packsearch(‘torch’)
-the instance p provide p.search() method. So that you can 
-search everything inside this package
-&gt; p.search(‘maxpoo’)
-or simply
-&gt; p(‘maxpoo’)
-output:</p>
+<p>Search names inside a package.</p>
+<p>Given an module object as input:</p>
+<p>&gt; p = Packsearch(torch)</p>
+<p>or</p>
+<p>&gt; p = Packsearch(‘torch’)</p>
+<p>the instance p provide p.search() method. So that you can</p>
+<p>search everything inside this package</p>
+<p>&gt; p.search(‘maxpoo’)</p>
+<p>or simply</p>
+<p>&gt; p(‘maxpoo’)</p>
+<p>output:</p>
 <blockquote>
-<div><p>Packsearch: 35 results found:
-————-results start————-
-0        torch.nn.AdaptiveMaxPool1d
-1        torch.nn.AdaptiveMaxPool2d
-2        torch.nn.AdaptiveMaxPool3d
-3        torch.nn.FractionalMaxPool2d
-4        torch.nn.MaxPool1d
-5        torch.nn.MaxPool2d
-…</p>
+<div><p>Packsearch: 35 results found:</p>
+<p>————-results start————-</p>
+<p>0        torch.nn.AdaptiveMaxPool1d</p>
+<p>1        torch.nn.AdaptiveMaxPool2d</p>
+<p>2        torch.nn.AdaptiveMaxPool3d</p>
+<p>3        torch.nn.FractionalMaxPool2d</p>
+<p>4        torch.nn.MaxPool1d</p>
+<p>5        torch.nn.MaxPool2d</p>
+<p>…</p>
 </div></blockquote>
 <dl class="method">
 <dt id="torchfun.Packsearch.dynamic_traverse">
@@ -2690,55 +2826,38 @@ search_attributes: whether to include class attributes or method names</p>
 <dl class="function">
 <dt id="torchfun.packsearch">
 <code class="descclassname">torchfun.</code><code class="descname">packsearch</code><span class="sig-paren">(</span><em>module_or_str</em>, <em>str_or_module</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.packsearch" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given an module object, and search pattern string as input:
-&gt; packsearch(torch,’maxpoo’)
-or
-&gt; packsearch(‘maxpoo’,torch)
-you can search everything inside this package
-output:</p>
+<dd><p>Given an module object, and search pattern string as input:</p>
+<p>&gt; packsearch(torch,’maxpoo’)</p>
+<p>or</p>
+<p>&gt; packsearch(‘maxpoo’,torch)</p>
+<p>you can search everything inside this package</p>
+<p>output:</p>
 <blockquote>
-<div><p>Packsearch: 35 results found:
-————-results start————-
-0        torch.nn.AdaptiveMaxPool1d
-1        torch.nn.AdaptiveMaxPool2d
-2        torch.nn.AdaptiveMaxPool3d
-3        torch.nn.FractionalMaxPool2d
-4        torch.nn.MaxPool1d
-5        torch.nn.MaxPool2d
-…</p>
+<div><p>Packsearch: 35 results found:</p>
+<p>————-results start————-</p>
+<p>0        torch.nn.AdaptiveMaxPool1d</p>
+<p>1        torch.nn.AdaptiveMaxPool2d</p>
+<p>2        torch.nn.AdaptiveMaxPool3d</p>
+<p>3        torch.nn.FractionalMaxPool2d</p>
+<p>4        torch.nn.MaxPool1d</p>
+<p>5        torch.nn.MaxPool2d</p>
+<p>…</p>
 </div></blockquote>
-</dd></dl>
-
-<dl class="function">
-<dt id="torchfun.force_exist">
-<code class="descclassname">torchfun.</code><code class="descname">force_exist</code><span class="sig-paren">(</span><em>dirname</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.force_exist" title="Permalink to this definition">¶</a></dt>
-<dd><p>force a directory to exist.
-force_exist can automatically create directory with any depth.
-Arguements:</p>
-<blockquote>
-<div><p>dirname: path of the desired directory
-verbose: print every directory creation. default True.</p>
-</div></blockquote>
-<dl class="simple">
-<dt>Usage:</dt><dd><p>force_exist(‘a/b/c/d/e/f’)
-force_exist(‘a/b/c/d/e/f’,verbose=False)</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="torchfun.whereis">
 <code class="descclassname">torchfun.</code><code class="descname">whereis</code><span class="sig-paren">(</span><em>module_or_string</em>, <em>open_gui=True</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.whereis" title="Permalink to this definition">¶</a></dt>
-<dd><p>find the source file location of a module
-arguments:</p>
+<dd><p>find the source file location of a module</p>
+<p>arguments:</p>
 <blockquote>
-<div><p>module_or_string: target module object, or it’s string path like <cite>torch.nn</cite>
-open_gui: open the folder with default window-manager.</p>
+<div><p>module_or_string: target module object, or it’s string path like <cite>torch.nn</cite></p>
+<p>open_gui: open the folder with default window-manager.</p>
 </div></blockquote>
-<dl class="simple">
-<dt>returns:</dt><dd><p>module file name, or None</p>
-</dd>
-</dl>
+<p>returns:</p>
+<blockquote>
+<div><p>module file name, or None</p>
+</div></blockquote>
 </dd></dl>
 
 <dl class="function">
@@ -2753,8 +2872,8 @@ returns:</p>
 
 <dl class="class">
 <dt id="torchfun.Options">
-<em class="property">class </em><code class="descclassname">torchfun.</code><code class="descname">Options</code><a class="headerlink" href="#torchfun.Options" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<em class="property">class </em><code class="descclassname">torchfun.</code><code class="descname">Options</code><span class="sig-paren">(</span><em>*args</em>, <em>**kws</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.Options" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
 <p>A simple yet effective option class for debugging use.
 key features: you can set attributes to it directly.
 like:</p>
@@ -2781,9 +2900,11 @@ please refer to Option class for more information</p>
 you can save/load them together.</p>
 <p>usage:</p>
 <blockquote>
-<div><p>unimodel = Unimodel(resnet1,resnet2,resnet3)
-unimodel.save(‘xxxx.pth’)
-unimodel.load(‘ssss.pth’)</p>
+<div><p>unimodel = Unimodel(resnet1,resnet2,resnet3)</p>
+<p>unimodel.save(‘xxxx.pth’)</p>
+<p>unimodel.load(‘ssss.pth’)</p>
+<p>resnet1 = unimodel.resnet1</p>
+<p>…</p>
 </div></blockquote>
 <dl class="method">
 <dt id="torchfun.Unimodel.load">
@@ -2840,10 +2961,10 @@ false False true True 0 1</p>
 <dd><p>help documentation on Torchfun
 Argument:</p>
 <blockquote>
-<div><dl class="simple">
-<dt>search: give None to go to the latest doc site</dt><dd><p>give string or object to search the object</p>
-</dd>
-</dl>
+<div><p>search: give None to go to the latest doc site</p>
+<blockquote>
+<div><p>give string or object to search the object</p>
+</div></blockquote>
 </div></blockquote>
 </dd></dl>
 
@@ -3359,7 +3480,7 @@ to_min: target expect min value of the output</p>
 into one unified parameter generator.
 Arguements:</p>
 <blockquote>
-<div><p><a href="#id23"><span class="problematic" id="id24">*</span></a>models: any number of models.</p>
+<div><p><a href="#id27"><span class="problematic" id="id28">*</span></a>models: any number of models.</p>
 </div></blockquote>
 <p>This utility is useful when you want several individual parts to be
 handled by one Optimizer. Parameters shall be gathered into one iterator
@@ -3378,9 +3499,26 @@ multi-dimensional vectorial cosine similarity.</p>
 
 <dl class="function">
 <dt id="torchfun.time">
-<code class="descclassname">torchfun.</code><code class="descname">time</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; floating point number<a class="headerlink" href="#torchfun.time" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the current time in seconds since the Epoch.
-Fractions of a second may be present if the system clock provides them.</p>
+<code class="descclassname">torchfun.</code><code class="descname">time</code><span class="sig-paren">(</span><em>message=None, name=None, named_time_table={}, anonymous_time=[None]</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.time" title="Permalink to this definition">¶</a></dt>
+<dd><p>show running time
+dict-key locating costs 1e-6 second = 1 micro-second
+context switching costs 5e-5 second.</p>
+<dl class="simple">
+<dt>Usage 1:</dt><dd><p>tf.time()
+…
+elapsed = tf.time()</p>
+</dd>
+<dt>Usage 2:</dt><dd><p>tf.time()
+…
+tf.time(‘elapsed:’)
+out: elapsed: 0.02 sec</p>
+</dd>
+<dt>Usage 3:</dt><dd><p>tf.time(name=’clock1’)
+…
+tf.time(‘elapsed’,name=’clock1’)
+out: elapsed 0.02 sec</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="class">
@@ -4087,33 +4225,8 @@ Out: ‘xxxdddaa.txt’</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="torchfun.info">
-<code class="descclassname">torchfun.</code><code class="descname">info</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.info" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="torchfun.error">
-<code class="descclassname">torchfun.</code><code class="descname">error</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.error" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="torchfun.warning">
-<code class="descclassname">torchfun.</code><code class="descname">warning</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.warning" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="torchfun.warn">
-<code class="descclassname">torchfun.</code><code class="descname">warn</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.warn" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="torchfun.wait">
-<code class="descclassname">torchfun.</code><code class="descname">wait</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.wait" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="torchfun.input_or">
-<code class="descclassname">torchfun.</code><code class="descname">input_or</code><span class="sig-paren">(</span><em>prompt</em>, <em>default='y'</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.input_or" title="Permalink to this definition">¶</a></dt>
+<dt id="torchfun.reset_timer">
+<code class="descclassname">torchfun.</code><code class="descname">reset_timer</code><span class="sig-paren">(</span><em>named_time_table={}, anonymous_time=[None]</em><span class="sig-paren">)</span><a class="headerlink" href="#torchfun.reset_timer" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -4195,7 +4308,7 @@ false False true True 0 1</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">torchfun 1.0.42 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">torchfun 1.0.80 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

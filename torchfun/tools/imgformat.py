@@ -64,7 +64,12 @@ def imgformat():
             if opt.type == 'pdf':
                 img2pdf_wrapper(imgpath,destpath)
             else:
-                imageio.imsave(destpath,imageio.imread(imgpath))
+                imgnp = imageio.imread(imgpath)
+                dims = len(imgnp.shape)
+                if (dims==3) and (imgnp.shape[2]==4):
+                    # RGBA image
+                    imgnp = imgnp[:,:,:3]
+                imageio.imsave(destpath,imgnp)
     print('finished.')
     return 0
 

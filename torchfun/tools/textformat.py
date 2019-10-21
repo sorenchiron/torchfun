@@ -7,7 +7,7 @@
 from __future__ import print_function
 from __future__ import division
 import argparse
-from ..torchfun import safe_open
+from ..utils import safe_open
 import os
 from glob import glob
 from sys import argv
