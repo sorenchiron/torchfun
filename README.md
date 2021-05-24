@@ -8,8 +8,6 @@ More convenient features based on PyTorch (originally Torchure)
 
 The purposed of TorchFun is to provide functions which are important and convenient, but absent in PyTorch, like some layers and visualization utils.
 
-This project has been undergoing in secret so that the author could credit TorchFun to his beloved as a little supprise of help, one day when this project is well-enriched or gets famous.
-
 Interestingly, The original project name given by the author, is `Torchure`. That is because he was always multi-tasking trivial affairs in school and got scorched, and when he was learning this new framework, he found plenty of issues/missing-functionalities. He felt that this was totally a torture. So, this project was named "Torchure" to satirize the lame PyTorch (you can still found Torchure in PyPi). And, the author hoped, by developing Torchure, users could feel ease even when encountering the crappy-parts of PyTorch.
 
 ## Latest Documentation:
