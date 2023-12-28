@@ -143,7 +143,8 @@ def imsave(img_or_dest,dest_or_img):
         dimensions = len(img.shape)
         if dimensions == 3: #make channel last image
             img = img.cpu().numpy().transpose(1,2,0)
-    img = _force_image_range(img,out_range=(0,1))
+    img = _force_image_range(img,out_range=(0,255))
+    img = img.round().astype(np.uint8)
     if img is None:
         return
     import imageio
@@ -399,7 +400,7 @@ def imresize(tensor_or_size,size_or_tensor):
     '''
     x,siz = sort_args([tensor_or_size,size_or_tensor],[torch.Tensor,(tuple,list,int,float)])
     if isinstance(siz,(int,float)):
-        return torch.nn.functional.interpolate(x,scale_factor=siz,mod='bilinear',align_corners=False)
+        return torch.nn.functional.interpolate(x,scale_factor=siz,mode='bilinear',align_corners=False)
     else:
         h,w = siz
         return torch.nn.functional.interpolate(x,size=(h,w),mode='bilinear',align_corners=False)
